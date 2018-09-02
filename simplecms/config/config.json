@@ -1,6 +1,6 @@
 {
   "environment": "development",
-  "database":"sqlite",
+  "database": "sqlite",
   "development": {
     "config_id": "development",
     "app_name": "Appec CMS",
@@ -16,13 +16,13 @@
         "host": "",
         "dbport": "",
         "options": {
-          
+
         }
       },
       "mongodb": {
         "dbname": "appec_cms",
         "dbuser": "dbuser",
-        "dbuserpwd": "bcd932b954891",
+        "dbuserpwd": "xxxxxxxxxx",
         "host": "localhost:",
         "dbport": "27017",
         "options": {
@@ -61,7 +61,7 @@
       "mongodb": {
         "dbname": "appec_cms",
         "dbuser": "dbuser",
-        "dbuserpwd": "bcd932b954891"
+        "dbuserpwd": "xxxxxxxxxx"
       },
       "mysql": {
         "dbname": "appec_cms",

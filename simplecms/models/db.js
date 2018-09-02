@@ -24,8 +24,7 @@ switch (database){
     mongoConn.once('open', function () {
       console.log("Mongodb Connected! at " + new Date());
     });
-    mongodbOrSQL = 1;    
-    //module.exports.db = db;
+    mongodbOrSQL = 1;        
   case 'sqlite':  
     sequelize = new Sequelize(database, dbuser, pwd, {
       host: 'localhost',
