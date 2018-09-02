@@ -1,0 +1,73 @@
+{
+  "environment": "development",
+  "database":"sqlite",
+  "development": {
+    "config_id": "development",
+    "app_name": "Appec CMS",
+    "app_desc": "A simple cms just to ease your blogging experience",
+    "node_port": 3000,
+    "json_indentation": 4,
+    "db_engine": "",
+    "database": {
+      "sqlite": {
+        "dbname": "appec_cms",
+        "dbuser": "",
+        "dbuserpwd": "",
+        "host": "",
+        "dbport": "",
+        "options": {
+          
+        }
+      },
+      "mongodb": {
+        "dbname": "appec_cms",
+        "dbuser": "dbuser",
+        "dbuserpwd": "bcd932b954891",
+        "host": "localhost:",
+        "dbport": "27017",
+        "options": {
+          "useNewUrlParser": true
+        }
+      },
+      "mysql": {
+        "dbname": "appec_cms",
+        "dbuser": "",
+        "dbuserpwd": ""
+      }
+    }
+  },
+  "testing": {
+    "config_id": "testing",
+    "database": "testing-database"
+  },
+  "staging": {
+    "config_id": "staging",
+    "node_port": 8080,
+    "database": "staging-database"
+  },
+  "production": {
+    "config_id": "production",
+    "node_port": 8080,
+    "app_name": "Appec CMS",
+    "app_desc": "A simple cms just to ease your blogging experience",
+    "json_indentation": 4,
+    "db_engine": "",
+    "database": {
+      "sqlite": {
+        "dbname": "appec_cms",
+        "dbuser": "",
+        "dbuserpwd": ""
+      },
+      "mongodb": {
+        "dbname": "appec_cms",
+        "dbuser": "dbuser",
+        "dbuserpwd": "bcd932b954891"
+      },
+      "mysql": {
+        "dbname": "appec_cms",
+        "dbuser": "",
+        "dbuserpwd": ""
+      }
+    }
+  }
+}

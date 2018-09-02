@@ -3,16 +3,26 @@
 /**
  * Module dependencies.
  */
-
+var config = require('../config/config.json');
+var environment = config.environment;
 var app = require('../app');
+var {db} = require('../models/db');
 var debug = require('debug')('simplecms:server');
 var http = require('http');
 
+db.authenticate()
+  .then(() => {
+    console.log('Connection has been established successfully.');
+  })
+  .catch(err => {
+    console.error('Failed to establish connection.');
+  });
+console.log(db);
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT || config[environment].node_port);
 app.set('port', port);
 
 /**

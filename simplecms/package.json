@@ -6,17 +6,20 @@
     "start": "nodemon ./bin/www"
   },
   "dependencies": {
+    "body-parser": "^1.18.3",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "ejs": "~2.5.7",
     "express": "~4.16.0",
-    "http-errors": "~1.6.2",
-    "morgan": "~1.9.0",
     "helmet": "^3.13.0",
+    "http-errors": "~1.6.2",
     "jsonwebtoken": "^8.3.0",
     "lodash": "^4.17.10",
+    "mongoose": "^5.2.12",
+    "morgan": "~1.9.0",
     "nodemon": "^1.18.3",
-    "validator": "^10.7.0",
-    "body-parser": "^1.18.3"
+    "sequelize": "^4.38.0",
+    "sqlite3": "^4.0.2",
+    "validator": "^10.7.0"
   }
 }
