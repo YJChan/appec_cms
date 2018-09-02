@@ -17,7 +17,7 @@ db.authenticate()
   .catch(err => {
     console.error('Failed to establish connection.');
   });
-console.log(db);
+db.sync();
 /**
  * Get port from environment and store in Express.
  */

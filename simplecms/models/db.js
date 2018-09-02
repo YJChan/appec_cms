@@ -39,6 +39,7 @@ switch (database){
       storage: './models/appec_cms.db'
     });  
     mongodbOrSQL = 2;    
+    //syncing database table with definition    
   default:
     console.error('no database connection.');
 }
