@@ -1,4 +1,4 @@
-const {Admin} = require('../../models/admin/admin');
+const {Admin} = require('../../models/sqlite/sqliteModel');
 const {db} = require('../../models/db');
 var express = require('express');
 var router = express.Router();
@@ -16,6 +16,7 @@ router.get('/', function(req, res, next){
   });
 });
 
+//POST - create new admin
 router.post('/', function (req, res, next) {
   
   var mAdmin = {

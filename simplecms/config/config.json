@@ -1,6 +1,7 @@
 {
   "environment": "development",
   "database": "sqlite",
+  "dbChange": false,
   "development": {
     "config_id": "development",
     "app_name": "Appec CMS",
