@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const config = require('./config/config.json');
+var resp = require('./utils/resp');
 
 //web router
 var indexRouter = require('./routes/index');
@@ -41,8 +42,15 @@ app.use(function(err, req, res, next) {
   //res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  //res.status(err.status || 500);
+  //res.render('error');
+  var response = new resp();
+  response.initResp(null, {
+    msg: err.message,
+    code: 401,
+    reason: err.stack
+  });
+  res.status(401).send(response);
 });
 
 module.exports = app;

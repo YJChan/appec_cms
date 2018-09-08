@@ -28,6 +28,7 @@ const Admin = db.define('Admin', {
   AdminEmail: {
     type: Sequelize.TEXT,
     allowNull: false,
+    unique: true,
     get(){
       return this.getDataValue('AdminEmail');      
     },
@@ -44,11 +45,10 @@ const Admin = db.define('Admin', {
     type: Sequelize.INTEGER,
     defaultValue: 1
   },
-  createdAt: {
-    type: Sequelize.DATE,
-    defaultValue: Sequelize.NOW
-  },
-  modifiedAt: Sequelize.DATE
+  isMaster: {
+    type: Sequelize.INTEGER,
+    allowNull: true    
+  }
 });
 
 const Role = db.define('Role', {
@@ -105,8 +105,7 @@ const Right = db.define('Right', {
     unique: true,
     get(){
       return {
-        module: this.getDataValue('module'),
-        section: this.getDataValue('section'),
+        module: this.getDataValue('module'),        
         acl: this.getDataValue('acl')
       }
     },
@@ -122,7 +121,7 @@ const Right = db.define('Right', {
   acl: {
     type: Sequelize.INTEGER,
     allowNull: false,
-    defaultValue: 744
+    defaultValue: 4
   }
 });
 
@@ -585,6 +584,11 @@ Role.hasMany(User, {
   as: 'UserRole'
 });
 
+Role.hasMany(Right, {
+  foreignKey: 'RoleID',
+  as: 'RoleRight'
+});
+
 Right.hasMany(SpecialField, {
   foreignKey: 'RightID',
   as: 'SpecialRight'
@@ -623,8 +627,8 @@ Tag.belongsToMany(Post, {
   otherKey: 'TagID'
 });
 
-if(config.environment === 'development' && ! config.dbChange){
-  db.sync({force:true});
+if(config.environment === 'development' && config.dbChange){
+  db.sync({alter:true});
 }
 
 module.exports = {
