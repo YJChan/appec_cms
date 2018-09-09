@@ -18,6 +18,7 @@ const Admin = db.define('Admin', {
   AdminName: {
     type: Sequelize.TEXT,
     allowNull: false,
+    unique: true,
     get() {
       return this.getDataValue('AdminName');
     },
@@ -628,7 +629,7 @@ Tag.belongsToMany(Post, {
 });
 
 if(config.environment === 'development' && config.dbChange){
-  db.sync({alter:true});
+  db.sync({force:true});
 }
 
 module.exports = {

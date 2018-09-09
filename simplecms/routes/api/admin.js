@@ -1,5 +1,6 @@
 const {Admin} = require('../../models/sqlite/sqliteModel');
 const {Right} = require('../../models/sqlite/sqliteModel');
+const {Role} = require('../../models/sqlite/sqliteModel');
 const {db} = require('../../models/db');
 var express = require('express');
 var router = express.Router();
@@ -8,37 +9,114 @@ const validator = require('validator');
 const utils = require('../../utils/utils');
 const security = require('../../utils/security');
 var resp = require('../../utils/resp');
+const rQry = require('../../models/sqlite/rawSQL');
+const roleIds = require('../../config/roles.json');
 var _ = require('lodash');
 
 router.use(bodyParser.json());
 
-router.get('/', isAuthenticated, function(req, res, next){
+router.get('/', isAuthenticated, (req, res, next) => {
   var action = "read";
 
   if(res.auth_token != null){
     var role = res.auth_token.role;
-    var validPermit = security.permit(action, role.admin);
+    var validPermit = security.permit(action, role.admin.acl);
+    var mAdmin = {};
+
     if(validPermit){
-      Admin.findAll({
-        attributes: ['AdminId', 'AdminName', 'AdminEmail', 'level', 'active', 'isMaster']
-      }).then(admins => {
-        res.status.send(admin);
+      for (var key in req.query) {
+        if (req.query.hasOwnProperty(key)) {
+          if (key === "name") {
+            mAdmin['AdminName'] = {
+              val: req.query[key],
+              check: true,
+              type: 'string'
+            };
+          } else if (key === 'email') {
+            mAdmin['AdminEmail'] = {
+              val: req.query[key],
+              check: true,
+              type: 'string'
+            };
+          } else if (key === 'level') {
+            mAdmin['level'] = {
+              val: req.query[key],
+              check: true,
+              type: 'integer'
+            };
+          } else if (key === 'active') {
+            mAdmin['active'] = {
+              val: req.query[key],
+              check: true,
+              type: 'integer'
+            };
+          } else if (key === 'role') {
+            mAdmin['RoleName'] = {
+              val: req.query[key],
+              check : true,
+              type: 'string'
+            }
+          }
+        }      
+      }
+      
+      security.validate(mAdmin, (err, mAdminValidated) => {
+        if(err){
+          var response = new resp();
+          res.status(401).send(response.initResp(null, {
+            msg: err.errmsg,
+            code: 400,
+            status: true
+          }));
+        }
+        var query = rQry.getAdminsSQL.bindParam(mAdminValidated);
+        
+        db.query(query, {
+          type: db.QueryTypes.SELECT
+        }).then(admins => {          
+          var response = new resp();
+          res.status(200).send(response.initResp(admins));
+        });
+
       });
     }else{
-      res.status(401).send();
+      var response = new resp();
+      res.status(401).send(response.unAuthResp());
     }
   }else{
-    res.status(401).send();
+    var response = new resp();
+    res.status(401).send(response.unAuthResp());
+  }  
+});
+
+
+//GET all admin
+router.get('/all', isAuthenticated, function(req, res, next){
+  var action = "read";
+
+  if(res.auth_token != null){
+    var role = res.auth_token.role;
+    var validPermit = security.permit(action, role.admin.acl);
+    if(validPermit){
+      Admin.findAll({
+        attributes: ['AdminID', 'AdminName', 'AdminEmail', 'level', 'active', 'isMaster']
+      }).then(admins => {
+        var response = new resp();
+        response.initResp(admins);
+        res.status(200).send(response);
+      });
+    }else{
+      var response = new resp();
+      response.unAuthResp();
+      res.status(401).send(response);
+    }
+  }else{
+    var response = new resp();
+    response.unAuthResp();
+    res.status(401).send(response);
   }
 });
 
-router.get('/:adminid', function(req, res, next){
-  var admin_id = 
-
-  res.status(200).send({
-    message: 'admin index'
-  });
-});
 
 //POST - create new admin
 router.post('/', function (req, res, next) {
@@ -94,7 +172,7 @@ router.post('/', function (req, res, next) {
         }else{
           if (admin !== null) {
             //master role id
-            admin.RoleID = '6DFA0E5A-A66E-47C7-B93A-F1FAE48213C6';
+            admin.RoleID = roleIds.master;
 
             Admin.create(admin).then(admin => {            
               var response = new resp();
@@ -136,7 +214,7 @@ router.post('/', function (req, res, next) {
   });
 });
 
-//update admin details
+//UPDATE admin details
 router.patch('/:adminid', (req, res, next) => {
   var adminid = req.params.adminid;
   var mAdminUpdate = {};
@@ -333,13 +411,21 @@ function isAuthenticated(req, res, next) {
   if (token !== '') {
     security.verifyToken(token, (err, validToken) => {
       if(err){
-        res.status(401).send({
-          error: 'Unauthorized request'
-        });
+        var response = new resp();
+        res.status(401).send(response.initResp(null, {
+          msg: err.message,
+          status : true,
+          code: 401,
+          reason: err.stack
+        }));
+        
       }
       res.auth_token = validToken;
       return next();
     });
+  }else{
+    var response = new resp();
+    res.status(401).send(response.unAuthResp());
   }
 }
 
