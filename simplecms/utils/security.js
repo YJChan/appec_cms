@@ -163,8 +163,59 @@ const security = {
     }else{
       callback(new Error(checker.errmsg), null);
     }
-  }
+  },
+  validateMore(arr, callback) {
+    var checker = {
+      status: false,
+      val: '',
+      errmsg: ''
+    };
+    var arrObj = [];
 
+    for(var obj in arr){
+      for (var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          if (obj[key].check) {
+            var type = obj[key].type ? obj[key].type : '';
+            var val;
+            if (type !== 'integer') {
+              val = obj[key].val ? obj[key].val : '';
+            } else {
+              if (isNaN(obj[key].val)) {
+                checker.status = false;
+                checker.errmsg = "Field suppose to be integer but it is not!";
+                break;
+              } else {
+                val = obj[key].val;
+              }
+            }
+
+            var checker = checkThis(type, val);
+            if (checker.status) {
+              obj[key] = checker.val;
+            } else {
+              break;
+            }
+
+          }
+        } else {
+          checker.status = false;
+          checker.errmsg = "Invalid object key, kindly check on parameter passed in !";
+        }        
+      }
+      if(checker.status){
+        arrObj.push(obj);
+      }else{
+        break;
+      }
+    }
+
+    if (checker.status) {
+      callback(null, arrObj);
+    } else {
+      callback(new Error(checker.errmsg), null);
+    }
+  }
 }
 
 var checkThis = (type, val) => {

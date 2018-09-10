@@ -13,6 +13,7 @@ var indexRouter = require('./routes/index');
 
 //api router
 var adminApi = require('./routes/api/admin');
+var roleApi = require('./routes/api/role');
 var app = express();
 
 // view engine setup
@@ -28,6 +29,7 @@ app.use(express.static(path.join(__dirname, '/public')));
 app.use('/', indexRouter);
 //app.use('/users', usersRouter);
 app.use('/admin', adminApi);
+app.use('/role', roleApi);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

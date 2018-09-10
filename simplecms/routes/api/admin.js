@@ -119,100 +119,114 @@ router.get('/all', isAuthenticated, function(req, res, next){
 
 
 //POST - create new admin
-router.post('/', function (req, res, next) {
-  console.log(utils.guid());
-  var mAdmin = {
-    AdminID: utils.guid(),
-    AdminName : {
-      val: req.body.admin_name,
-      type: 'empty',
-      check: true
-    },
-    AdminEmail: {
-      val: req.body.admin_email,
-      type: 'email',
-      check: true
-    },
-    AdminPwd : {
-      val: req.body.admin_pwd,
-      type: 'password',
-      check: true
-    },
-    level: {
-      val: req.body.level,
-      type: 'integer',
-      check: true
-    },
-    isMaster: {
-      val: req.body.isMaster,
-      type: 'integer',
-      check: true
-    }
-  };
+router.post('/', isAuthenticated, function (req, res, next) {
+  var action = "write";
 
-  security.validate(mAdmin, function (err, admin) {
-    if(err) next(err);
-    
-    if(admin.isMaster === 1){
-      Admin.findAndCountAll({
-        where: {
-          isMaster: 1
+  if (res.auth_token != null) {
+    var role = res.auth_token.role;
+    var validPermit = security.permit(action, role.admin.acl);
+    if (validPermit) {
+      var mAdmin = {
+        AdminID: utils.guid(),
+        AdminName : {
+          val: req.body.admin_name,
+          type: 'empty',
+          check: true
+        },
+        AdminEmail: {
+          val: req.body.admin_email,
+          type: 'email',
+          check: true
+        },
+        AdminPwd : {
+          val: req.body.admin_pwd,
+          type: 'password',
+          check: true
+        },
+        level: {
+          val: req.body.level,
+          type: 'integer',
+          check: true
+        },
+        isMaster: {
+          val: req.body.isMaster,
+          type: 'integer',
+          check: true
         }
-      }).then(result => {
-        if(result.count > 0){
-          var response = new resp();
+      };
 
-          response.initResp(null, {
-            msg: 'Master is already exist, do not create more than one master',
-            code: 999,
-            stack: 'DUP_MASTER'
-          });
-
-          res.status(401).send(response);
-        }else{
-          if (admin !== null) {
-            //master role id
-            admin.RoleID = roleIds.master;
-
-            Admin.create(admin).then(admin => {            
+      security.validate(mAdmin, function (err, admin) {
+        if(err) next(err);
+        
+        if(admin.isMaster === 1){
+          Admin.findAndCountAll({
+            where: {
+              isMaster: 1
+            }
+          }).then(result => {
+            if(result.count > 0){
               var response = new resp();
 
+              response.initResp(null, {
+                msg: 'Master is already exist, do not create more than one master',
+                code: 999,
+                stack: 'DUP_MASTER'
+              });
+
+              res.status(401).send(response);
+            }else{
+              if (admin !== null) {
+                //master role id
+                admin.RoleID = roleIds.master;
+
+                Admin.create(admin).then(admin => {            
+                  var response = new resp();
+
+                  response.initResp(admin.get({
+                    plain: true
+                  }));
+
+                  res.status(200).send(response);
+
+                }).catch((e) => {
+                  res.status(400).send(e);
+                });
+
+              } else {
+                var err = new Error("Invalid user input!");
+                next(err);
+              }
+            }
+          });      
+        }else{
+          console.log(admin);
+          if (admin !== null) {
+            Admin.create(admin).then(admin => {
+              var response = new resp();
               response.initResp(admin.get({
                 plain: true
               }));
 
               res.status(200).send(response);
-
             }).catch((e) => {
               res.status(400).send(e);
             });
-
           } else {
             var err = new Error("Invalid user input!");
             next(err);
           }
-        }
-      });      
+        }    
+      });
     }else{
-      console.log(admin);
-      if (admin !== null) {
-        Admin.create(admin).then(admin => {
-          var response = new resp();
-          response.initResp(admin.get({
-            plain: true
-          }));
-
-          res.status(200).send(response);
-        }).catch((e) => {
-          res.status(400).send(e);
-        });
-      } else {
-        var err = new Error("Invalid user input!");
-        next(err);
-      }
-    }    
-  });
+      var response = new resp();
+      res.status(401).send(response.unAuthResp());
+    }
+  }else{
+    var response = new resp();
+    res.status(401).send(response.unAuthResp());
+  }
 });
+
 
 //UPDATE admin details
 router.patch('/:adminid', (req, res, next) => {
@@ -284,7 +298,14 @@ router.patch('/:adminid', (req, res, next) => {
         }).then(result => {
           console.log('transaction committed');
         }).catch(err =>{
+          t.rollback();
+          var response = new resp();   
           console.log(err);
+          res.status(400).send(response.initResp(null, {
+           msg: 'Unable to update Admin information!',
+           status: true,
+           code: 400 
+          }));          
         });         
       });
     }else{
@@ -383,20 +404,39 @@ router.delete('/', isAuthenticated, (req, res, next) => {
       Admin.findOne({
         where: mAdmin
       }).then(admin => {
-        admin.destroy();
-      }).then( () => {
-        var response = new resp();
-        response.initResp({
-          time: new Date.now()          
-        }, null, {
-          msg: 'successfully deleted admin',
-          code: 200,
-          status: true
-        });
+        if(admin !== null){
+          // return db.transaction(function(t) {
+          //   return admin.destroy({transaction: t})
+          //     .then(result => {
+          //       var response = new resp();
+          //       response.initResp("Successfully deleted role!", null, {
+          //         msg: 'successfully deleted admin',
+          //         code: 200,
+          //         status: true
+          //       });
 
-        res.status(200).send(response);
-      }).catch((e) => {
-        res.status(400).send(e);
+          //       res.status(200).send(response);
+          //     }).catch((e) => {
+          //       t.rollback();
+
+          //       var response = new resp();
+          //       console.log(err);
+          //       res.status(400).send(response.initResp(null, {
+          //         msg: 'Unable to delete admin!',
+          //         status: true,
+          //         code: 400
+          //       }));
+          //     });
+          // });          
+          admin.destroy();
+
+          var response = new resp();                    
+          res.status(200).send(response.initResp("Successfully deleted role!", null, {
+            msg: 'successfully deleted admin',
+            code: 200,
+            status: true
+          }));
+        }
       });
     }else{
       next(new Error("Permission denied!"));
@@ -407,22 +447,29 @@ router.delete('/', isAuthenticated, (req, res, next) => {
 
 function isAuthenticated(req, res, next) {
   var token = req.get('Authorization') !== null || req.get('Authorization') !== undefined? req.get('Authorization'): '';
-  res.auth_token = null;
-  if (token !== '') {
-    security.verifyToken(token, (err, validToken) => {
-      if(err){
-        var response = new resp();
-        res.status(401).send(response.initResp(null, {
-          msg: err.message,
-          status : true,
-          code: 401,
-          reason: err.stack
-        }));
-        
-      }
-      res.auth_token = validToken;
-      return next();
-    });
+  if (token.includes("Bearer")) {
+    token = token.replace("Bearer ", "");
+
+    res.auth_token = null;
+    if (token !== '') {
+      security.verifyToken(token, (err, validToken) => {
+        if(err){
+          var response = new resp();
+          res.status(401).send(response.initResp(null, {
+            msg: err.message,
+            status : true,
+            code: 401,
+            reason: err.stack
+          }));
+          
+        }
+        res.auth_token = validToken;
+        return next();
+      });
+    }else{
+      var response = new resp();
+      res.status(401).send(response.unAuthResp());
+    }
   }else{
     var response = new resp();
     res.status(401).send(response.unAuthResp());

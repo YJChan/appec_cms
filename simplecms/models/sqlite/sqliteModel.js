@@ -69,17 +69,17 @@ const Role = db.define('Role', {
     type: Sequelize.TEXT,
     allowNull: false,
     get() {
-      return this.getDataValue('RoleName');
+      return this.getDataValue('Rolename');
     },
     set(val) {
-      this.setDataValue('RoleName', val);
+      this.setDataValue('Rolename', val);
     }
   },
   active: {
     type: Sequelize.INTEGER,
     defaultValue: 1,
     get() {
-      return this.getDataValue('allowNull');
+      return this.getDataValue('active');
     },
     set(val) {
       this.setDataValue('active', val);
