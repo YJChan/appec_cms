@@ -39,11 +39,24 @@ const security = {
         iss: 'http://appec.work',
         jwtid: utils.sguid(),
         role: {
-          admin: rights.admin === undefined? 0 : rights.admin,
-          post: rights.post === undefined ? 0 : rights.post,
-          page: rights.page === undefined ? 0 : rights.page,
-          role: rights.role === undefined ? 0 : rights.role,
-          user: rights.user === undefined ? 0 : rights.user,
+          admin: {
+            acl: rights.admin.acl === undefined? 0 : rights.admin.acl
+          },
+          post: {
+            acl: rights.post.acl === undefined ? 0 : rights.post.acl
+          },
+          page: {
+            acl: rights.page.acl === undefined ? 0 : rights.page.acl
+          },
+          role: {
+            acl: rights.role.acl === undefined ? 0 : rights.role.acl
+          },
+          user: {
+            acl: rights.user.acl === undefined ? 0 : rights.user.acl
+          },
+          right: {
+            acl: rights.right.acl === undefined? 0 : rights.right.acl
+          }
         }
       };
       var encode_token = jsonwebtoken.sign(payload, supersecret);
@@ -172,7 +185,8 @@ const security = {
     };
     var arrObj = [];
 
-    for(var obj in arr){
+    for(var k in arr){
+      var obj = arr[k];
       for (var key in obj) {
         if (obj.hasOwnProperty(key)) {
           if (obj[key].check) {
@@ -226,6 +240,12 @@ var checkThis = (type, val) => {
   };
 
   switch (type.toUpperCase()) {
+    case 'GENUUID':
+      checkObj.val = utils.guid().toUpperCase();
+      checkObj.status = true,
+      checkObj.err = '';
+       
+      break;
     case 'EMAIL':
       if (!validator.isEmail(val)) {
         checkObj.errmsg = 'Invalid email entry.';        

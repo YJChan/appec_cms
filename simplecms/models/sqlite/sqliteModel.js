@@ -102,8 +102,7 @@ const Right = db.define('Right', {
   },
   module: {
     type: Sequelize.TEXT,
-    allowNull: false,
-    unique: true,
+    allowNull: false,    
     get(){
       return {
         module: this.getDataValue('module'),        
@@ -629,7 +628,7 @@ Tag.belongsToMany(Post, {
 });
 
 if(config.environment === 'development' && config.dbChange){
-  db.sync({force:true});
+  db.sync({alter:true});
 }
 
 module.exports = {
