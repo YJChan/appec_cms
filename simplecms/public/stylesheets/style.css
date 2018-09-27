@@ -1,8 +1,137 @@
+@import url(https: //fonts.googleapis.com/css?family=Lato:400,300,300italic,400italic,700,700italic);
+
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font-family: 'Lato', Helvetica, sans-serif;
+  font-weight: 400;
+  background: #f4f4f4;
 }
 
 a {
   color: #00B7FF;
+}
+
+.light {
+  background-color: #f4f4f4;
+  color: #1D2F3A;
+}
+
+.warning {
+  background-color: #F32260;
+  color: #FCF7FA;
+}
+
+.success {
+  background-color: #1ECE80;
+  color: #FCF7FA;
+}
+
+.primary {
+  background-color: #456990;
+  color: #FCF7FA;
+}
+
+.dark {
+  background-color: #323C46;
+  color: #FCF7FA;
+}
+
+.note {
+  background-color: #FFD011;
+  color: #1D2F3A;
+}
+
+.default {
+  background-color: #989898;
+  color: #FCF7FA;
+}
+
+/*input*/
+.input-box {
+  display: inline;
+  padding: 0.15rem 0.45rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #1D2F3A;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1.35px solid #ced4da;
+  border-radius: 0.1rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  margin: 5px;
+}
+
+.input-line {
+  display: inline;
+  padding: 0.15rem 0.45rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #1D2F3A;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1.35px solid #364a4c;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0.1rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  margin: 5px;
+  border-radius: 0;
+}
+
+input.input-line:focus {
+  outline-width: 0;
+}
+
+/*Menu*/
+
+.navigation {
+  width: 220px;
+  height: 100%;
+  position: fixed;
+}
+
+.menu,
+.submenu {
+  font-family: 'Lato',
+    Helvetica,
+    sans-serif;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu div:hover {
+  background-color: #C5C5C5;
+  cursor: pointer
+}
+
+.menu li:hover .submenu {
+  display: block;
+  max-height: 200px;
+}
+
+.submenu a:hover {
+  background-color: #C5C5C5;
+}
+
+.submenu {
+  overflow: hidden;
+  max-height: 0;
+  -webkit-transition: all 0.5s ease-out;
+  padding-left: 35px;
+}
+
+.alert {
+  border-radius: 0.2rem;
+  padding: 0.5em 0.675rem;
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.alert-close {
+  cursor: pointer;
+}
+
+.alert-block {
+  display: block;
 }

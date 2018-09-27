@@ -1,6 +1,7 @@
 const {Admin} = require('../../models/sqlite/sqliteModel');
 const {Right} = require('../../models/sqlite/sqliteModel');
 const {Role} = require('../../models/sqlite/sqliteModel');
+const {Session} = require('../../models/sqlite/sqliteModel');
 const {db} = require('../../models/db');
 var express = require('express');
 var router = express.Router();
@@ -10,11 +11,22 @@ const utils = require('../../utils/utils');
 const security = require('../../utils/security');
 var resp = require('../../utils/resp');
 const rQry = require('../../models/sqlite/rawSQL');
+const config = require('../../config/config.json');
 const roleIds = require('../../config/roles.json');
 var _ = require('lodash');
 
 router.use(bodyParser.json());
 
+//get individual admin record by passing params
+/**
+ * @param json{
+ *  name: string,
+ *  email: string,
+ *  level: integer,
+ *  active: integer,
+ *  role: string
+ * }
+ */
 router.get('/', isAuthenticated, (req, res, next) => {
   var action = "read";
 
@@ -91,6 +103,18 @@ router.get('/', isAuthenticated, (req, res, next) => {
 
 
 //GET all admin
+//get /admin/all
+//join sample
+// Admin.findAll({
+//   attributes: ['AdminID', 'AdminName', 'AdminEmail', 'level', 'active', 'isMaster', 'RoleID', 'AdminRole.Rolename'],
+//   include: [{
+//     model: Role,
+//     as: 'AdminRole',
+//     where: {
+//       RoleID: db.col('Admin.RoleID')
+//     }
+//   }]
+// })
 router.get('/all', isAuthenticated, function(req, res, next){
   var action = "read";
 
@@ -99,8 +123,13 @@ router.get('/all', isAuthenticated, function(req, res, next){
     var validPermit = security.permit(action, role.admin.acl);
     if(validPermit){
       Admin.findAll({
-        attributes: ['AdminID', 'AdminName', 'AdminEmail', 'level', 'active', 'isMaster']
+        attributes: ['AdminID', 'AdminName', 'AdminEmail', 'level', 'active', 'isMaster', 'RoleID', 'AdminRole.Rolename'],
+        include: [{
+          model: Role,
+          as: 'AdminRole'
+        }]      
       }).then(admins => {
+        console.log(admins);
         var response = new resp();
         response.initResp(admins);
         res.status(200).send(response);
@@ -152,6 +181,11 @@ router.post('/', isAuthenticated, function (req, res, next) {
           val: req.body.isMaster,
           type: 'integer',
           check: true
+        },
+        RoleID: {
+          val: req.body.role,
+          type: 'uuid',
+          check: true
         }
       };
 
@@ -177,7 +211,7 @@ router.post('/', isAuthenticated, function (req, res, next) {
             }else{
               if (admin !== null) {
                 //master role id
-                admin.RoleID = roleIds.master;
+                //admin.RoleID = roleIds.master;
 
                 Admin.create(admin).then(admin => {            
                   var response = new resp();
@@ -199,7 +233,7 @@ router.post('/', isAuthenticated, function (req, res, next) {
             }
           });      
         }else{
-          console.log(admin);
+          //console.log(admin);
           if (admin !== null) {
             Admin.create(admin).then(admin => {
               var response = new resp();
@@ -338,13 +372,12 @@ router.post('/login', (req, res, next) => {
         where: {
           AdminEmail: mAdminValidated.AdminEmail          
         },
-        attributes: ['AdminID', 'AdminPwd', 'AdminName', 'level', 'AdminEmail', 'RoleID'],        
-      // db.query(
-      //   "SELECT * FROM Admins A LEFT JOIN Rights R ON R.RoleID = A.RoleID ", 
-      //   {type: db.QueryTypes.SELECT}
+        attributes: ['AdminID', 'AdminPwd', 'AdminName', 'level', 'AdminEmail', 'RoleID', 'security_phase'],      
       }).then(admin => {
-        console.log(admin);        
+              
         security.decrypt(mAdminValidated.AdminPwd, admin.AdminPwd, (err, validLogin) => {
+          if(err) next(err);
+
           if(validLogin !== null){
             Right.findAll({
               where: {
@@ -362,15 +395,44 @@ router.post('/login', (req, res, next) => {
                 email: admin.AdminEmail,
                 level: admin.level
               };
+              
+              var security_phase = false;
+              if(admin.security_phase != null){
+                security_phase = true;
+              }
 
-              var jwtoken = security.issueJWT(authObj, rightsObj);
-              var response = new resp();
-              response.initResp({
-                token: jwtoken
+              //create session
+              Session.create({
+                SessionID: utils.guid(),
+                loginUser: admin.AdminID, 
+                issueAt: new Date(),                 
+                expired: new Date().getTime() + (parseInt(config[config.environment].expire_time.global) * 60 * 60 *1000)
+              }).then(session => {
+                var jwtoken = security.issueJWT(authObj, rightsObj);;
+                //if security phase is on, user required to key in security phase too
+                // if(! security_phase){
+                //   security.issueJWT(authObj, rightsObj);
+                // } 
+
+                var response = new resp();
+                response.initResp({
+                  token: jwtoken,
+                  security_phase: security_phase,
+                  ssid: session.SessionID,
+                  path: config[config.environment].adminpanel
+                });
+
+                res.status(200).send(response);              
+              }).catch(e => {
+                console.log(e);
+                var response = new resp();
+                res.status(500).send(response.initResp(null, {
+                  message: 'Unable to create session',
+                  code: 500,
+                  stack: e,
+                  status: true
+                }));
               });
-
-              res.status(200).send(response);
-            
             });
 
           }else{
@@ -386,9 +448,45 @@ router.post('/login', (req, res, next) => {
   });
 });
 
+//verify security phase
+router.post('/verify-security-phase', isAuthenticated, (req, res, next) => {
+  var mAdmin = {    
+    AdminID: res.auth_token.id
+  };
+  var security_phase = req.body.security_phase;
+  var response = new resp();
+
+  Admin.findOne({
+    where: mAdmin, 
+    attributes: ['AdminID', 'security_phase']})
+  .then(admin => {
+    security.decrypt(security_phase, admin.security_phase, (err, validPhase) => {
+      if (err) next(err);
+
+      if (validPhase){
+        //return user with authenticate object
+
+      }else{
+        res.status(401).send(response.unAuthResp());
+      }
+
+    });
+  }).catch(e => {
+    console.log(e);
+    var response = new resp();
+    res.status(401).send(resp.initResp(null, {
+      message: 'Unable to match security phase',
+      code: 401,
+      status: true
+    }));
+  })
+
+
+});
+
 router.delete('/', isAuthenticated, (req, res, next) => {
   var action = "delete";
-
+  //var admins = req.body.admins;
   if (! security.isUUID(req.body.admin_id)){
     next(new Error("Invalid Admin ID"));
   }else{
@@ -445,6 +543,50 @@ router.delete('/', isAuthenticated, (req, res, next) => {
 
 });
 
+router.delete('/bulk', isAuthenticated, (req, res, next) => {
+  var action = "delete";
+  var admins = req.body.admins;
+  var arrAdmins = [];
+  var response = new resp();  
+
+  for(var n = 0; n < admins.length; n++){
+    var admin_id = admins[n];    
+    arrAdmins.push(admin_id);
+  }
+  var idsGoingToDel = {
+    AdminID: arrAdmins
+  };
+
+  var role = res.auth_token.role;
+  var validPermit = security.permit(action, role.admin.acl);
+  if (validPermit) {
+      //console.log(res.auth_token);
+      Admin.destroy({
+        where: idsGoingToDel
+        }).then(affectedRows => {
+        if (affectedRows > 0) {
+          console.log('deleted ' +affectedRows + ' admins');
+          
+          res.status(200).send(response.initResp("Successfully deleted role!", null, {
+            msg: 'successfully deleted ' + affectedRows + 'admin',
+            code: 200,
+            status: true
+          }));
+        }else{
+          res.status(400).send(response.initResp(null, {
+            msg: 'Unable to delete admins',
+            code: 400,
+            status: true
+          }));
+        }
+      });
+  } else {
+    bSuccess = false;
+    return false;
+  }
+});
+
+
 function isAuthenticated(req, res, next) {
   var token = req.get('Authorization') !== null || req.get('Authorization') !== undefined? req.get('Authorization'): '';
   if (token.includes("Bearer")) {
@@ -460,11 +602,11 @@ function isAuthenticated(req, res, next) {
             status : true,
             code: 401,
             reason: err.stack
-          }));
-          
+          }));          
         }
+        
         res.auth_token = validToken;
-        return next();
+        next();
       });
     }else{
       var response = new resp();

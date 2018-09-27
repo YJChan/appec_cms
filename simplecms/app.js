@@ -4,12 +4,13 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const config = require('./config/config.json');
+//const cors = require('cors')
 var resp = require('./utils/resp');
 
 //web router
 var indexRouter = require('./routes/index');
+var adminRouter = require('./routes/web/admin');
 //var usersRouter = require('./routes//web/users');
-
 
 //api router
 var adminApi = require('./routes/api/admin');
@@ -27,7 +28,15 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '/public')));
 
+//serve files
+app.use('/scripts', express.static(path.join(__dirname, '/node_modules/')));
+app.use('/riot', express.static(path.join(__dirname, '/views/app/riot/')));
+
+//use cors
+//app.use(cors())
+
 app.use('/', indexRouter);
+app.use('/' + config.development.adminpanel, adminRouter);
 //app.use('/users', usersRouter);
 app.use('/admin', adminApi);
 app.use('/role', roleApi);

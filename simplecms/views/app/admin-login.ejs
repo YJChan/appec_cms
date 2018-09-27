@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32" />
+    <!--<link rel="icon" type="image/png" href="/public/images/favicon-16x16.png" sizes="16x16" /> -->
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <sc-login theme="light"></sc-login>
+    <script type="text/javascript" src="/scripts/axios/dist/axios.js"></script>
+    <script type="text/javascript" src="/scripts/riot/riot.min.js"></script>
+    <script type="text/javascript" src="/scripts/riotx/dist/riotx.min.js"></script>
+    <script type="text/javascript" src="/riot/components/simple-cms/control.js"></script>
+    <script type="text/javascript" src="/riot/components/mino-ui/mixins/cookiemixins.js"></script>
+    <script type="text/javascript" src="/riot/components/mino-ui/mino.js"></script>
+    <script type="text/javascript" src="/riot/components/simple-cms/sc-components.js"></script>
+    <script type="text/javascript" src="/riot/simple-cms-app.js"></script>
+    <script type="text/javascript">      
+      riot.mount("*");
+    </script>
+  </body>
+</html>

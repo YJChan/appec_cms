@@ -49,6 +49,10 @@ const Admin = db.define('Admin', {
   isMaster: {
     type: Sequelize.INTEGER,
     allowNull: true    
+  },
+  security_phase: {
+    type: Sequelize.TEXT,
+    allowNull: true
   }
 });
 
@@ -122,6 +126,9 @@ const Right = db.define('Right', {
     type: Sequelize.INTEGER,
     allowNull: false,
     defaultValue: 4
+  },
+  RoleID: {
+    type: Sequelize.TEXT
   }
 });
 
@@ -535,7 +542,7 @@ const Setting = db.define('Setting', {
   },
   active: {
     type: Sequelize.INTEGER,
-    defaultValue: 0
+    defaultValue: 1
   },
   maintenance: {
     type: Sequelize.INTEGER,
@@ -574,9 +581,40 @@ const Theme = db.define('Theme', {
   }
 });
 
+const Session = db.define('Session',{
+  SessionID: {
+    type: Sequelize.TEXT,
+    allowNull: false,
+    primaryKey: true,
+    unique: true,
+    get() {
+      return this.getDataValue('SessionID');
+    },
+    set(val) {
+      this.setDataValue('SessionID', val.toUpperCase());
+    }
+  },
+  loginUser: {
+    type: Sequelize.TEXT
+  },
+  issueAt:{
+    type: Sequelize.DATE,
+    defaultValue: new Date()    
+  },
+  expired: {
+    type: Sequelize.DATE    
+  }  
+});
+
 Role.hasMany(Admin, {
   foreignKey: 'RoleID',
   as:'AdminRole'
+});
+
+Admin.belongsTo(Role, {
+  foreignKey: 'RoleID',
+  constraints: false,
+  as: 'AdminRole'
 });
 
 Role.hasMany(User, {
@@ -584,19 +622,37 @@ Role.hasMany(User, {
   as: 'UserRole'
 });
 
+User.belongsTo(Role, {
+  foreignKey: 'RoleID',
+  constraints: false,
+  as: 'Role'
+});
+
 Role.hasMany(Right, {
   foreignKey: 'RoleID',
   as: 'RoleRight'
 });
 
-Right.hasMany(SpecialField, {
-  foreignKey: 'RightID',
-  as: 'SpecialRight'
-});
+// Right.belongsTo(Role, {
+//   foreignKey: 'RoleID',
+//   constraints: false,
+//   as: 'RightRole'
+// });
+
+// Right.hasMany(SpecialField, {
+//   foreignKey: 'RightID',
+//   as: 'SpecialRight'
+// });
 
 User.hasMany(Post, {
   foreignKey: 'UserID',
   as: 'UserPost'
+});
+
+Post.belongsTo(User, {
+  foreignKey: 'UserID',
+  constraints: false,
+  as:'UserPost'
 });
 
 Post.belongsToMany(Category, {
@@ -627,8 +683,8 @@ Tag.belongsToMany(Post, {
   otherKey: 'TagID'
 });
 
-if(config.environment === 'development' && config.dbChange){
-  db.sync({alter:true});
+if(config.environment === 'development' && ! config.dbChange){
+  db.sync();
 }
 
 module.exports = {
@@ -643,5 +699,6 @@ module.exports = {
   Setting, 
   SpecialField, 
   Theme, 
-  User
+  User,
+  Session
 };

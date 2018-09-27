@@ -3,6 +3,7 @@ var validator = require('validator');
 var sanitizer = require('sanitizer');
 var jsonwebtoken = require('jsonwebtoken');
 var utils = require('./utils');
+var config = require('../config/config.json');
 
 //cannot be change!!
 const salts = 8;
@@ -30,32 +31,33 @@ const security = {
   },
   issueJWT(authenticatedObj, rights = null){
     if(authenticatedObj !== null){
+      var exp_time = parseInt(config[config.environment].expire_time.global);
       var payload = {
         id: authenticatedObj.id,
         email: authenticatedObj.email,
         name: authenticatedObj.name,
         level: authenticatedObj.level,
-        exp: Math.floor(Date.now() / 1000) + (60 * 120),
+        exp: Math.floor(Date.now() / 1000) + (60 * (exp_time *60)),
         iss: 'http://appec.work',
         jwtid: utils.sguid(),
         role: {
           admin: {
-            acl: rights.admin.acl === undefined? 0 : rights.admin.acl
+            acl: rights.admin === undefined? 0 : rights.admin.acl
           },
           post: {
-            acl: rights.post.acl === undefined ? 0 : rights.post.acl
+            acl: rights.post === undefined ? 0 : rights.post.acl
           },
           page: {
-            acl: rights.page.acl === undefined ? 0 : rights.page.acl
+            acl: rights.page === undefined ? 0 : rights.page.acl
           },
           role: {
-            acl: rights.role.acl === undefined ? 0 : rights.role.acl
+            acl: rights.role === undefined ? 0 : rights.role.acl
           },
           user: {
-            acl: rights.user.acl === undefined ? 0 : rights.user.acl
+            acl: rights.user === undefined ? 0 : rights.user.acl
           },
           right: {
-            acl: rights.right.acl === undefined? 0 : rights.right.acl
+            acl: rights.right === undefined? 0 : rights.right.acl
           }
         }
       };

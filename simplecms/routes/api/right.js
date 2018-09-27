@@ -124,7 +124,7 @@ router.patch('/:rightid', isAuthenticated, (req, res, next) => {
   }
 });
 
-router.post('/', isAuthenticated, (req, res, next) => {
+router.post('/sets', isAuthenticated, (req, res, next) => {
   var action = "write";
 
   if (res.auth_token !== null) {
@@ -138,11 +138,70 @@ router.post('/', isAuthenticated, (req, res, next) => {
         var response = new resp();
 
         if (mRightValidated !== null) {
-          Right.bulkCreate(mRightValidated)
+          Right.bulkCreate(mRightValidated)          
             .then(affectedRows => {
 
               if (affectedRows.length > 0) {
                 response.initResp(affectedRows);
+              } else {
+                response.initResp(null, {
+                  msg: 'No rights is created'
+                });
+              }
+              res.status(200).send(response);
+            });
+        } else {
+          res.status(400).send(null, {
+            msg: 'Sequelize cannot create right object!',
+            code: 400,
+            status: true
+          });
+        }
+      });
+    }
+  } else {
+    var response = new resp();
+    res.status(400).send(response.unAuthResp());
+  }
+});
+
+router.post('/', isAuthenticated, (req, res, next) => {
+  var action = "write";
+
+  if (res.auth_token !== null) {
+    var role = res.auth_token.role;
+    var validPermit = security.permit(action, role.right.acl);
+    if (validPermit) {      
+      
+      var mRight = {
+            RightID: utils.guid(),
+            module: {
+              val: req.body.module,
+              type: 'string',
+              check: true
+            },            
+            acl: {
+              val: req.body.acl,
+              type: 'integer',
+              check: true
+            },
+            RoleID: {
+              val: req.body.RoleID,
+              type: 'uuid',
+              check: true
+            },
+          };
+
+      security.validate(mRight, (err, mRightValidated) => {
+        if (err) next(err);
+        var response = new resp();
+
+        if (mRightValidated !== null) {          
+          Right.create(mRightValidated)
+            .then(rights => {
+
+              if (rights !== null) {
+                response.initResp(rights);
               } else {
                 response.initResp(null, {
                   msg: 'No rights is created'
@@ -219,7 +278,7 @@ function isAuthenticated(req, res, next) {
 
         }
         res.auth_token = validToken;
-        return next();
+        next();
       });
     } else {
       var response = new resp();
