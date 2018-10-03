@@ -1,12 +1,12 @@
 const rawQuery = {
   getAdminsSQL: {
-    params: [':1:', ':2:', ':3:', ':4:', ':5:'],
+    params: [':1:', ':2:', ':3:', ':4:', ':5:', ':6:'],
     query: "SELECT A.AdminID, A.AdminName, A.AdminEmail, A.level, " + 
-           "A.active, A.isMaster, A.RoleID, R.RoleName, A.createdAt, A.updatedAt " + 
+           "A.active, A.isMaster, A.RoleID, R.RoleName, A.createdAt, A.updatedAt, A.security_phase " +
            "FROM Admins A LEFT JOIN Roles R ON R.RoleID = A.RoleID " + 
-           "WHERE A.isMaster =0 :1: :2: :3: :4: :5: ",
+           "WHERE A.isMaster=0 :1: :2: :3: :4: :5: :6: ",
     bindParam: function(obj){
-      var sql = this.query;
+      var sql = this.query;      
       if (obj.AdminName !== undefined && obj.AdminName !== null) {
         sql = sql.replace(":1:", " AND A.AdminName LIKE '%" + obj.AdminName + "%' ");
       }else{
@@ -32,7 +32,11 @@ const rawQuery = {
       }else{
         sql = sql.replace(":5:", "");
       }
-
+      if (obj.AdminID !== undefined && obj.AdminID !== null) {
+        sql = sql.replace(":6:", " AND A.AdminID LIKE '%" + obj.AdminID + "%' ");
+      } else {
+        sql = sql.replace(":6:", "");
+      }
       return sql;
     },
     prepareSQL: function(){      
