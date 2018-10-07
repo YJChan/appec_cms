@@ -6,6 +6,13 @@ body {
   background: #f4f4f4;
 }
 
+div.disabled {
+  pointer-events: none;
+  /* for "disabled" effect */
+  opacity: 0.5;
+  background: #CCC;
+}
+
 a {
   color: #00B7FF;
 }
@@ -135,3 +142,34 @@ input.input-line:focus {
 .alert-block {
   display: block;
 }
+
+.sc-table{
+  background-color: #cbd8e6 !important;  
+  width: 100%;
+  border-radius: 5px 5px 0px 0px;
+}
+
+.sc-tr-header{
+  vertical-align: bottom;
+  text-align: center;
+}
+
+.sc-th{
+  font-weight: 700;
+  border-bottom: 1px solid #fff !important;
+  padding: 10px;
+}
+
+.sc-td{
+  display: table-cell;
+  line-height: 23px;
+  padding: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: background-color .3s;
+}
+
+.sc-table .sc-td-data{
+  background-color: #f3f3f3;
+}
+

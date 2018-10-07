@@ -10,8 +10,7 @@
   <div class="siimple-grid-col siimple-grid-col--10">
     <div class="siimple-content siimple-content--fluid sc-main-panel">
       <sc-manage-admin if={admin_route.m_admin}></sc-manage-admin>
-      <sc-manage-right if={admin_route.m_right}></sc-manage-right>
-      <sc-manage-role if={admin_route.m_role}></sc-manage-role>   
+      <sc-manage-role if={admin_route.m_role}></sc-manage-role>          
     </div>     
   </div>
   <style>
@@ -31,9 +30,8 @@
     this.mixin(minoCookie);
     this.theme = '';        
     this.routes = [
-      {name: 'Manage Admins', url:'manage-admins'},
-      {name: 'Manage Rights',url: 'manage-rights'},
-      {name: 'Manage Roles', url: 'manage-roles'}
+      {name: 'Manage Admins', url:'manage-admins'},      
+      {name: 'Manage Roles', url: 'manage-roles'},      
     ];
     this.admin_route = {
       m_admin: false,

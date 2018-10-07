@@ -1,6 +1,6 @@
 <sc-list-admin>
   <mino-alert type="dismiss" theme="warning alert-block" if={delSomeone}>{}</mino-alert>
-  <div class="siimple-table siimple-table--hover">
+  <div class="siimple-table siimple-table--striped">
     <div class="siimple-table-header">
       <div class="siimple-table-row">
         <div class="siimple-table-cell"></div>
@@ -14,12 +14,14 @@
     </div>
     <div class="siimple-table-body">
       <div class="siimple-table-row" if={list_of_admins !== []} each={list_of_admins}>
-        <div class="siimple-table-cell">                    
-          <input type="checkbox" ref="chkAdmin" value="{AdminID}" if={isMaster !== 1}/>      
+        <div class="siimple-table-cell">          
+            <input type="checkbox" ref="chkAdmin" id="chkAdmin" value="{AdminID}" if={isMaster !== 1}/>                                    
         </div>
         <div class="siimple-table-cell">
-          {AdminName}<br/>
-          <small onclick="{() => editAdmin()}">{AdminID}</small>          
+          <div class="{isMaster !== 1? 'sc-edit-class': ''}" onclick="{isMaster !== 1? () => editAdmin(AdminID): ''}">
+            {AdminName}<br/> 
+            <small if={isMaster !== 1}>{AdminID}</small>           
+          </div>
         </div>
         <div class="siimple-table-cell">
           {AdminEmail}
@@ -50,21 +52,34 @@
       font-size: 11px;
       color: #aaa;
     }
+
+    .sc-edit-class{
+      cursor: pointer;    
+      padding: 10px;        
+    }
+
+    .sc-edit-class:hover{
+      background-color: #ddd;
+      border-radius: 2px;      
+    }
   </style>
   <script src="../../../mino-ui/tags/mino-alert/mino-alert.js"></script>
   <script>
     this.list_of_admins = opts.lists !== undefined? opts.lists: [];
     this.delSomeone = false;
-    this.delMsg = '';
+    this.delMsg = '';    
     var self = this;
     var mainControl = this.riotx.get('main-control');
 
     this.on('mount', function(){
 
     });
-
+    
     mainControl.change('AdminsRetrieved', function(state, c){
-      self.list_of_admins = c.getter('getListOfAdminGetter');
+      self.list_of_admins = c.getter('getListOfAdminGetter');      
+      self.parent.update({
+        isLoading: false
+      })
       self.update();
     });
 
@@ -101,9 +116,8 @@
       }
     });
 
-    editAdmin(){
-      alert('navigate');
-      console.log('navigate to edit');
+    editAdmin(admin_id){
+      this.parent.editAdmin(admin_id);            
     }
 
     strManipulate(val, expected){
@@ -113,6 +127,5 @@
         return expected.falseValue;
       }
     }
-
   </script>
 </sc-list-admin>

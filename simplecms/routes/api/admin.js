@@ -38,7 +38,13 @@ router.get('/', isAuthenticated, (req, res, next) => {
     if(validPermit){
       for (var key in req.query) {
         if (req.query.hasOwnProperty(key)) {
-          if (key === "name") {
+          if (key === "id") {
+            mAdmin['AdminID'] = {
+              val: req.query[key],
+              check: true,
+              type: 'string'
+            };
+          } else if (key === "name") {
             mAdmin['AdminName'] = {
               val: req.query[key],
               check: true,
@@ -128,8 +134,7 @@ router.get('/all', isAuthenticated, function(req, res, next){
           model: Role,
           as: 'AdminRole'
         }]      
-      }).then(admins => {
-        console.log(admins);
+      }).then(admins => {        
         var response = new resp();
         response.initResp(admins);
         res.status(200).send(response);
@@ -178,13 +183,18 @@ router.post('/', isAuthenticated, function (req, res, next) {
           check: true
         },
         isMaster: {
-          val: req.body.isMaster,
+          val: req.body.isMaster === undefined ? 0: req.body.isMaster,
           type: 'integer',
           check: true
         },
         RoleID: {
           val: req.body.role,
           type: 'uuid',
+          check: true
+        },
+        security_phase: {
+          val: req.body.security_phase === undefined? '': req.body.security_phase,
+          type: 'string',
           check: true
         }
       };
@@ -263,90 +273,118 @@ router.post('/', isAuthenticated, function (req, res, next) {
 
 
 //UPDATE admin details
-router.patch('/:adminid', (req, res, next) => {
+router.patch('/:adminid', isAuthenticated, (req, res, next) => {
+  var action = "write";  
   var adminid = req.params.adminid;
   var mAdminUpdate = {};
+  var role = res.auth_token.role;
+  var validPermit = security.permit(action, role.admin.acl);
 
-  if(! validator.isUUID(adminid)){
-    var err = new Error("Invalid admin id!");
-    next(err);
-  }
+  if (! validPermit){
+    var response = new resp();
+    res.status(405).send(response.initResp(null, {
+      status: true,
+      code: 405,
+      message: 'You are not allow to access this application',
+      reason: 'Method not allowed'
+    }));
+  }else{
 
-  var mAdmin = {    
-    AdminID: adminid 
-  };
-  
-  for (var key in req.body) {
-    if (req.body.hasOwnProperty(key)) {
-      if (key.toUpperCase() === 'ADMINNAME' || key.toUpperCase() === 'ADMIN_NAME') {
-        mAdminUpdate['AdminName'] = {
-          val: req.body[key],
-          check: true,
-          type: 'string'
-        };
-      } else if (key.toUpperCase() === 'ADMINEMAIL' || key.toUpperCase() === 'ADMIN_EMAIL') {
-        mAdminUpdate['AdminEmail'] = {
-          val: req.body[key],
-          check: true,
-          type: 'email'
-        };
-      } else if (key.toUpperCase() === 'LEVEL') {
-        mAdminUpdate['level'] = {
-          val: req.body[key],
-          check: true,
-          type: 'integer'
-        };
-      } else if (key.toUpperCase() === 'ACTIVE') {
-        mAdminUpdate['active'] = {
-          val: req.body[key],
-          check: true,
-          type: 'integer'
-        };
-      } else if (key.toUpperCase() === 'ISMASTER') {
-        mAdminUpdate['isMaster'] = {
-          val: req.body[key],
-          check: true,
-          type: 'integer'
-        };
+    if(! validator.isUUID(adminid)){
+      var err = new Error("Invalid admin id!");
+      next(err);
+    }      
+
+    var mAdmin = {    
+      AdminID: adminid 
+    };
+    
+    for (var key in req.body) {
+      if (req.body.hasOwnProperty(key)) {
+        if (key.toUpperCase() === 'ADMINNAME' || key.toUpperCase() === 'ADMIN_NAME') {
+          mAdminUpdate['AdminName'] = {
+            val: req.body[key],
+            check: true,
+            type: 'string'
+          };
+        } else if (key.toUpperCase() === 'ADMINEMAIL' || key.toUpperCase() === 'ADMIN_EMAIL') {
+          mAdminUpdate['AdminEmail'] = {
+            val: req.body[key],
+            check: true,
+            type: 'email'
+          };
+        } else if (key.toUpperCase() === 'LEVEL') {
+          mAdminUpdate['level'] = {
+            val: req.body[key],
+            check: true,
+            type: 'integer'
+          };
+        } else if (key.toUpperCase() === 'ACTIVE') {
+          mAdminUpdate['active'] = {
+            val: req.body[key],
+            check: true,
+            type: 'integer'
+          };
+        } else if (key.toUpperCase() === 'ISMASTER') {
+          mAdminUpdate['isMaster'] = {
+            val: req.body[key],
+            check: true,
+            type: 'integer'
+          };
+        } else if (key.toUpperCase() === 'ROLE') {
+          mAdminUpdate['RoleID'] = {
+            val: req.body[key],
+            check: true,
+            type: 'uuid'
+          };
+        } else if (key.toUpperCase() === 'SECURITYPHASE' || key.toUpperCase() === 'SECURITY_PHASE') {
+          if(req.body[key] !== ''){
+            mAdminUpdate['security_phase'] = {
+              val: req.body[key],
+              check: true,
+              type: 'string'
+            };
+          }
+        }
       }
     }
+
+    security.validate(mAdminUpdate, (err, mAdminValidated) => {
+      if(err) next(err);
+
+      if(Admin !== null){
+        Admin.findOne({
+          where: mAdmin
+        }).
+        then(admin => {
+          return db.transaction(function( t) {
+            return admin.update(mAdminUpdate, {transaction: t})
+              .then(mAdminUpdated => {     
+                var response = new resp();
+                response.initResp(mAdminUpdated.get({
+                  plain: true
+                }));
+                res.status(200).send(response);
+              });
+          }).then(result => {
+            console.log('transaction committed');
+          }).catch(err =>{
+            t.rollback();
+            var response = new resp();   
+            console.log(err);
+            res.status(400).send(response.initResp(null, {
+            msg: 'Unable to update Admin information!',
+            status: true,
+            code: 400 
+            }));          
+          });         
+        });
+      }else{
+        var error = new Error("Admin object does not exist!");
+        next(error);
+      }
+    });
   }
-
-  security.validate(mAdminUpdate, (err, mAdminValidated) => {
-    if(err) next(err);
-
-    if(Admin !== null){
-      Admin.findOne({
-        where: mAdmin
-      }).
-      then(admin => {
-        return db.transaction(function( t) {
-          return admin.update(mAdminUpdate, {transaction: t})
-            .then(mAdminUpdated => {     
-              var response = new resp();
-              response.initResp(mAdminUpdated.get({
-                plain: true
-              }));
-              res.status(200).send(response);
-            });
-        }).then(result => {
-          console.log('transaction committed');
-        }).catch(err =>{
-          t.rollback();
-          var response = new resp();   
-          console.log(err);
-          res.status(400).send(response.initResp(null, {
-           msg: 'Unable to update Admin information!',
-           status: true,
-           code: 400 
-          }));          
-        });         
-      });
-    }else{
-      var error = new Error("Admin object does not exist!");
-      next(error);
-    }
-  });
 });
 
 //login to admin panel
@@ -498,7 +536,7 @@ router.delete('/', isAuthenticated, (req, res, next) => {
         AdminID: adminId, 
         isMaster: 0      
       };
-      console.log(res.auth_token);
+      //console.log(res.auth_token);
       Admin.findOne({
         where: mAdmin
       }).then(admin => {

@@ -89,6 +89,12 @@ router.patch('/:rightid', isAuthenticated, (req, res, next) => {
               type: 'integer',
               check: true
             }
+          } else if (key.toUpperCase() === "ROLEID" || key.toUpperCase() === "ROLE_ID") {
+            mRightUpdate['RoleID'] = {
+              val: req.body.roleid,
+              type: 'uuid',
+              check: true
+            }
           }
         }
       }
@@ -186,7 +192,7 @@ router.post('/', isAuthenticated, (req, res, next) => {
               check: true
             },
             RoleID: {
-              val: req.body.RoleID,
+              val: req.body.roleid,
               type: 'uuid',
               check: true
             },
@@ -196,19 +202,31 @@ router.post('/', isAuthenticated, (req, res, next) => {
         if (err) next(err);
         var response = new resp();
 
-        if (mRightValidated !== null) {          
-          Right.create(mRightValidated)
-            .then(rights => {
+        if (mRightValidated !== null) {
+          Right.findOne({
+            where: mRightValidated
+          }).then(existRights => {
+            if(existRights == null){
+              Right.create(mRightValidated)
+                .then(rights => {
 
-              if (rights !== null) {
-                response.initResp(rights);
-              } else {
-                response.initResp(null, {
-                  msg: 'No rights is created'
+                  if (rights !== null) {
+                    response.initResp(rights);
+                  } else {
+                    response.initResp(null, {
+                      msg: 'No rights is created'
+                    });
+                  }
+                  res.status(200).send(response);
                 });
+              }else{                
+                res.status(400).send(response.initResp(null, {
+                  msg: 'Role already has this right assigned!',
+                  code: 400,
+                  status: true
+                }));
               }
-              res.status(200).send(response);
-            });
+          });
         } else {
           res.status(400).send(null, {
             msg: 'Sequelize cannot create right object!',

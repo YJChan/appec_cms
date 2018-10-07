@@ -15,6 +15,7 @@ const roleIds = require('../../config/roles.json');
 var path = require('path');
 const fs = require('fs');
 var _ = require('lodash');
+const Op = db.Op;
 
 router.use(bodyParser.json());
 
@@ -27,13 +28,51 @@ router.get('/all', isAuthenticated, (req, res, next) => {
     var role = res.auth_token.role.role;
     var validPermit = security.permit(action, role.acl);
     if (validPermit) {
-      Role.findAll().then(roles => {  
+      Role.findAll({        
+        where:{Rolename: {[Op.not]:'Master'}}, include: [{
+        model: Right,
+        as: 'RoleRight'        
+      }]}).then(roles => {
         res.status(200).send(response.initResp(roles));
       });
     } else {      
-      next(response.unAuthResp());
+      res.status(401).send(response.unAuthResp());
     }
   }else{    
+    res.status(401).send(response.unAuthResp());
+  }
+});
+
+//get single role
+router.get('/:roleid', isAuthenticated, (req, res, next) => {
+  var action = "read";
+  var response = new resp();
+
+  if (res.auth_token != null) {
+    var role = res.auth_token.role.role;
+    var role_id = req.params.roleid;
+    if(security.isUUID(role_id)){
+      var validPermit = security.permit(action, role.acl);
+      if (validPermit) {
+        Role.findAll({
+          where: {
+            Rolename: {
+              [Op.not]: 'Master'
+            },
+            RoleID : role_id
+          },
+          include: [{
+            model: Right,
+            as: 'RoleRight'
+          }]
+        }).then(roles => {
+          res.status(200).send(response.initResp(roles));
+        });      
+      } else {
+        next(response.unAuthResp());
+      }    
+    }
+  } else {
     res.status(401).send(response.unAuthResp());
   }
 });
@@ -50,7 +89,7 @@ router.post('/', isAuthenticated, (req, res, next) => {
       mRole = {
         RoleID: utils.guid(),
         Rolename: {
-          val: req.body.role_name,
+          val: req.body.rolename,
           type: 'string',
           check: true
         },
@@ -59,31 +98,13 @@ router.post('/', isAuthenticated, (req, res, next) => {
           type: 'integer',
           check: true
         }             
-      };
-      // mRight = {
-      //   RightID: utils.guid(),
-      //   module : {
-      //     val: req.body.module,
-      //     type: 'string',
-      //     check: true
-      //   },
-      //   section : {
-      //     val: req.body.section,
-      //     type: 'string',
-      //     check: true
-      //   },
-      //   acl: {
-      //     val: req.body.acl,
-      //     type: 'integer',
-      //     check: true
-      //   }
-      // };
+      };     
 
       security.validate(mRole, (err, mRoleValidated) => {
         if(err) next(err);        
 
         if(mRoleValidated !== null){
-          Role.create(mRoleValidated).then(role => {            
+          Role.create(mRoleValidated).then(role => {
             //update role.json to enable future role assignment            
             RoleJSON(role, "new");
 
@@ -149,22 +170,17 @@ router.patch('/:roleid', isAuthenticated, (req, res, next) => {
         if(Role !== null){
           Role.findOne({
             where: mRole
-          }).then(role => {
-            return db.transaction(function (t) {
-              return role.update(mRoleUpdate, {
-                  transaction: t
-                })
-                .then(mRoleUpdated => {
-                  t.commit();
-                  RoleJSON(mRoleUpdated, "update");
+          }).then(role => {            
+            role.update(mRoleUpdate)
+            .then(mRoleUpdated => {                  
+              RoleJSON(mRoleUpdated, "update");
 
-                  var response = new resp();
-                  response.initResp(mRoleUpdated.get({
-                    plain: true
-                  }));
-                  res.status(200).send(response);
-              });
-            });
+                var response = new resp();
+                response.initResp(mRoleUpdated.get({
+                  plain: true
+                }));
+                res.status(200).send(response);
+            });            
           });
         }
       });

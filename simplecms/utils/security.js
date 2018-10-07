@@ -87,14 +87,20 @@ const security = {
     if(grade === 4){
       if(action === 'read'){
         return true;
+      }else{
+        return false;
       }
     }else if (grade === 6) {      
       if (action === 'write' || action === 'read') {
         return true;
+      }else{
+        return false;
       }
     }else if (grade === 7){
       if (action === 'write' || action === 'read' || action === 'delete') {
         return true;
+      }else{
+        return false;
       }
     }else{
       return false;
