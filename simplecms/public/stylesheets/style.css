@@ -62,7 +62,7 @@ a {
   background-color: #fff;
   background-clip: padding-box;
   border: 1.35px solid #ced4da;
-  border-radius: 0.1rem;
+  border-radius: 0.2rem;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   margin: 5px;
 }

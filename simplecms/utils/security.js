@@ -141,6 +141,9 @@ const security = {
       return false;
     }
   },
+  isDate(str) {
+    return !isNaN(Date.parse(str));
+  },
   validate(obj, callback){
     var checker = {
       status: false,
@@ -170,8 +173,10 @@ const security = {
             obj[key] = checker.val;
           }else{
             break;
-          }
-          
+          }          
+        }
+        if (obj[key].exclude) {
+          delete obj[key];
         }
       }else{
         checker.status = false;
@@ -219,6 +224,9 @@ const security = {
               break;
             }
 
+          }
+          if(obj[key].exclude){
+            delete obj[key];
           }
         } else {
           checker.status = false;
@@ -326,6 +334,24 @@ var checkThis = (type, val) => {
         checkObj.errmsg = "Invalid password entry";
         checkObj.status = false;
         
+      }
+      break;
+    case "DATE":
+      if (security.isDate(val)){
+        checkObj.status = true;
+        checkObj.val = val
+      }else{
+        checkObj.errmsg = "Invalid date entry";
+        checkObj.status = false;
+      }
+      break;
+    case "NULLABLE":
+      if(val === null || val === ''){
+        checkObj.status = true;
+        checkObj.val = '';
+      }else{
+        checkObj.status = true;
+        checkObj.val = val;
       }
       break;
     default:

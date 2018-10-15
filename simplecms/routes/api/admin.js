@@ -435,9 +435,11 @@ router.post('/login', (req, res, next) => {
               };
               
               var security_phase = false;
-              if(admin.security_phase != null){
-                security_phase = true;
-              }
+              //2018/10/10 
+              //always set security_phase to false for now
+              // if(admin.security_phase != null){
+              //   security_phase = true;
+              // }              
 
               //create session
               Session.create({
@@ -518,8 +520,48 @@ router.post('/verify-security-phase', isAuthenticated, (req, res, next) => {
       status: true
     }));
   })
+});
 
-
+/**
+ * user's access right 
+ * @param {string} jwtoken 
+ * @returns {Object} acl - Access list of current user
+ */
+router.post('/acl', isAuthenticated, (req, res, next) => {
+  var adminId = res.auth_token.id;  
+  var response = new resp();
+  var level = 0;
+  var roleId = '';  
+  Admin.findOne({
+    where: {
+      AdminID: adminId,
+      active: 1
+    }, 
+    attributes: ['level','RoleID'],
+  }).then(admin => {
+    if(admin !== null){
+      roleId = admin.RoleID;
+      Right.findAll({
+        where: {
+          RoleID: roleId
+        }
+      }).then(right => {
+        var rightsObj = {};
+        for (var k in right) {
+          rightsObj[right[k].module.module] = right[k].module;
+        }
+        console.log(right);
+        res.status(200).send(response.initResp(rightsObj));
+      });
+    }        
+  }).catch(e => {
+    console.log(e);    
+    res.status(404).send(resp.initResp(null, {
+      message: 'There is an error with your ID.',
+      code: 404,
+      status: true
+    }));
+  });
 });
 
 router.delete('/', isAuthenticated, (req, res, next) => {

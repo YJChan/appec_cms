@@ -1,10 +1,10 @@
 <sc-edit-role>
   <div class="simple-grid">
     <div class="simple-grid-row">
-      <div class="siimple--display-block primary sc-title">
+      <div class="siimple--display-block primary sc-content-title">
         {act === 'create'? 'Create': 'Edit'} Role
       </div>
-      <div class="siimple--display-block siimple--bg-white sc-panel">
+      <div class="siimple--display-block siimple--bg-white sc-content-panel">
         <div class="siimple-form">
           <div class="siimple-form-title" if={act==='create'}>Create a new Role</div>
           <div class="siimple-form-title" if={act==='edit'}>Edit Role - {edit_role.Rolename}</div>
@@ -30,15 +30,15 @@
       </div>
     </div>
   </div>
+  <div class="siimple-tip siimple-tip--primary sc-tip">
+    Please select the role access right below. The updated access right will be reflect on the user next login.
+  </div>
   <div class="simple-grid">
     <div class="simple-grid-row">
-      <div class="siimple--display-block primary sc-title">
+      <div class="siimple--display-block primary sc-content-title">
         {act === 'create'? 'Create': 'Edit'} Right - {edit_role.Rolename}
       </div>
-      <div class="siimple--display-block siimple--bg-white sc-panel">
-        <div class="siimple-tip siimple-tip--primary">
-          Please select the role access right below. The updated access right will be reflect on the user next login.
-        </div>
+      <div class="siimple--display-block siimple--bg-white sc-content-panel">
         <div class="siimple-form">
             <div class="siimple-form-field">              
               <div class="siimple-table">
@@ -144,6 +144,17 @@
       width: 5%;
       text-align: center;
       line-height: 2.5;
+    }
+    .sc-content-title{
+      padding: 5px;
+      border-radius: 3px 3px 0px 0px;
+      margin: 15px 0px 0px 0px;
+    }
+    .sc-content-panel{
+      padding: 15px;      
+    }
+    .sc-tip{
+      margin: 15px 0px 15px 0px;
     }
 </style>
 <script type="text/javascript" src="../../observers/sc-admin-observer.js"></script>

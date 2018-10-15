@@ -3,7 +3,7 @@
   <div class="siimple-table siimple-table--striped">
     <div class="siimple-table-header">
       <div class="siimple-table-row">
-        <div class="siimple-table-cell"></div>
+        <div class="siimple-table-cell" if={acl.admin.acl === 7}></div>
         <div class="siimple-table-cell">Username</div>
         <div class="siimple-table-cell">Email</div>
         <div class="siimple-table-cell">Role Name</div>
@@ -14,11 +14,12 @@
     </div>
     <div class="siimple-table-body">
       <div class="siimple-table-row" if={list_of_admins !== []} each={list_of_admins}>
-        <div class="siimple-table-cell">          
-            <input type="checkbox" ref="chkAdmin" id="chkAdmin" value="{AdminID}" if={isMaster !== 1}/>                                    
+        <div class="siimple-table-cell" if={acl.admin.acl === 7}>          
+            <input type="checkbox" ref="chkAdmin" id="chkAdmin" value="{AdminID}" if={isMaster !== 1}/>
         </div>
         <div class="siimple-table-cell">
-          <div class="{isMaster !== 1? 'sc-edit-class': ''}" onclick="{isMaster !== 1? () => editAdmin(AdminID): ''}">
+          <div class="{isMaster !== 1 && acl.admin.acl === 7? 'sc-edit-class': ''}" 
+            onclick="{isMaster !== 1 && acl.admin.acl === 7? () => editAdmin(AdminID): ''}">
             {AdminName}<br/> 
             <small if={isMaster !== 1}>{AdminID}</small>           
           </div>
@@ -68,6 +69,7 @@
     this.list_of_admins = opts.lists !== undefined? opts.lists: [];
     this.delSomeone = false;
     this.delMsg = '';    
+    this.acl = opts.acl;
     var self = this;
     var mainControl = this.riotx.get('main-control');
 

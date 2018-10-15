@@ -8,6 +8,14 @@ var resp = require('../../utils/resp');
 router.use(cookieParser());
 
 /* GET home page. */
+router.get('/', isAuthenticated, function (req, res, next) {
+  res.clearCookie('auth_token');
+  res.clearCookie('ssid');
+  res.render('app/admin-login', {
+    title: config.development.app_name
+  });
+});
+
 router.get('/admin', isAuthenticated, function (req, res, next) {
   res.render('app/admin', {
     title: config.development.app_name

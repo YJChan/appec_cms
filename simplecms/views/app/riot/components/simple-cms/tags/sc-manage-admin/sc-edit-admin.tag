@@ -1,10 +1,10 @@
 <sc-edit-admin>
-  <div class="simple-grid">
+  <div class="simple-grid" if={! isLoading}>
     <div class="simple-grid-row">
-      <div class="siimple--display-block primary sc-title">
+      <div class="siimple--display-block primary sc-content-title">
         {act === 'create'? 'Create': 'Edit'} Admin
       </div>
-      <div class="siimple--display-block siimple--bg-white sc-panel">
+      <div class="siimple--display-block siimple--bg-white sc-content-panel">
         <div class="siimple-form">
           <div class="siimple-form-title" if={act==='create'}>Create a new admin</div>
           <div class="siimple-form-title" if={act==='edit'}>Edit Admin - {edit_admin.AdminName}</div>
@@ -59,10 +59,12 @@
             <input type="text" ref="inpSecurePhase" class="siimple-input siimple-input--fluid"/>
           </div>
           <div class="siimple-form-field">
-            <div class="siimple-btn siimple-btn--blue" onclick="{() => saveAdmin()}" if={admin_id !== ''}>Save</div>
-            <div class="siimple-btn siimple-btn--blue" onclick="{() => createAdmin()}" if={admin_id === ''}>Create</div>
+            <div class="siimple-btn siimple-btn--blue" onclick="{() => saveAdmin()}" 
+              if={admin_id !== ''}>Save</div>
+            <div class="siimple-btn siimple-btn--blue" onclick="{() => createAdmin()}"
+               if={admin_id === ''}>Create</div>
             &nbsp;
-            <div class="siimple-btn siimple-btn--red" onclick="{() => cancelCreate()}">Cancel</div>
+            <div class="siimple-btn siimple-btn--red" onclick="{() => cancelCreate()}">Cancel</div>            
           </div>
         </div>
       </div>
@@ -85,6 +87,14 @@
       text-align: center;
       line-height: 2.5;
     }
+    .sc-content-title{
+      padding: 5px;
+      border-radius: 3px 3px 0px 0px;
+      margin: 15px 0px 0px 0px;
+    }
+    .sc-content-panel{
+      padding: 15px;      
+    }
   </style>
   <script type="text/javascript" src="../../observers/sc-admin-observer.js"></script>
   <script>
@@ -93,16 +103,20 @@
     this.admin_id = '';
     this.edit_admin = '';    
     this.change_role = false;
-    this.act = opts.act !== undefined? opts.act: 'create';
-
+    this.act = opts.act !== undefined? opts.act: 'create';    
+    this.acl = opts.acl;
     riot.scAdminWard = new scAdminObserver();
     var mainControl = this.riotx.get('main-control');
     var self = this;
 
+    this.on('before-mount', function(){      
+
+    });
+
     this.on('mount', function(){
       if(opts.act === 'create'){
         this.change_role = true;
-      }
+      }      
       this.getRolesList();
     });
 
@@ -230,5 +244,15 @@
       self.update();
     });
 
+    mainControl.change('AccessListRetrieved', function(state, c){
+      var r = c.getter('getAccessListGetter');
+      if(r.success.status){
+        self.acl = r.result;        
+      }else{
+        //notification
+      }
+      console.log(self.acl);
+      self.update();
+    });
   </script>
 </sc-edit-admin>

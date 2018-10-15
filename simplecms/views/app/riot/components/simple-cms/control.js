@@ -64,6 +64,11 @@ const api = {
       patch: {
         url: 'admin',
       }
+    }, 
+    acl: {
+      post: {
+        url: 'admin/acl'
+      }
     }
   },
   role: {
@@ -105,6 +110,11 @@ const api = {
 var loginControl = new riotx.Store({
   name: 'main-control',
   state: {
+    notification: {
+      global: {
+        notify_message:''
+      }
+    },
     baseUrl: base_url,
     admin:{
       login: false,
@@ -116,7 +126,8 @@ var loginControl = new riotx.Store({
       list_of_admin: [],
       deleted_status: false,
       created_admin: false,
-      edit_admin: null
+      edit_admin: null,
+      acl: ''
     },
     role: {
       list: '',
@@ -129,6 +140,12 @@ var loginControl = new riotx.Store({
     }
   },
   actions: {
+    globalNotificationAction: function(context, data){
+      return Promise.resolve()
+      .then(function(){
+        context.commit('GlobalNotificationMutation', data);
+      })
+    },
     loginAction: function (context, data) {
       return Promise.resolve()
         .then(function () {
@@ -153,6 +170,27 @@ var loginControl = new riotx.Store({
       return Promise.resolve()
       .then(function(){
         unAuthRedirect();
+      })
+    },
+    getAccessListAction: function(context, data){
+      return Promise.resolve()
+      .then(function(){
+        try{
+          http.post(api.admin.acl.post.url,{})
+          .then((response) => {
+            if(response.status === 200){
+              context.commit('getAclMutation', {
+                param: response.data
+              });
+            }else if(response.status === 401){
+              unAuthRedirect();
+            }
+          });
+        }catch(e){
+          console.error(e);
+          return e;
+        }
+        
       })
     },
     getListOfAdminsAction: function(context, data){
@@ -547,6 +585,10 @@ var loginControl = new riotx.Store({
     }
   },
   mutations: {   
+    GlobalNotificationMutation: function (context, data){
+      context.state.notification.global.notify_message = data.message;
+      return ['onGlobalNotify'];
+    },
     loginMutation: function (context, data) {
       context.state.admin.login = true;
       context.state.admin.security_phase = data.param.security_phase;
@@ -557,6 +599,10 @@ var loginControl = new riotx.Store({
       }
 
       return ['LoginStatus'];
+    },
+    getAclMutation: function (context, data){
+      context.state.admin.acl = data.param;
+      return ['AccessListRetrieved'];
     },
     getListOfAdminMutation: function (context, data){
       context.state.list_of_admin = data.param.result;
@@ -604,6 +650,9 @@ var loginControl = new riotx.Store({
     }
   },
   getters: {
+    globalNotificationGetter: function (context) {
+      return context.state.notification.global.notify_message;
+    },
     baseURLGetter: function(context){
       return context.state.baseURL;
     },
@@ -615,6 +664,9 @@ var loginControl = new riotx.Store({
         ssid: context.state.admin.ssid,
         path: context.state.admin.path
       };
+    },
+    getAccessListGetter: function(context){
+      return context.state.admin.acl;
     },
     getListOfAdminGetter: function (context) {
       return context.state.list_of_admin;

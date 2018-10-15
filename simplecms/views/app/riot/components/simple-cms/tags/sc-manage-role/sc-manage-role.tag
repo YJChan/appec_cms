@@ -1,33 +1,37 @@
 <sc-manage-role>
-  <div class="simple-grid">
+  <div class="siimple-alert siimple-alert--warning" if={acl.role === undefined || acl.role === null}>
+    You are not allow to access this module!
+  </div>
+  <div class="simple-grid" if={acl.role.acl > 4}>
     <div class="simple-grid-row">
       <div class="siimple--display-block primary sc-title">
         Manage Role
       </div>
       <div class="siimple--display-block siimple--bg-light sc-panel">
-        <div class="siimple-btn siimple-btn--navy {action === 'edit'? 'siimple-btn--disabled': ''}" 
+        <div class="siimple-btn siimple-btn--navy {action === 'edit'? 'siimple-btn--disabled': ''}"
+          if={acl.role.acl >= 7}
           onclick="{() => createRole()}">Create</div>        
         <div class="siimple-btn siimple-btn--success siimple--float-right {action === 'edit'? 'siimple-btn--disabled': ''}" 
+          if={acl.role.acl >= 4}
           onclick="{() => refreshRole()}">Refresh</div>
       </div>
     </div>
     <div if={isLoading}>
-      <div class="siimple-spinner siimple-spinner--teal"></div>
-    </br/>
+      <div class="siimple-spinner siimple-spinner--teal"></div>    
     </div>
-    <sc-list-role if={list}></sc-list-role>
-    <sc-edit-role if={edit} role_id={role_id} act={action}></sc-edit-role>    
+    <sc-list-role if={list} acl={acl}></sc-list-role>
+    <sc-edit-role if={edit} role_id={role_id} act={action} acl={acl}></sc-edit-role>    
   <div>
   <style>  
     .sc-title {
       padding: 5px;
-      border-radius: 4px 4px 0px 0px;
+      border-radius: 3px 3px 0px 0px;
+      margin: -15px -15.5px 15px -15.5px
     }
-
     .sc-panel{
       padding: 10px;
-      margin-bottom: 15px;
-    }  
+      margin: -15px -15px 20px -15px;
+    }
   </style>
   <script type="text/javascript" src="../../observers/sc-admin-observer.js"></script>
   <script>
@@ -36,11 +40,18 @@
     this.action = 'create';
     this.role_id = '';
     this.isLoading = false;
+    this.acl = opts.acl;
     var mainControl = this.riotx.get('main-control');
     var self = this;
 
-    this.on('mount', function(){
+    this.on('before-mount', function(){
       this.getRoleList();
+    });
+
+    this.on('mount', function(){
+      this.isLoading = true;
+      mainControl.getter('getAccessListGetter', {});
+      
     });
 
     getRoleList(){
