@@ -316,6 +316,9 @@ const Image = db.define('Image', {
 		type: Sequelize.INTEGER,
 		defaultValue: 1,
 	},
+	filename: {
+		type: Sequelize.TEXT
+	},
 	fileType: {
 		type: Sequelize.TEXT    
 	},
@@ -691,7 +694,7 @@ Tag.belongsToMany(Post, {
 });
 
 if(config.environment === 'development' && config.dbChange){
-	db.sync({logging: true});
+	db.sync({alter: true});
 }
 
 module.exports = {

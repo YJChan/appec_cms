@@ -1,5 +1,5 @@
 //Application Model
-const PostModel = require('../models/post.model');
+const PostModel = require('../models/post_es5.model');
 
 //helper
 const security = require('../utils/security');

@@ -1,3 +1,4 @@
+'use strict';
 //Sequelize Model
 const {Admin} = require('./sqlite/sqliteModel');
 const {Right} = require('./sqlite/sqliteModel');
@@ -9,7 +10,6 @@ const utils = require('../utils/utils');
 const {db} = require('./db');
 const rQry = require('./sqlite/rawSQL');
 const Op = db.Op;
-
 class PostModel{
 	constructor() {
 
@@ -31,7 +31,7 @@ class PostModel{
 
 	postParam(withId = true) {
 		return {
-			PostID: withId ? `POST-${utils.guid()}`: {val: '', type: 'nullable', check: false, exclude: true},
+			PostID: withId ? 'POST-' + utils.guid(): {val: '', type: 'nullable', check: false, exclude: true},
 			content: {
 				name: 'content',
 				val: '',

@@ -38,12 +38,12 @@ class TagModel {
    * @param {string} oTag.createdBy - creator
    * @param {string} tagId 
    */
-	updateTag(oTag, tagId){
+	updateTag(oTagUpadate, tagId){
 		return new Promise((resolve, reject) => {
 			Tag.findOne({
 				where: {TagID: tagId}
 			}).then(oTag => {
-				oTag.update(oTag).then(oTagSaved => {
+				oTag.update(oTagUpadate).then(oTagSaved => {
 					resolve(oTagSaved);
 				});
 			}).catch(err => {
@@ -178,7 +178,7 @@ class TagModel {
 		}
 	}
 
-	categoryParam(withID = true) {
+	tagParam(withID = true) {
 		return {
 			TagID: withID ? 'TAG-' + utils.guid() : {val: '', type: 'nullable', check: false, exclude: true},
 			tagname: {        
