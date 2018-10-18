@@ -1,5 +1,5 @@
 //Application Model
-const PostModel = require('../models/post_es5.model');
+const PostModel = require('../models/post.model');
 
 //helper
 const security = require('../utils/security');
@@ -39,4 +39,74 @@ exports.createPost = (req, res, next) => {
 			code: 401
 		});    
 	}      
+};
+
+exports.getPost = (req, res, next) => {
+	let action = 'read';
+	let response = new resp();
+	let postACL = {};
+	let valid_permit = false;
+	let oPostM = new PostModel();
+	let oPostReq = {
+		PostID: {
+			val: req.params.postid,
+			type: 'uuid',
+			check: true,
+			exclude: false
+		}
+	};
+
+	if(res.auth_token !== null){
+		postACL = res.auth_token.role.post;
+		valid_permit = security.permit(action, postACL.acl);
+		if(valid_permit){
+			security.validate(oPostReq, function(err, oPost){
+				if(err) res.status(400).send(response.initResp(null, {message: err, code: 400, status: true}));
+				oPostM.getPost(oPost)
+					.then(oPostContent => {
+						res.status(200).send(response.initResp(oPostContent));
+					})
+					.catch(err => {
+						res.status(400).send(response.initResp(null, err));
+					});				
+			});
+		}else{
+			return next({
+				message: 'Unauthorized access api',
+				api: true,
+				code: 401
+			});
+		}
+	}
+};
+
+exports.updatePost = (req, res, next) => {
+	let action = 'read';
+	let response = new resp();
+	let postACL = {};
+	let valid_permit = false;
+	let oPostM = new PostModel();
+	let oPostReq = new oPostM.postParam();		
+
+	if (res.auth_token !== null) {
+		postACL = res.auth_token.role.post;
+		valid_permit = security.permit(action, postACL.acl);
+		if (valid_permit) {
+			
+		}else{
+			return next({
+				message: 'Unauthorized access api',
+				api: true,
+				code: 401
+			});
+		}
+	}
+	 else {
+		return next({
+			message: 'Unauthorized access api',
+			api: true,
+			code: 401
+		});
+	}
+	
 };

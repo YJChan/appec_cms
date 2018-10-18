@@ -14,7 +14,9 @@ class PostModel{
 	constructor() {
 
 	}
-
+	/**
+	 * @param  {} oPost
+	 */
 	createPost(oPost){
 		return new Promise((resolve, reject) => {
 			Post.create(oPost)
@@ -26,6 +28,22 @@ class PostModel{
 				.catch(err =>{
 					reject(err);
 				});
+		});
+	}
+
+	
+	/**
+	 * @param  {} oPost
+	 */
+	getPost(oPost){
+		return new Promise((resolve, reject) => {
+			Post.findOne({
+				where: oPost
+			}).then(oPostGet => {
+				resolve(oPostGet);
+			}).catch(err => {
+				reject(err);
+			});
 		});
 	}
 

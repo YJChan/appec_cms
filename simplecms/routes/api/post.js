@@ -1,9 +1,3 @@
-const {Admin} = require('../../models/sqlite/sqliteModel');
-const {Right} = require('../../models/sqlite/sqliteModel');
-const {Role} = require('../../models/sqlite/sqliteModel');
-const {Session} = require('../../models/sqlite/sqliteModel');
-const {Post} = require('../../models/sqlite/sqliteModel');
-const {db} = require('../../models/db');
 const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
@@ -77,7 +71,9 @@ let isAuthenticated = (req, res, next) => {
 	}
 };
 
-router.post('/', isAuthenticated, PostController.createPost);
+router.post('/post-create', isAuthenticated, PostController.createPost);
+
+router.get('/post-get/:postid', isAuthenticated, PostController.getPost);
 
 /** 
  * @param  {string} PostId (p-id)
