@@ -81,18 +81,27 @@ exports.getPost = (req, res, next) => {
 };
 
 exports.updatePost = (req, res, next) => {
-	let action = 'read';
+	let action = 'write';
 	let response = new resp();
 	let postACL = {};
 	let valid_permit = false;
 	let oPostM = new PostModel();
-	let oPostReq = new oPostM.postParam();		
+	let oPostReq = oPostM.postParam(false);		
+	let postID = req.params.postid;
 
-	if (res.auth_token !== null) {
+	if (res.auth_token !== null) {		
 		postACL = res.auth_token.role.post;
 		valid_permit = security.permit(action, postACL.acl);
 		if (valid_permit) {
-			
+			oPostReq = oPostM.determineWhatToUpdate(req, oPostReq);
+			supp.prepareBodyReq(req, oPostReq)
+				.then(oPostToSave => oPostM.updatePost(oPostToSave, postID))
+				.then(oPostRec => {
+					res.status(200).send(response.initResp(oPostRec));
+				})
+				.catch(err => {
+					res.status(400).send(response.initResp(null, err));
+				});
 		}else{
 			return next({
 				message: 'Unauthorized access api',
@@ -101,12 +110,25 @@ exports.updatePost = (req, res, next) => {
 			});
 		}
 	}
-	 else {
+	else {
 		return next({
 			message: 'Unauthorized access api',
 			api: true,
 			code: 401
 		});
-	}
-	
+	}	
 };
+
+exports.increasePostView = (req, res) => {
+	let response = new resp();
+	let oPostM = new PostModel();	
+	let postID = req.params.postid;
+
+	oPostM.increasePostView(postID)
+		.then(oPostView => {
+			res.status(200).send(response.initResp(oPostView.views));
+		}).catch(err => {
+			res.status(400).send(response.initResp(err));
+		});
+};
+

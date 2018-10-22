@@ -75,6 +75,10 @@ router.post('/post-create', isAuthenticated, PostController.createPost);
 
 router.get('/post-get/:postid', isAuthenticated, PostController.getPost);
 
+router.patch('/post-update/:postid', isAuthenticated, PostController.updatePost);
+
+router.patch('/post-view/:postid', PostController.increasePostView);
+
 /** 
  * @param  {string} PostId (p-id)
  * @param  {string} tags (tag)
@@ -85,7 +89,7 @@ router.get('/post-get/:postid', isAuthenticated, PostController.getPost);
  * @param  {string} UserID (uid)
  * @param  {string} Username (uname)
  */
-router.get('/all', (req, res, next) => {  
+router.get('/all', (req, res, next) => {
 	let response = new resp();
   
 	Post.findAll()

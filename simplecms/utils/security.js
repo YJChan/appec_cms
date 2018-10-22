@@ -177,6 +177,7 @@ const security = {
 					}          
 				}
 				if (obj[key].exclude) {
+					checker.status = true;					
 					delete obj[key];
 				}
 			}else{

@@ -131,6 +131,7 @@ class ImageModel {
 				});
 		});
 	}
+
 	/**
    * Check on what parameter has been passed from front end
    * @param  {Object} req

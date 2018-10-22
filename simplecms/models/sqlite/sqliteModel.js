@@ -653,6 +653,16 @@ Right.belongsTo(Role, {
 //   foreignKey: 'RightID',
 //   as: 'SpecialRight'
 // });
+Admin.hasMany(Post, {
+	foreignKey: 'AdminID',
+	as: 'AdminPost'
+});
+
+Post.belongsTo(Admin, {
+	foreignKey: 'AdminID',
+	constraints: false,
+	as: 'AdminPost'
+});
 
 User.hasMany(Post, {
 	foreignKey: 'UserID',
