@@ -241,6 +241,12 @@ class ImageModel {
 				type: 'string',
 				check: false,
 				exclude: true
+			},
+			url: {
+				val: '',
+				type: 'string',
+				check: true,
+				exclude: false
 			}
 		};
 	}

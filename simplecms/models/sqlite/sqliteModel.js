@@ -261,6 +261,10 @@ const Post = db.define('Post', {
 			this.setDataValue('PostID', val.toUpperCase());
 		}
 	},
+	title:{
+		type: Sequelize.TEXT,
+		allowNull: true
+	},
 	content: {
 		type: Sequelize.TEXT,
 		allowNull: false,        
@@ -293,6 +297,11 @@ const Post = db.define('Post', {
 	metaTag: {
 		type: Sequelize.TEXT,
 		allowNull: true
+	},
+	mode: {
+		type: Sequelize.TEXT,
+		allowNull: true,
+		defaultValue: 'DRAFT'
 	},
 	createdBy: {
 		type: Sequelize.TEXT    
@@ -334,6 +343,10 @@ const Image = db.define('Image', {
 		type: Sequelize.TEXT,
 		allowNull: true,
 		defaultValue: ''
+	},
+	url: {
+		type: Sequelize.TEXT,
+		allowNull: true
 	}
 });
 
@@ -617,6 +630,58 @@ const Session = db.define('Session',{
 	}  
 });
 
+const PostCategory = db.define('PostCategory', {
+	PostCategoryID : {
+		type: Sequelize.TEXT,
+		allowNull: false,
+		primaryKey: true,
+		unique: true
+	},
+	PostID: {
+		type: Sequelize.TEXT,
+		allowNull: false		
+	},
+	CatID: {
+		type: Sequelize.TEXT,
+		allowNull: false
+	}
+});
+
+const PostTag = db.define('PostTag', {
+	PostTagID: {
+		type: Sequelize.TEXT,
+		allowNull: false,
+		primaryKey: true,
+		unique: true
+	},
+	PostID: {
+		type: Sequelize.TEXT,
+		allowNull: false
+	},
+	TagID: {
+		type: Sequelize.TEXT,
+		allowNull: false
+	}
+});
+
+const PostImage = db.define('PostImage', {
+	PostImageID: {
+		type: Sequelize.TEXT,
+		allowNull: false,
+		primaryKey: true,
+		unique: true
+	},
+	PostID: {
+		type: Sequelize.TEXT,
+		allowNull: false
+	},
+	ImageID: {
+		type: Sequelize.TEXT,
+		allowNull: false
+	}
+});
+
+
 Role.hasMany(Admin, {
 	foreignKey: 'RoleID',
 	as:'AdminRole'
@@ -675,36 +740,40 @@ Post.belongsTo(User, {
 	as:'UserPost'
 });
 
-Post.belongsToMany(Category, {
-	as: 'PostCategory',
-	through: 'Post_Category',
-	foreignKey: 'PostID',
-	otherKey: 'CatID'
-});
+// Post.belongsToMany(Category, {
+// 	as: 'PostCategory',
+// 	through: 'Post_Category',
+// 	foreignKey: 'PostID',
+// 	otherKey: 'CatID'
+// });
 
-Image.belongsToMany(Post, {
-	as: 'PostImage',
-	through: 'Post_Image',
-	foreignKey: 'PostID',
-	otherKey: 'ImageID'
-});
+// Image.belongsToMany(Post, {
+// 	as: 'PostImage',
+// 	through: 'Post_Image',
+// 	foreignKey: 'PostID',
+// 	otherKey: 'ImageID'
+// });
 
-Image.belongsToMany(Page, {
-	as: 'PageImage',
-	through: 'Page_Image',
-	foreignKey: 'PageID',
-	otherKey: 'ImageID'
-});
+// Image.belongsToMany(Page, {
+// 	as: 'PageImage',
+// 	through: 'Page_Image',
+// 	foreignKey: 'PageID',
+// 	otherKey: 'ImageID'
+// });
 
-Tag.belongsToMany(Post, {
-	as: 'PostTag',
-	through: 'Post_Tag',
-	foreignKey: 'PostID',
-	otherKey: 'TagID'
-});
+// Tag.belongsToMany(Post, {
+// 	as: 'PostTag',
+// 	through: 'Post_Tag',
+// 	foreignKey: 'PostID',
+// 	otherKey: 'TagID'
+// });
 
 if(config.environment === 'development' && config.dbChange){
-	db.sync({alter: true});
+	//db.sync({alter: true});
+	//Post.sync({alter:true});
+	Image.sync({
+		alter: true
+	});
 }
 
 module.exports = {
@@ -720,5 +789,8 @@ module.exports = {
 	SpecialField, 
 	Theme, 
 	User,
-	Session
+	Session,
+	PostCategory,
+	PostImage,
+	PostTag
 };

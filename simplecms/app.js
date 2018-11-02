@@ -1,35 +1,36 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+let createError = require('http-errors');
+let express = require('express');
+let path = require('path');
+let cookieParser = require('cookie-parser');
+let logger = require('morgan');
 const config = require('./config/config.json');
 //const cors = require('cors')
-var resp = require('./utils/resp');
+let resp = require('./utils/resp');
 
 //web router
-var indexRouter = require('./routes/index');
-var adminRouter = require('./routes/web/admin');
-//var usersRouter = require('./routes//web/users');
+let indexRouter = require('./routes/index');
+let adminRouter = require('./routes/web/admin');
+let postRouter = require('./routes/web/post');
+//let usersRouter = require('./routes//web/users');
 
 //api router
-var adminApi = require('./routes/api/admin');
-var roleApi = require('./routes/api/role');
-var rightApi = require('./routes/api/right');
-var postApi = require('./routes/api/post');
-var categoryApi = require('./routes/api/category');
-var tagApi = require('./routes/api/tag');
-var imageApi = require('./routes/api/image');
+let adminApi = require('./routes/api/admin');
+let roleApi = require('./routes/api/role');
+let rightApi = require('./routes/api/right');
+let postApi = require('./routes/api/post');
+let categoryApi = require('./routes/api/category');
+let tagApi = require('./routes/api/tag');
+let imageApi = require('./routes/api/image');
 
-var app = express();
+let app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit:'5mb', extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '/public')));
 
@@ -42,6 +43,7 @@ app.use('/riot', express.static(path.join(__dirname, '/views/app/riot/')));
 
 app.use('/', indexRouter);
 app.use('/' + config.development.adminpanel, adminRouter);
+app.use('/post', postRouter);
 //app.use('/users', usersRouter);
 app.use('/admin', adminApi);
 app.use('/role', roleApi);

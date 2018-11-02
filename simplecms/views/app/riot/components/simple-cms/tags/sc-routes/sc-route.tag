@@ -2,7 +2,13 @@
   <div class="siimple-grid-col siimple-grid-col--2">    
     <div class="siimple-menu sc-menu">
         <div class="siimple-menu-group">Administration</div>
-        <div each={routes}>
+        <div each={admin_routes}>
+          <a class="siimple-menu-item" href="#{url}">{name}</a>
+        </div>
+    </div>
+    <div class="siimple-menu sc-menu">
+        <div class="siimple-menu-group">Post</div>
+        <div each={post_routes}>
           <a class="siimple-menu-item" href="#{url}">{name}</a>
         </div>
     </div>
@@ -13,7 +19,8 @@
     </div>
     <div class="siimple-content siimple-content--fluid sc-main-panel" if={isLoading === false}>      
       <sc-manage-admin if={admin_route.m_admin} acl={acl}></sc-manage-admin>
-      <sc-manage-role if={admin_route.m_role} acl={acl}></sc-manage-role>          
+      <sc-manage-role if={admin_route.m_role} acl={acl}></sc-manage-role>
+      <sc-manage-post if={post_route.m_post} acl={acl}></sc-manage-post>
     </div>     
   </div>
   <style>
@@ -32,15 +39,26 @@
   <script>
     this.mixin(minoCookie);
     this.theme = '';        
-    this.routes = [
+    this.admin_routes = [
       {name: 'Manage Admins', url:'manage-admins', module: 'admin'},      
       {name: 'Manage Roles', url: 'manage-roles', module: 'role'},      
+    ];
+    this.post_routes = [
+      {name: 'Manage Posts', url: 'manage-posts', module: 'post'},
+      {name: 'Manage Categories', url: 'manage-category', module: 'post'},
+      {name: 'Manage Tags', url: 'manage-tags', module: 'post'},      
     ];
     this.admin_route = {
       m_admin: false,
       m_right: false,
       m_role: false
     };
+    this.post_route = {
+      m_post: false,
+      m_category: false,
+      m_tag: false
+    };
+
     this.isLoading = true;
     this.acl = '';
     var self = this;
@@ -89,7 +107,14 @@
         }else{
           this.admin_route[r_name] = false;
         }
-      }      
+      }
+      for(var r_name in this.post_route){
+        if(r === r_name){
+          this.post_route[r_name] = true;
+        }else{
+          this.post_route[r_name] = false;
+        }
+      }          
     }
 
     var sc_route = route.create();
@@ -102,6 +127,27 @@
 
     sc_route('manage-roles', function(){
       self.rotueChange('m_role');
+      self.update({
+        acl: self.acl
+      });
+    });
+
+    sc_route('manage-posts', function(){
+      self.rotueChange('m_post');
+      self.update({
+        acl: self.acl
+      });
+    });
+
+    sc_route('manage-category', function(){
+      self.rotueChange('m_category');
+      self.update({
+        acl: self.acl
+      });
+    });
+
+    sc_route('manage-tag', function(){
+      self.rotueChange('m_tag');
       self.update({
         acl: self.acl
       });

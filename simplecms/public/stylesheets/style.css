@@ -143,24 +143,24 @@ input.input-line:focus {
   display: block;
 }
 
-.sc-table{
-  background-color: #cbd8e6 !important;  
+.sc-table {
+  background-color: #cbd8e6 !important;
   width: 100%;
   border-radius: 5px 5px 0px 0px;
 }
 
-.sc-tr-header{
+.sc-tr-header {
   vertical-align: bottom;
   text-align: center;
 }
 
-.sc-th{
+.sc-th {
   font-weight: 700;
   border-bottom: 1px solid #fff !important;
   padding: 10px;
 }
 
-.sc-td{
+.sc-td {
   display: table-cell;
   line-height: 23px;
   padding: 10px;
@@ -169,7 +169,493 @@ input.input-line:focus {
   transition: background-color .3s;
 }
 
-.sc-table .sc-td-data{
+.sc-table .sc-td-data {
   background-color: #f3f3f3;
 }
 
+@media (min-width: 320px) and (max-width: 480px) {
+  .calendar-modal {
+    border: 0.15em solid #b9b5b5;
+    display: inline-block;
+    position: absolute;
+    background: #f3f3f3;
+    border-radius: 0.25em;
+    height: auto;
+    margin: 16px;
+    top: 10%;
+    left: 0;
+    width: 90%;
+    box-shadow: 2px 2px 2px 2px #5a5858;
+  }
+
+  .calendar {
+    border: 0.15em solid #b9b5b5;
+    display: inline-block;
+    position: absolute;
+    background: #f3f3f3;
+    border-radius: 0.25em;
+    height: auto;
+    margin: -5px -25px 20px 0px;
+    width: 80%;
+  }
+
+  .month-title {
+    width: 52%;
+    display: inline-block;
+    text-align: left;
+    font-weight: 600;
+    font-size: x-large;
+    cursor: pointer;
+  }
+
+  .t-year-title {
+    width: 20%;
+    display: inline-block;
+    text-align: center;
+    font-size: large;
+    cursor: pointer;
+  }
+
+  .week-title {
+    width: 11.25%;
+    text-align: center;
+    display: inline-block;
+    padding: 1%;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 767px) {
+  .calendar-modal {
+    border: 0.15em solid #b9b5b5;
+    display: inline-block;
+    position: absolute;
+    background: #f3f3f3;
+    border-radius: 0.25em;
+    height: auto;
+    margin: 25px;
+    top: 0;
+    left: 6%;
+    width: 45%;
+    box-shadow: 2px 2px 2px 2px #5a5858;
+  }
+
+  .calendar {
+    border: 0.15em solid #b9b5b5;
+    display: inline-block;
+    position: absolute;
+    background: #f3f3f3;
+    border-radius: 0.25em;
+    height: auto;
+    margin: -5px -25px 20px 0px;
+    width: 290px;
+  }
+
+  .month-title {
+    width: 48%;
+    display: inline-block;
+    text-align: left;
+    font-weight: 600;
+    font-size: x-large;
+    cursor: pointer;
+    border-radius: 0.2em;
+    padding: 1%;
+  }
+
+  .t-year-title {
+    width: 19.5%;
+    display: inline-block;
+    text-align: center;
+    font-size: large;
+    cursor: pointer;
+    border-radius: 0.2em;
+    padding: 1.5%;
+  }
+
+
+  .week-title {
+    width: 10.5%;
+    text-align: center;
+    display: inline-block;
+    padding: 1%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .calendar-modal {
+    border: 0.15em solid #b9b5b5;
+    display: inline-block;
+    position: absolute;
+    background: #f3f3f3;
+    border-radius: 0.25em;
+    height: auto;
+    margin: 25px;
+    top: 0;
+    left: 6%;
+    width: 45%;
+    box-shadow: 2px 2px 2px 2px #5a5858;
+  }
+
+  .calendar {
+    border: 0.15em solid #b9b5b5;
+    display: inline-block;
+    position: absolute;
+    background: #f3f3f3;
+    border-radius: 0.25em;
+    height: auto;
+    margin: -5px -25px 20px 0px;
+    width: 290px;
+  }
+
+  .month-title {
+    width: 48%;
+    display: inline-block;
+    text-align: left;
+    font-weight: 600;
+    font-size: x-large;
+    cursor: pointer;
+    border-radius: 0.2em;
+    padding: 1%;
+  }
+
+  .t-year-title {
+    width: 19.5%;
+    display: inline-block;
+    text-align: center;
+    font-size: large;
+    cursor: pointer;
+    border-radius: 0.2em;
+    padding: 1.5%;
+  }
+
+
+  .week-title {
+    width: 11%;
+    text-align: center;
+    display: inline-block;
+    padding: 1%;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1920px) {
+  .calendar {
+    border: 0.15em solid #b9b5b5;
+    display: inline-block;
+    position: absolute;
+    background: #f3f3f3;
+    border-radius: 0.25em;
+    height: auto;
+    margin: -5px -25px 20px 0px;
+    width: 280px;
+    font-size: smaller;
+  }
+
+  .calendar-modal {
+    border: 0.15em solid #b9b5b5;
+    display: inline-block;
+    position: absolute;
+    background: #f3f3f3;
+    border-radius: 0.25em;
+    height: auto;
+    margin: 25px;
+    top: 10%;
+    left: 35%;
+    width: 350px;
+    box-shadow: 2px 2px 2px 2px #5a5858;
+  }
+
+  .month-title {
+    width: 46%;
+    display: inline-block;
+    text-align: left;
+    font-size: x-large;
+    cursor: pointer;
+    font-weight: 600;
+    padding: 2%;
+    border-radius: 0.2em;
+  }
+
+  .t-year-title {
+    width: 19.5%;
+    display: inline-block;
+    text-align: center;
+    font-size: large;
+    cursor: pointer;
+    padding: 2%;
+    border-radius: 0.2em;
+  }
+
+  .week-title {
+    width: 11%;
+    text-align: center;
+    display: inline-block;
+    padding: 1%;
+  }
+}
+
+.modal-back {
+  position: fixed;
+  z-index: 0;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.bottom-action {
+  width: 100%;
+  padding: 1px;
+}
+
+.action-wrapper {
+  box-sizing: border-box;
+  display: inline-block;
+  width: 32%;
+  padding: 4px;
+  text-decoration: none;
+  color: inherit;
+  border: 0;
+  background: transparent;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 0.15em;
+}
+
+.action-wrapper:hover {
+  background: #ddd;
+  color: #161125;
+}
+
+input.input-line:focus {
+  outline-width: 0;
+}
+
+.input-box {
+  display: inline;
+  padding: 0.2rem 0.45rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #1D2F3A;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1.35px solid #ced4da;
+  border-radius: 0.2rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  margin: 5px;
+}
+
+.input-line {
+  display: inline;
+  padding: 0.2rem 0.45rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #1D2F3A;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1.35px solid #364a4c;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0.2rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  margin: 5px;
+  border-radius: 0;
+}
+
+.title-wrapper {
+  padding: 1%;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.month-year-selection {
+  overflow: scroll;
+  box-sizing: content-box;
+  height: auto;
+  margin: 0px 15px;
+  text-align: center;
+  width: 100%;
+  padding: 1%;
+  display: inline-block;
+}
+
+.month-selection {
+  height: 20px;
+  padding: 10px 15px;
+  display: inline-block;
+  border-radius: 0.2em;
+  cursor: pointer;
+}
+
+.year-selection {
+  height: 20px;
+  padding: 15px 15px;
+  display: inline-block;
+  border-radius: 0.2em;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.t-year-title:hover {
+  background-color: #ddd;
+}
+
+.year-selection:hover {
+  background-color: #ddd;
+}
+
+.month-title:hover {
+  background-color: #ddd;
+}
+
+.month-selection:hover {
+  background-color: #ddd;
+}
+
+.year-title {
+  font-size: 15.5pt;
+  text-align: center;
+  cursor: pointer;
+  padding: 2%;
+  border-radius: 0.2em;
+}
+
+.year-title:hover {
+  background: #ddd;
+}
+
+.monthyear-close {
+  cursor: pointer
+}
+
+.display-wrapper {
+  text-align: center;
+}
+
+.month-wrapper {
+  display: inline-block;
+  width: 100%;
+}
+
+.week-wrapper {
+  width: 100%;
+  height: auto;
+  display: block;
+  padding: 1%;
+}
+
+.month-navigator {
+  width: 11%;
+  border-radius: 0.2em;
+  border: 0;
+  font-size: 15.5pt;
+  padding: 0px;
+  cursor: pointer;
+  background-color: #f3f3f3;
+}
+
+.month-navigator:hover {
+  background: #ddd;
+}
+
+.cal {
+  background:
+    url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhRE9DVFlQRSBzdmcgIFBVQkxJQyAnLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4nICAnaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkJz48c3ZnIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDgwIDgwIiBoZWlnaHQ9IjgwcHgiIGlkPSJJY29ucyIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgODAgODAiIHdpZHRoPSI4MHB4IiB4bWw6c3BhY2U9InByZXNlcnZlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48Zz48cGF0aCBkPSJNNjEsMjAuMDQ3aC02VjE1aC01djUuMDQ3SDMwVjE1aC01djUuMDQ3aC01LjkxOWMtMi4yMDksMC00LDEuNzkxLTQsNFY2MWMwLDIuMjA5LDEuNzkxLDQsNCw0SDYxYzIuMjA5LDAsNC0xLjc5MSw0LTQgICBWMjQuMDQ3QzY1LDIxLjgzOCw2My4yMDksMjAuMDQ3LDYxLDIwLjA0N3ogTTYwLDYwSDIwVjM1aDQwVjYweiBNNjAsMzBIMjB2LTVoNDBWMzB6Ii8+PHJlY3QgaGVpZ2h0PSI1IiB3aWR0aD0iNSIgeD0iMzgiIHk9IjQwIi8+PHJlY3QgaGVpZ2h0PSI1IiB3aWR0aD0iNSIgeD0iNDgiIHk9IjQwIi8+PHJlY3QgaGVpZ2h0PSI1IiB3aWR0aD0iNSIgeD0iMzgiIHk9IjUwIi8+PHJlY3QgaGVpZ2h0PSI1IiB3aWR0aD0iNSIgeD0iMjgiIHk9IjUwIi8+PC9nPjwvc3ZnPg==) no-repeat scroll 4.5px 4.5px;
+  background-position: right;
+  background-repeat: no-repeat;
+  background-size: 30px;
+}
+
+@media (min-width: 1025px) and (max-width: 1920px) {
+  .day-wrapper {
+    cursor: pointer;
+    width: 14%;
+    height: 32px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 2;
+  }
+
+  .not-in-month {
+    color: #bbb;
+  }
+
+  .active {
+    background-color: #456990;
+    border-radius: 0.25em;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 767px) {
+  .day-wrapper {
+    cursor: pointer;
+    width: 14%;
+    height: 32px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 2;
+  }
+
+  .not-in-month {
+    color: #bbb;
+  }
+
+  .active {
+    background-color: #456990;
+    border-radius: 0.25em;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .day-wrapper {
+    cursor: pointer;
+    width: 14%;
+    height: 32px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 2;
+  }
+
+  .not-in-month {
+    color: #bbb;
+  }
+
+  .active {
+    background-color: #456990;
+    border-radius: 0.25em;
+  }
+}
+
+@media (min-width: 320px) and (max-width: 480px) {
+  .day-wrapper {
+    cursor: pointer;
+    width: 14%;
+    height: 32px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 2.1;
+  }
+
+  .not-in-month {
+    color: #bbb;
+  }
+
+  .active {
+    background-color: #456990;
+    border-radius: 0.25em;
+  }
+}
+
+.day-wrapper:hover {
+  background-color: #ccc;
+  border-radius: 0.25em;
+}

@@ -7,6 +7,7 @@ const supp = require('../utils/supp');
 const fs = require('fs');
 const path = require('path');
 const utils = require('../utils/utils');
+const config = require('../config/config.json');
 
 /**
  * Create new Post
@@ -26,15 +27,19 @@ exports.uploadImage = (req, res, next) => {
 	let response = new resp();
 	let oImageM = new ImageModel();	
 	let uploadedFile = req.file;
-
+	let env = config.environment;
+	let imageId = 'IMG-' + utils.guid();
+	imageId = imageId.toUpperCase();
+	
 	let oImageReq = {
-		ImageID: 'IMG-' + utils.guid(),
+		ImageID: imageId,
 		inDb: '',
 		fileType: uploadedFile.mimetype,
 		fileSize: uploadedFile.size,
 		filename: uploadedFile.filename,
 		binaryFile: '',
-		filePath: '/public/images/uploads'
+		filePath: '/public/images/uploads',
+		url: config[env].base_url + 'api/image/get-image/' + imageId
 	};
 
 	oImageM.uploadImage(oImageReq)		

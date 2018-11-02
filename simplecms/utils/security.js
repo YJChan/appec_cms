@@ -265,6 +265,18 @@ var checkThis = (type, val) => {
 		checkObj.err = '';
        
 		break;
+	case 'UUID':
+		var strArr = val.split('-');
+		var prefixLen = strArr[0].length;
+		var uuidStr = val.substring(prefixLen, val.length);
+		if(! validator.isUUID(uuidStr)){
+			checkObj.errmsg = 'Invalid Object ID.';
+			checkObj.status - false;
+		}else{
+			checkObj.status = true;
+			checkObj.val = val;
+		}
+		break;
 	case 'EMAIL':
 		if (!validator.isEmail(val)) {
 			checkObj.errmsg = 'Invalid email entry.';        
@@ -357,6 +369,15 @@ var checkThis = (type, val) => {
 			checkObj.val = val;
 		}
 		break;
+	case 'JSON':
+		if (validator.isJSON(val)){
+			checkObj.status = true;
+			checkObj.val = val;
+		}else{
+			checkObj.status = false;
+			checkObj.val = '';
+		}
+		break;	
 	default:
 		var str = security.cleanUpStr(val);
 		checkObj.status = true,

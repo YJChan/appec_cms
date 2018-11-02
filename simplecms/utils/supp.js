@@ -41,6 +41,9 @@ const supp = {
 				}
 			});
 		});
+	},
+	isValidUUID: function(val){
+		return security.isUUID(val);
 	}
 };
 

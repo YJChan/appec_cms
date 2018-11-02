@@ -10,7 +10,16 @@ const config = require('../../config/config.json');
 const supp = require('../../utils/supp');
 const _ = require('lodash');
 const PostController = require('../../controllers/post.controller');
-router.use(bodyParser.json());
+router.use(bodyParser.json({
+	json: {
+		limit: '50mb',
+		extended: true
+	},
+	urlencoded: {
+		limit: '50mb',
+		extended: true
+	}
+}));
 
 let fTagParam = () => ({
 	TagID: utils.guid(),
@@ -79,23 +88,18 @@ router.patch('/post-update/:postid', isAuthenticated, PostController.updatePost)
 
 router.patch('/post-view/:postid', PostController.increasePostView);
 
-/** 
- * @param  {string} PostId (p-id)
- * @param  {string} tags (tag)
- * @param  {string} category (cat)
- * @param  {string} publish-date (pdt)
- * @param  {integer} active (a)
- * @param  {integer} visibility (v)
- * @param  {string} UserID (uid)
- * @param  {string} Username (uname)
- */
-router.get('/all', (req, res, next) => {
-	let response = new resp();
-  
-	Post.findAll()
-		.then(oPosts => {
-			res.status(200).send(response.initResp(oPosts));
-		});
-});
+router.delete('/post-del/:postid', isAuthenticated, PostController.deletePost);
+
+router.get('/all', PostController.getAllPost);
+
+router.get('/paginate/:pagenum', PostController.paginatePost);
+
+router.post('/post-category', isAuthenticated, PostController.setPostCategory);
+
+router.delete('/post-category', isAuthenticated, PostController.delPostCategory);
+
+router.post('/post-tag', isAuthenticated, PostController.setPostTag);
+
+router.delete('/post-tag', isAuthenticated, PostController.delPostTag);
 
 module.exports = router;
