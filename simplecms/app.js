@@ -4,7 +4,7 @@ let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 const config = require('./config/config.json');
-//const cors = require('cors')
+//const cors = require('cors');
 let resp = require('./utils/resp');
 
 //web router
@@ -21,6 +21,7 @@ let postApi = require('./routes/api/post');
 let categoryApi = require('./routes/api/category');
 let tagApi = require('./routes/api/tag');
 let imageApi = require('./routes/api/image');
+let userApi = require('./routes/api/user');
 
 let app = express();
 
@@ -52,32 +53,38 @@ app.use('/api/post', postApi);
 app.use('/api/category', categoryApi);
 app.use('/api/tag', tagApi);
 app.use('/api/image', imageApi);
+app.use('/api/user', userApi);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-	next(createError(404));
+app.use(function(req, res, next) {			
+	next(createError(404, 'We couldn\'t find this page.'));
 });
 
 // error handler
 app.use(function(err, req, res, next) {
-	let response = new resp();
-  
+	let response = new resp();	
+	
 	// set locals, only providing error in development
-	if(err.api !== null){
+	if(err.api !== null && err.api !== undefined){		
 		//res.locals.error = req.app.get('env') === 'development' ? err : {};
 		res.locals.message = err.message;    
 		res.locals.error = config.environment === 'development' ? err: {};
     
 		response.initResp(null, {
 			msg: err.message,
-			code: err.code !== undefined? err.code: 401,
+			code: err.code !== undefined? err.code: err.status,
 			reason: err.stack
 		});
-		res.status(401).send(response);
+		res.status(err.status).send(response);
 	}else{
-		//render the error page
+		//render the error page		
 		res.status(err.status || 500);
-		res.render('error');
+		res.render('error', {
+			title: 'Ops, Something wrong.',
+			message: err.message,
+			status: err.status,
+			stack: config.environment === 'development' ? err.stack: {}
+		});
 	}  
 });
 

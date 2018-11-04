@@ -5,7 +5,7 @@
   "development": {
     "config_id": "development",
     "app_name": "Appec CMS",
-    "app_desc": "A simple cms just to ease your blogging experience",
+    "app_desc": "A simple content management system for personal blog",
     "node_port": 3000,
     "json_indentation": 4,
     "db_engine": "",
@@ -38,8 +38,8 @@
       }
     },
     "adminpanel": "18b2822c-d327-4a20-83d1-d027946e0f5e",
-    "expire_time" :{
-      "global" : 3      
+    "expire_time": {
+      "global": 3
     }
   },
   "testing": {
@@ -55,7 +55,7 @@
     "config_id": "production",
     "node_port": 8080,
     "app_name": "Appec CMS",
-    "app_desc": "A simple cms just to ease your blogging experience",
+    "app_desc": "A simple content management system for personal blog",
     "json_indentation": 4,
     "db_engine": "",
     "base_url": "http://localhost:3000/",
@@ -78,7 +78,7 @@
     }
   },
   "adminpanel": "056fba64-127b-401c-91c3-4bc37b7cd5e4",
-  "expire_time" :{
-    "global" : 3      
+  "expire_time": {
+    "global": 3
   }
 }

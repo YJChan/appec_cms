@@ -13,11 +13,19 @@ var readCookie = function (name) {
 	return null;
 };
 
-var unAuthRedirect = function(){
+const unAuthRedirect = function(){
 	var path = window.location.pathname;
 	path = path.split('/');
 	path = path[1];
 	window.location.replace(base_url + path + '/login');
+};
+
+const renderError = function(err){
+	if(err.response.data.error.reason !== undefined)	{
+		alert(err.response.data.error.reason);
+	}else{
+		alert(err.response.data.error.message);
+	}
 };
 
 const http = axios.create({
@@ -95,6 +103,22 @@ const api = {
 			}
 		}
 	},
+	curr_user:{
+		info: {
+			get: {
+				url: 'api/user/me'
+			},
+			post: {
+				url: 'api/user/me'
+			},
+			patch: {
+				url: 'api/user/me'
+			},
+			delete: {
+				url: 'api/user/me'
+			}
+		}
+	},
 	right: {
 		edit: {
 			post: {
@@ -130,6 +154,26 @@ const api = {
 				url: 'api/post/post-del'
 			}
 		}
+	},
+	category: {
+		lists: {
+			get: {
+				url: 'api/category/all'
+			}
+		},
+		save: {
+			patch: {
+				url: 'api/category/'
+			},
+			post: {
+				url: 'api/category'
+			}
+		},
+		remove: {
+			delete: {
+				url: 'api/category/'
+			}
+		}
 	}
 
 };
@@ -154,8 +198,11 @@ var loginControl = new riotx.Store({
 			deleted_status: false,
 			created_admin: false,
 			edit_admin: null,
-			acl: ''
+			acl: '',
+			uid: '',
+			aid: ''
 		},
+		curr_user: '',
 		role: {
 			list: '',
 			list_of_role: [],
@@ -170,6 +217,12 @@ var loginControl = new riotx.Store({
 			single_post: '',
 			updated_post: '',
 			deleted_post: ''
+		},
+		category: {
+			lists: '',
+			save: '',
+			delete: '',
+			selected: []
 		}
 	},
 	actions: {
@@ -670,11 +723,17 @@ var loginControl = new riotx.Store({
 						if (data.content.length > 0) {
 							oPost['content'] = data.content;
 						}
+						if (data.createdBy.length > 0) {
+							oPost['createdBy'] = data.createdBy;
+						}
+						if(data.AuthorID.length > 0){
+							oPost['AuthorID'] = data.AuthorID;
+						}
 						if (! isNaN(data.active)) {
 							oPost['active'] = data.active;
 						}
 						if (! isNaN(data.allowComment)) {
-							oPost['allowComment'] = data.comment;
+							oPost['allowComment'] = data.allowComment;
 						}
 						if (data.publishDate.length > 0) {
 							oPost['publishDate'] = data.publishDate;
@@ -682,17 +741,36 @@ var loginControl = new riotx.Store({
 						if (! isNaN(data.visibility)) {
 							oPost['visibility'] = data.visibility;
 						}
-						http.patch(api.post.singlePost.patch.url + '/' + postId, oPost)
-							.then((response) => {
-								if(response.status === 200){
-									context.commit('savePostMutation', {param:response.data});
-								}else if(response.status === 401){
-									unAuthRedirect();
-								}
-							}).catch((err) => {
-								alert(err.response.data.error.message);
-								console.error('%c ' + err.response.data.error.message, 'color: orange; font-weight: bold;');								
-							});
+
+						//save to existing post
+						if(postId !== undefined && postId !== null && postId !== ''){
+							http.patch(api.post.singlePost.patch.url + '/' + postId, oPost)
+								.then((response) => {
+									if(response.status === 200){
+										context.commit('savePostMutation', {param:response.data});
+									}else if(response.status === 401){
+										unAuthRedirect();
+									}
+								}).catch((err) => {
+									alert(err.response.data.error.message);
+									console.error('%c ' + err.response.data.error.message, 'color: orange; font-weight: bold;');								
+								});
+						}else{
+							//create new post
+							http.post(api.post.singlePost.post.url, oPost)
+								.then((response) => {
+									if (response.status === 200) {
+										context.commit('savePostMutation', {
+											param: response.data
+										});
+									} else if (response.status === 401) {
+										unAuthRedirect();
+									}
+								}).catch((err) => {
+									renderError(err);
+									console.error('%c ' + err.response.data.error.message, 'color: orange; font-weight: bold;');
+								});
+						}
 					}catch(e){
 						console.error(e);
 						return e;
@@ -713,12 +791,70 @@ var loginControl = new riotx.Store({
 								}
 							});
 					}catch(err){
-						alert(err.response.data.error.message);
+						renderError(err);
 						console.error('%c ' + err.response.data.error.message, 'color: orange; font-weight: bold;');
 					}					
 				});
+		},
+		getAuthorInfoAction: function (context, data) {
+			return Promise.resolve()
+				.then(function(){
+					try{
+						var authorId = data.param;
+						http.get(api.curr_user.info.get.url + '/' + authorId)
+							.then((response) => {
+								if(response.status === 200){
+									context.commit('getAuthorInfoMutation', {param: response.data});
+								}else if(response.status === 401){
+									unAuthRedirect();
+								}
+							});					
+					}catch(err){
+						renderError(err);
+						console.error('%c ' + err.response.data.error.message, 'color: orange; font-weight: bold;');
+					}				
+				});
+		},
+		getCategoriesAction: function (context, data) {
+			return Promise.resolve()
+				.then(function(){
+					try{
+						var param = data.param;
+						http.get(api.category.lists.get.url + param)
+							.then((response) => {
+								if(response.status === 200){
+									context.commit('getCategoriesMutation', {param: response.data});
+								}else if(response.status === 401){
+									unAuthRedirect();
+								}
+							});						
+					}catch(err){
+						renderError(err);
+						console.error('%c ' + err.response.data.error.message, 'color: orange; font-weight: bold;');
+					}					
+				});
+		},
+		selectCategoryAction: function(context, data){
+			return Promise.resolve()
+				.then(function() {
+					var selected = data.param;
+					var action = data.action;
+					
+					if(selected !== undefined && selected !== null && selected !== ''){
+						if(action === 'select'){
+							context.commit('selectCategoryMutation', {
+								param: selected,
+								action: 'select'});
+						}else if(action === 'remove'){
+							context.commit('selectCategoryMutation', {
+								param: selected,
+								action: 'remove'});
+						}
+						
+					}
+				});
 		}
-	},
+	},	
 	mutations: {   
 		GlobalNotificationMutation: function (context, data){
 			context.state.notification.global.notify_message = data.message;
@@ -729,6 +865,8 @@ var loginControl = new riotx.Store({
 			context.state.admin.security_phase = data.param.security_phase;
 			context.state.admin.path = data.param.path;
 			context.state.admin.ssid = data.param.ssid;
+			context.state.admin.uid = data.param.uid;
+			context.state.admin.aid = data.param.aid;
 			if(data.param.token != null && data.param.token !== undefined){
 				context.state.admin.token = data.param.token;
 			}
@@ -798,6 +936,25 @@ var loginControl = new riotx.Store({
 		deleteSinglePostMutation: function (context, data) {
 			context.state.post.deleted_post = data.param;
 			return ['SinglePostDeleted'];
+		},
+		getAuthorInfoMutation: function (context, data){
+			context.state.curr_user = data.param;
+			return ['GetAuthourInfo'];
+		},
+		getCategoriesMutation: function(context, data){
+			context.state.category.lists = data.param;
+			return ['CategoriesRetrieved'];
+		},
+		selectCategoryMutation: function(context, data){
+			var action = data.action;
+			var param = data.param;
+			if(action === 'select') {
+				context.state.category.selected.push(data.param);
+			}else if(action === 'remove'){
+				context.state.category.selected.splice(context.state.category.selected.indexOf(param), 1);
+			}
+			
+			return ['CategorySelected'];
 		}
 	},
 	getters: {
@@ -813,6 +970,8 @@ var loginControl = new riotx.Store({
 				token: context.state.admin.token,
 				security_phase: context.state.admin.security_phase,
 				ssid: context.state.admin.ssid,
+				uid: context.state.admin.uid,
+				aid: context.state.admin.aid,
 				path: context.state.admin.path
 			};
 		},
@@ -854,6 +1013,15 @@ var loginControl = new riotx.Store({
 		},
 		deleteSinglePostGetter: function (context) {
 			return context.state.post.deleted_post;
+		},
+		getAuthorInfoGetter: function(context){
+			return context.state.curr_user;
+		},
+		getCategoriesGetter: function(context){
+			return context.state.category.lists;
+		},
+		getSelectedCategoriesGetter: function(context){
+			return context.state.category.selected;
 		}
 	}
 });

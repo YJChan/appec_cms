@@ -2,8 +2,11 @@
   <div class="siimple-form">
     <div class="siimple-field">
       <label class="siimple-label">Title</label><br>
-      <input type="text" class="siimple-input siimple-input--fluid" style="border-bottom: 1px solid #111;border-top: 0;
-        border-left: 0;border-right: 0;border-radius: 0px; background: transparent" ref="inpPostTitle">
+      <input type="text" class="siimple-input siimple-input--fluid sc-input" ref="inpPostTitle">
+    </div>
+    <div class="siimple-field">
+      <label class="siimple-label">Category</label><br>
+      <sc-multi-select ref="selCategories"></sc-multi-select>
     </div>
     <div class="siimple-field">
       <div id="editor">
@@ -31,6 +34,10 @@
       <label class="siimple-label">Publish Date</label>
       <mino-date theme="primary" type="modal" ref="inpDate"></mino-date>
     </div>
+    <div class="siimple-field">
+      <label class="siimple-label">Creator Name</label>
+      <input type="text" ref="inpCreator" class="siimple-input sc-input"  maxlength="100" placeholder="Your name"/>
+    </div>
     <div class="siimple-btn siimple-btn--primary" onclick="{() => saveContent()}">Save</div>
     <div class="siimple-btn siimple-btn--warning" onclick="{() => backToList()}">Back</div>
   </div>
@@ -39,14 +46,20 @@
     .space{
       width: 5%;
       display: inline-block;
-    }            
+    }
+    .sc-input{
+      background:#f3f3f3; 
+      border:1px solid #ccc;
+    }
   </style>
   <script src="../../../mino-ui/tags/mino-date/mino-date.js"></script>
   <script>
     var editor = null;
     var postId = opts.postid !== undefined? opts.postid: '';
     var post = null;
-    var postContent = null;
+    var postContent = null;    
+    var author = null;
+    var categoriesSelected = '';
     var toolbarOptions = [
       [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
       ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
@@ -73,13 +86,14 @@
       placeholder: 'Compose something...',            
     };    
     var mainControl = this.riotx.get('main-control');    
+    this.cat = [{name: 'Something'}, {name:'Tech'}, {name: 'Others'}];
     var self = this;
     this.mixin(minoCookie);
 
     this.on('before-mount', function(){
       if(self.opts.postid !== ''){
         self.getContent(self.opts.postid);        
-      }      
+      }
     });
 
     this.on('mount', function () {
@@ -88,13 +102,29 @@
       editor.getModule('toolbar').addHandler('image', () => {
         self.selectLocalImage();
       });
+      if(self.opts.postid === ''){
+        self.getAuthorInfo();
+      }
+      mainControl.action('getCategoriesAction', {param: 'all'});      
     });
+
+    getAuthorInfo(){
+      var authorId = self.getCookie('aid');
+      if(authorId === undefined || authorId === null || authorId === ''){
+        authorId = self.getCookie('uid');
+      }
+      mainControl.action('getAuthorInfoAction', {param: authorId});
+    }
 
     getContent(id){
       mainControl.action('getPostByIDAction', {param: id});
     }
 
     saveContent(){
+      var creator = self.getCookie('uid');
+      if(creator === undefined || creator === ''){
+        creator = self.getCookie('aid');
+      }      
       var oPost = {
         postId: self.postId,  
         title: self.refs.inpPostTitle.value,
@@ -102,8 +132,12 @@
         active: self.refs.chkActive.checked? 1: 0,
         visibility: self.refs.chkVisible.checked? 1: 0,
         allowComment: self.refs.chkComment.checked? 1: 0,
-        publishDate: self.refs.inpDate.value
+        publishDate: self.refs.inpDate.value,
+        AuthorID: creator,
+        createdBy: self.refs.inpCreator.value,
+        categories: self.categoriesSelected
       }
+      ///console.log(oPost);
       mainControl.action('savePostAction', oPost);      
     }
 
@@ -118,8 +152,9 @@
       this.refs.chkActive.checked = p.active === 1 ? true: false;
       this.refs.chkVisible.checked = p.visibility === 1 ? true: false;
       this.refs.chkComment.checked = p.allowComment === 1 ? true: false;
-      this.refs.inpDate.date = self.formatDate(p.publishDate);      
-      postContent = JSON.parse(p.content);   
+      this.refs.inpDate.date = self.formatDate(p.publishDate);     
+      this.refs.inpCreator.value = p.createdBy; 
+      postContent = JSON.parse(p.content);
       editor.setContents(postContent);
     }
 
@@ -159,8 +194,9 @@
     });
 
     mainControl.change('SinglePostSaved', function(state, c){
-      var singlePost = c.getter('savePostGetter');
+      var singlePost = c.getter('savePostGetter');      
       if(singlePost.success.status){
+        self.postId = singlePost.result.PostID;
         self.notify({
           position: 'bottom-left',
           theme: 'success',
@@ -178,6 +214,59 @@
           message: singlePost.error.message,
           visibile: true
         });
+      }
+    });
+
+    mainControl.change('GetAuthourInfo', function(state, c){
+      var authorInfo = c.getter('getAuthorInfoGetter');      
+      if(authorInfo.success.status){
+        self.author = authorInfo.result;
+        self.refs.inpCreator.value = self.author.AdminName !== undefined? self.author.AdminName: self.author.Username;
+      }else{
+        self.notify({
+          position: 'bottom-left',
+          theme: 'warning',
+          leadstyle: 'note',
+          stay: 3,
+          message: singlePost.error.message,
+          visibile: true
+        });
+      }      
+    });
+
+    mainControl.change('CategoriesRetrieved', function(state, c) {
+      var category = c.getter('getCategoriesGetter');
+      var carArr = [];
+      if(category.success.status){
+        category.result.forEach(function(oCat){
+          carArr.push({id: oCat.CatID, name: oCat.catname});
+        });
+        self.cat = carArr;
+        console.log(self.cat);
+
+        riot.mount('sc-multi-select', {
+          selections: self.cat,
+          selectedFunc : 'selectCategoryAction',
+          setSelectedFunc : 'CategorySelected',
+          getSelectedFunc : 'getSelectedCategoriesGetter'
+        });
+        self.update();
+      }else{
+        self.notify({
+          position: 'bottom-left',
+          theme: 'warning',
+          leadstyle: 'note',
+          stay: 3,
+          message: category.error.message,
+          visibile: true
+        });
+      }
+    });
+
+    mainControl.change('CategorySelected', function(state, c){
+      var category = c.getter('getSelectedCategoriesGetter');
+      if(category.length > 0){
+        self.categoriesSelected = category;
       }
     });
 

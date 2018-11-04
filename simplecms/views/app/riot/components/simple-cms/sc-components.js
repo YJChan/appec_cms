@@ -19,6 +19,8 @@ riot.tag2('sc-login', '<div class="center {theme}" if="{login === false}"> <div 
         if(loginStatus.token !== '' && loginStatus.token !== null){
           self.setCookie('auth_token', loginStatus.token, 1);
           self.setCookie('ssid', loginStatus.ssid, 3);
+          self.setCookie('uid', loginStatus.uid);
+          self.setCookie('aid', loginStatus.aid);
           self.login = true;
           if(loginStatus.security_phase){
             self.security_phase = true;
@@ -415,7 +417,8 @@ var scAdminObserver = function () {
     });
 
 });
-riot.tag2('sc-edit-post', '<div class="siimple-form"> <div class="siimple-field"> <label class="siimple-label">Title</label><br> <input type="text" class="siimple-input siimple-input--fluid" style="border-bottom: 1px solid #111;border-top: 0; border-left: 0;border-right: 0;border-radius: 0px; background: transparent" ref="inpPostTitle"> </div> <div class="siimple-field"> <div id="editor"> </div> </div> <div class="siimple-field"> <label class="siimple-label">Active</label> <div class="siimple-checkbox"> <input type="checkbox" id="chkActive" ref="chkActive"> <label for="chkActive"></label> </div> <div class="space"></div> <label class="siimple-label">Visibility</label> <div class="siimple-checkbox"> <input type="checkbox" id="chkVisible" ref="chkVisible"> <label for="chkVisible"></label> </div> <div class="space"></div> <label class="siimple-label">Allow Comment</label> <div class="siimple-checkbox"> <input type="checkbox" id="chkComment" ref="chkComment"> <label for="chkComment"></label> </div> <div class="space"></div> <label class="siimple-label">Publish Date</label> <mino-date theme="primary" type="modal" ref="inpDate"></mino-date> </div> <div class="siimple-btn siimple-btn--primary" onclick="{() => saveContent()}">Save</div> <div class="siimple-btn siimple-btn--warning" onclick="{() => backToList()}">Back</div> </div> <sc-notify></sc-notify>', 'sc-edit-post .space,[data-is="sc-edit-post"] .space{ width: 5%; display: inline-block; }', '', function(opts) {
+
+riot.tag2('sc-edit-post', '<div class="siimple-form"> <div class="siimple-field"> <label class="siimple-label">Title</label><br> <input type="text" class="siimple-input siimple-input--fluid sc-input" ref="inpPostTitle"> </div> <div class="siimple-field"> <label class="siimple-label">Category</label><br> <sc-multi-select ref="selCategories"></sc-multi-select> </div> <div class="siimple-field"> <div id="editor"> </div> </div> <div class="siimple-field"> <label class="siimple-label">Active</label> <div class="siimple-checkbox"> <input type="checkbox" id="chkActive" ref="chkActive"> <label for="chkActive"></label> </div> <div class="space"></div> <label class="siimple-label">Visibility</label> <div class="siimple-checkbox"> <input type="checkbox" id="chkVisible" ref="chkVisible"> <label for="chkVisible"></label> </div> <div class="space"></div> <label class="siimple-label">Allow Comment</label> <div class="siimple-checkbox"> <input type="checkbox" id="chkComment" ref="chkComment"> <label for="chkComment"></label> </div> <div class="space"></div> <label class="siimple-label">Publish Date</label> <mino-date theme="primary" type="modal" ref="inpDate"></mino-date> </div> <div class="siimple-field"> <label class="siimple-label">Creator Name</label> <input type="text" ref="inpCreator" class="siimple-input sc-input" maxlength="100" placeholder="Your name"> </div> <div class="siimple-btn siimple-btn--primary" onclick="{() => saveContent()}">Save</div> <div class="siimple-btn siimple-btn--warning" onclick="{() => backToList()}">Back</div> </div> <sc-notify></sc-notify>', 'sc-edit-post .space,[data-is="sc-edit-post"] .space{ width: 5%; display: inline-block; } sc-edit-post .sc-input,[data-is="sc-edit-post"] .sc-input{ background:#f3f3f3; border:1px solid #ccc; }', '', function(opts) {
 riot.tag2('mino-date', '<input type="text" ref="{rname}" class="cal {class}" onclick="{() => renderCalendar()}" riot-value="{date}"><br> <div class="{(render || mRender || yRender) && type=== \'modal\' ? \'modal-back\': \'\'}"></div> <div if="{render}" class="{type !== \'modal\'? \'calendar\': \'calendar-modal\'}"> <div class="title-wrapper"> <div class="t-year-title" onclick="{() => monthYearSelection(\'year\')}"> {minodate.year} </div> <div class="month-title" onclick="{() => monthYearSelection(\'month\')}"> {minodate.getMonthName(minodate.month)} </div> <button type="button" class="month-navigator" onclick="{() => minodate.prevMonth()}">&#8249;</button> <button type="button" class="month-navigator" onclick="{() => minodate.nextMonth()}">&#8250;</button> </div> <div> <div class="week-title">S</div> <div class="week-title">M</div> <div class="week-title">T</div> <div class="week-title">W</div> <div class="week-title">T</div> <div class="week-title">F</div> <div class="week-title">S</div> </div> <div class="month-wrapper"> <div class="week-wrapper" each="{week in weeks}"> <mino-week week="{week}" parentname="{rname}" theme="{theme}"></mino-week> </div> </div> <div class="bottom-action"> <div class="action-wrapper" onclick="{() => clearSelection()}"> clear </div> <div class="action-wrapper" onclick="{() => todaySelection()}"> TODAY </div> <div class="action-wrapper" onclick="{() => renderCalendar()}"> close </div> </div> </div> <div if="{mRender}" class="{type !== \'modal\'? \'calendar\': \'calendar-modal\'}" style="overflow: hidden;"> <div class="year-title" onclick="{() => monthYearSelection(\'year\')}">{minodate.year}</div> <div style="display:flex;"> <div class="month-year-selection"> <div class="month-selection" each="{month, m in minodate.getMonthNames()}" onclick="{() => monthSelection(m)}"> {month} </div> </div> </div> <div style="text-align:center;" class="{theme} monthyear-close" onclick="{() => monthYearClose()}">&times; close</div> </div> <div if="{yRender}" class="{type !== \'modal\'? \'calendar\': \'calendar-modal\'}" style="overflow: hidden;"> <div style="display:flex;"> <div class="month-year-selection"> <div class="year-selection" each="{year, y in minodate.getYearSelection(numOfYears)}" onclick="{() => yearSelection(year)}"> {year} </div> </div> </div> <div style="text-align:center;" class="{theme} monthyear-close" onclick="{() => monthYearClose()}">&times; close</div> </div>', 'mino-date,[data-is="mino-date"]{ font-family: \'Lato\', Helvetica, sans-serif; color: #333447; line-height: 1.5; } @media (min-width: 320px) and (max-width: 480px) { mino-date .calendar-modal,[data-is="mino-date"] .calendar-modal{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: 16px; top: 10%; left: 0; width: 90%; box-shadow: 2px 2px 2px 2px #5a5858; } mino-date .calendar,[data-is="mino-date"] .calendar{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: -5px -25px 20px 0px; width: 80%; } mino-date .month-title,[data-is="mino-date"] .month-title{ width: 52%; display: inline-block; text-align:left; font-weight: 600; font-size: x-large; cursor:pointer; } mino-date .t-year-title,[data-is="mino-date"] .t-year-title{ width: 20%; display: inline-block; text-align:center; font-size: large; cursor:pointer; } mino-date .week-title,[data-is="mino-date"] .week-title{ width:11.25%; text-align: center; display:inline-block; padding:1%; } } @media (min-width: 481px) and (max-width: 767px) { mino-date .calendar-modal,[data-is="mino-date"] .calendar-modal{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: 25px; top: 0; left: 6%; width: 45%; box-shadow: 2px 2px 2px 2px #5a5858; } mino-date .calendar,[data-is="mino-date"] .calendar{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: -5px -25px 20px 0px; width: 290px; } mino-date .month-title,[data-is="mino-date"] .month-title{ width: 48%; display: inline-block; text-align:left; font-weight: 600; font-size: x-large; cursor:pointer; border-radius: 0.2em; padding: 1%; } mino-date .t-year-title,[data-is="mino-date"] .t-year-title{ width: 19.5%; display: inline-block; text-align:center; font-size: large; cursor:pointer; border-radius: 0.2em; padding: 1.5%; } mino-date .week-title,[data-is="mino-date"] .week-title{ width:10.5%; text-align: center; display:inline-block; padding:1%; } } @media (min-width: 768px) and (max-width: 1024px) { mino-date .calendar-modal,[data-is="mino-date"] .calendar-modal{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: 25px; top: 0; left: 6%; width: 45%; box-shadow: 2px 2px 2px 2px #5a5858; } mino-date .calendar,[data-is="mino-date"] .calendar{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: -5px -25px 20px 0px; width: 290px; } mino-date .month-title,[data-is="mino-date"] .month-title{ width: 48%; display: inline-block; text-align:left; font-weight: 600; font-size: x-large; cursor:pointer; border-radius: 0.2em; padding: 1%; } mino-date .t-year-title,[data-is="mino-date"] .t-year-title{ width: 19.5%; display: inline-block; text-align:center; font-size: large; cursor:pointer; border-radius: 0.2em; padding: 1.5%; } mino-date .week-title,[data-is="mino-date"] .week-title{ width:11%; text-align: center; display:inline-block; padding:1%; } } @media (min-width: 1025px) and (max-width: 1920px) { mino-date .calendar,[data-is="mino-date"] .calendar{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: -5px -25px 20px 0px; width: 280px; font-size: smaller; } mino-date .calendar-modal,[data-is="mino-date"] .calendar-modal{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: 25px; top: 10%; left: 35%; width: 350px; box-shadow: 2px 2px 2px 2px #5a5858; } mino-date .month-title,[data-is="mino-date"] .month-title{ width: 46%; display: inline-block; text-align:left; font-size: x-large; cursor:pointer; font-weight: 600; padding:2%; border-radius: 0.2em; } mino-date .t-year-title,[data-is="mino-date"] .t-year-title{ width: 19.5%; display: inline-block; text-align:center; font-size: large; cursor:pointer; padding:2%; border-radius: 0.2em; } mino-date .week-title,[data-is="mino-date"] .week-title{ width:11%; text-align: center; display:inline-block; padding:1%; } } mino-date .modal-back,[data-is="mino-date"] .modal-back{ position: fixed; z-index: 0; padding-top: 100px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.4); } mino-date .bottom-action,[data-is="mino-date"] .bottom-action{ width: 100%; padding: 1px; } mino-date .action-wrapper,[data-is="mino-date"] .action-wrapper{ box-sizing: border-box; display: inline-block; width: 32%; padding: 4px; text-decoration: none; color: inherit; border: 0; background: transparent; text-align: center; cursor: pointer; border-radius: 0.15em; } mino-date .action-wrapper:hover,[data-is="mino-date"] .action-wrapper:hover{ background: #ddd; color: #161125; } mino-date input.input-line:focus,[data-is="mino-date"] input.input-line:focus{ outline-width: 0; } mino-date .input-box,[data-is="mino-date"] .input-box{ display: inline; padding: 0.2rem 0.45rem; font-size: 1rem; line-height: 1.5; color: #1D2F3A; background-color: #fff; background-clip: padding-box; border: 1.35px solid #ced4da; border-radius: 0.2rem; transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; margin: 5px; } mino-date .input-line,[data-is="mino-date"] .input-line{ display: inline; padding: 0.2rem 0.45rem; font-size: 1rem; line-height: 1.5; color: #1D2F3A; background-color: #fff; background-clip: padding-box; border: 1.35px solid #364a4c; border-top: 0; border-left: 0; border-right: 0; border-radius: 0.2rem; transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; margin: 5px; border-radius: 0; } mino-date .title-wrapper,[data-is="mino-date"] .title-wrapper{ padding: 1%; } mino-date ::-webkit-scrollbar,[data-is="mino-date"] ::-webkit-scrollbar{ display: none; } mino-date .month-year-selection,[data-is="mino-date"] .month-year-selection{ overflow:scroll; box-sizing: content-box; height:auto; margin:0px 15px; text-align:center; width:100%; padding: 1% display: inline-block; } mino-date .month-selection,[data-is="mino-date"] .month-selection{ height:20px; padding: 10px 15px; display: inline-block; border-radius: 0.2em; cursor: pointer; } mino-date .year-selection,[data-is="mino-date"] .year-selection{ height:20px; padding: 15px 15px; display: inline-block; border-radius: 0.2em; cursor: pointer; margin: 5px; } mino-date .t-year-title:hover,[data-is="mino-date"] .t-year-title:hover{ background-color: #ddd; } mino-date .year-selection:hover,[data-is="mino-date"] .year-selection:hover{ background-color: #ddd; } mino-date .month-title:hover,[data-is="mino-date"] .month-title:hover{ background-color: #ddd; } mino-date .month-selection:hover,[data-is="mino-date"] .month-selection:hover{ background-color: #ddd; } mino-date .year-title,[data-is="mino-date"] .year-title{ font-size: 15.5pt; text-align: center; cursor: pointer; padding: 2%; border-radius: 0.2em; } mino-date .year-title:hover,[data-is="mino-date"] .year-title:hover{ background: #ddd; } mino-date .monthyear-close,[data-is="mino-date"] .monthyear-close{ cursor: pointer } mino-date .display-wrapper,[data-is="mino-date"] .display-wrapper{ text-align: center; } mino-date .month-wrapper,[data-is="mino-date"] .month-wrapper{ display:inline-block; width: 100%; } mino-date .week-wrapper,[data-is="mino-date"] .week-wrapper{ width: 100%; height:auto; display:block; padding: 1%; } mino-date .month-navigator,[data-is="mino-date"] .month-navigator{ width:11%; border-radius: 0.2em; border: 0; font-size: 15.5pt; padding: 0px; cursor: pointer; background-color: #f3f3f3; } mino-date .month-navigator:hover,[data-is="mino-date"] .month-navigator:hover{ background: #ddd; } mino-date .light,[data-is="mino-date"] .light{ background-color: #f4f4f4; color: #1D2F3A; } mino-date .warning,[data-is="mino-date"] .warning{ background-color: #F32260; color: #FCF7FA; } mino-date .success,[data-is="mino-date"] .success{ background-color: #1ECE80; color: #FCF7FA; } mino-date .primary,[data-is="mino-date"] .primary{ background-color: #456990; color: #FCF7FA; } mino-date .dark,[data-is="mino-date"] .dark{ background-color: #323C46; color: #FCF7FA; } mino-date .note,[data-is="mino-date"] .note{ background-color: #FFD011; color: #1D2F3A; } mino-date .default,[data-is="mino-date"] .default{ background-color: #989898; color: #FCF7FA; } mino-date .cal,[data-is="mino-date"] .cal{ background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhRE9DVFlQRSBzdmcgIFBVQkxJQyAnLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4nICAnaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkJz48c3ZnIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDgwIDgwIiBoZWlnaHQ9IjgwcHgiIGlkPSJJY29ucyIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgODAgODAiIHdpZHRoPSI4MHB4IiB4bWw6c3BhY2U9InByZXNlcnZlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48Zz48cGF0aCBkPSJNNjEsMjAuMDQ3aC02VjE1aC01djUuMDQ3SDMwVjE1aC01djUuMDQ3aC01LjkxOWMtMi4yMDksMC00LDEuNzkxLTQsNFY2MWMwLDIuMjA5LDEuNzkxLDQsNCw0SDYxYzIuMjA5LDAsNC0xLjc5MSw0LTQgICBWMjQuMDQ3QzY1LDIxLjgzOCw2My4yMDksMjAuMDQ3LDYxLDIwLjA0N3ogTTYwLDYwSDIwVjM1aDQwVjYweiBNNjAsMzBIMjB2LTVoNDBWMzB6Ii8+PHJlY3QgaGVpZ2h0PSI1IiB3aWR0aD0iNSIgeD0iMzgiIHk9IjQwIi8+PHJlY3QgaGVpZ2h0PSI1IiB3aWR0aD0iNSIgeD0iNDgiIHk9IjQwIi8+PHJlY3QgaGVpZ2h0PSI1IiB3aWR0aD0iNSIgeD0iMzgiIHk9IjUwIi8+PHJlY3QgaGVpZ2h0PSI1IiB3aWR0aD0iNSIgeD0iMjgiIHk9IjUwIi8+PC9nPjwvc3ZnPg==) no-repeat scroll 4.5px 4.5px; background-position: right; background-repeat: no-repeat; background-size: 30px; }', '', function(opts) {
 var minoDateObserver = function () {
   riot.observable(this);
@@ -884,6 +887,8 @@ riot.tag2('mino-week', '<mino-day each="{week}" day="{day}" month="{month}" year
     var postId = opts.postid !== undefined? opts.postid: '';
     var post = null;
     var postContent = null;
+    var author = null;
+    var categoriesSelected = '';
     var toolbarOptions = [
       [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
       ['bold', 'italic', 'underline', 'strike'],
@@ -910,6 +915,7 @@ riot.tag2('mino-week', '<mino-day each="{week}" day="{day}" month="{month}" year
       placeholder: 'Compose something...',
     };
     var mainControl = this.riotx.get('main-control');
+    this.cat = [{name: 'Something'}, {name:'Tech'}, {name: 'Others'}];
     var self = this;
     this.mixin(minoCookie);
 
@@ -925,13 +931,29 @@ riot.tag2('mino-week', '<mino-day each="{week}" day="{day}" month="{month}" year
       editor.getModule('toolbar').addHandler('image', () => {
         self.selectLocalImage();
       });
+      if(self.opts.postid === ''){
+        self.getAuthorInfo();
+      }
+      mainControl.action('getCategoriesAction', {param: 'all'});
     });
+
+    this.getAuthorInfo = function(){
+      var authorId = self.getCookie('aid');
+      if(authorId === undefined || authorId === null || authorId === ''){
+        authorId = self.getCookie('uid');
+      }
+      mainControl.action('getAuthorInfoAction', {param: authorId});
+    }.bind(this)
 
     this.getContent = function(id){
       mainControl.action('getPostByIDAction', {param: id});
     }.bind(this)
 
     this.saveContent = function(){
+      var creator = self.getCookie('uid');
+      if(creator === undefined || creator === ''){
+        creator = self.getCookie('aid');
+      }
       var oPost = {
         postId: self.postId,
         title: self.refs.inpPostTitle.value,
@@ -939,8 +961,12 @@ riot.tag2('mino-week', '<mino-day each="{week}" day="{day}" month="{month}" year
         active: self.refs.chkActive.checked? 1: 0,
         visibility: self.refs.chkVisible.checked? 1: 0,
         allowComment: self.refs.chkComment.checked? 1: 0,
-        publishDate: self.refs.inpDate.value
+        publishDate: self.refs.inpDate.value,
+        AuthorID: creator,
+        createdBy: self.refs.inpCreator.value,
+        categories: self.categoriesSelected
       }
+
       mainControl.action('savePostAction', oPost);
     }.bind(this)
 
@@ -956,6 +982,7 @@ riot.tag2('mino-week', '<mino-day each="{week}" day="{day}" month="{month}" year
       this.refs.chkVisible.checked = p.visibility === 1 ? true: false;
       this.refs.chkComment.checked = p.allowComment === 1 ? true: false;
       this.refs.inpDate.date = self.formatDate(p.publishDate);
+      this.refs.inpCreator.value = p.createdBy;
       postContent = JSON.parse(p.content);
       editor.setContents(postContent);
     }.bind(this)
@@ -998,6 +1025,7 @@ riot.tag2('mino-week', '<mino-day each="{week}" day="{day}" month="{month}" year
     mainControl.change('SinglePostSaved', function(state, c){
       var singlePost = c.getter('savePostGetter');
       if(singlePost.success.status){
+        self.postId = singlePost.result.PostID;
         self.notify({
           position: 'bottom-left',
           theme: 'success',
@@ -1015,6 +1043,59 @@ riot.tag2('mino-week', '<mino-day each="{week}" day="{day}" month="{month}" year
           message: singlePost.error.message,
           visibile: true
         });
+      }
+    });
+
+    mainControl.change('GetAuthourInfo', function(state, c){
+      var authorInfo = c.getter('getAuthorInfoGetter');
+      if(authorInfo.success.status){
+        self.author = authorInfo.result;
+        self.refs.inpCreator.value = self.author.AdminName !== undefined? self.author.AdminName: self.author.Username;
+      }else{
+        self.notify({
+          position: 'bottom-left',
+          theme: 'warning',
+          leadstyle: 'note',
+          stay: 3,
+          message: singlePost.error.message,
+          visibile: true
+        });
+      }
+    });
+
+    mainControl.change('CategoriesRetrieved', function(state, c) {
+      var category = c.getter('getCategoriesGetter');
+      var carArr = [];
+      if(category.success.status){
+        category.result.forEach(function(oCat){
+          carArr.push({id: oCat.CatID, name: oCat.catname});
+        });
+        self.cat = carArr;
+        console.log(self.cat);
+
+        riot.mount('sc-multi-select', {
+          selections: self.cat,
+          selectedFunc : 'selectCategoryAction',
+          setSelectedFunc : 'CategorySelected',
+          getSelectedFunc : 'getSelectedCategoriesGetter'
+        });
+        self.update();
+      }else{
+        self.notify({
+          position: 'bottom-left',
+          theme: 'warning',
+          leadstyle: 'note',
+          stay: 3,
+          message: category.error.message,
+          visibile: true
+        });
+      }
+    });
+
+    mainControl.change('CategorySelected', function(state, c){
+      var category = c.getter('getSelectedCategoriesGetter');
+      if(category.length > 0){
+        self.categoriesSelected = category;
       }
     });
 
@@ -1137,13 +1218,14 @@ riot.tag2('sc-list-post', '<div class="siimple-content siimple-content--fluid"> 
     }.bind(this)
 
 });
-riot.tag2('sc-manage-post', '<div class="siimple-alert siimple-alert--warning" if="{acl.post === undefined || acl.post === null}"> You are not allow to access this module! </div> <div class="simple-grid" if="{acl.post.acl > 4}"> <div class="simple-grid-row"> <div class="siimple--display-block primary sc-title"> Manage Post </div> <div class="siimple--display-block siimple--bg-light sc-panel"> <div class="siimple-btn siimple-btn--navy {action === \'edit\'? \'siimple-btn--disabled\': \'\'}" if="{acl.post.acl >= 7}" onclick="{() => createPost()}">Create</div> <div class="siimple-btn siimple-btn--success siimple--float-right {action === \'edit\'? \'siimple-btn--disabled\': \'\'}" if="{acl.post.acl >= 4}" onclick="{() => refreshPost()}">Refresh</div> </div> </div> <div if="{isLoading}"> <div class="siimple-spinner siimple-spinner--teal"></div> </div> <sc-list-post if="{list}"></sc-list-post> <sc-edit-post if="{edit}" postid="{post_id}"></sc-edit-post> <div>', 'sc-manage-post .sc-title,[data-is="sc-manage-post"] .sc-title{ padding: 5px; border-radius: 3px 3px 0px 0px; margin: -15px -15.5px 15px -15.5px } sc-manage-post .sc-panel,[data-is="sc-manage-post"] .sc-panel{ padding: 10px; margin: -15px -15px 20px -15px; }', '', function(opts) {
+riot.tag2('sc-manage-post', '<div class="siimple-alert siimple-alert--warning" if="{acl.post === undefined || acl.post === null}"> You are not allow to access this module! </div> <div class="simple-grid" if="{acl.post.acl > 4}"> <div class="simple-grid-row"> <div class="siimple--display-block primary sc-title"> {title} </div> <div class="siimple--display-block siimple--bg-light sc-panel" if="{list}"> <div class="siimple-btn siimple-btn--navy {action === \'edit\'? \'siimple-btn--disabled\': \'\'}" if="{acl.post.acl >= 7}" onclick="{() => createPost()}">Create</div> <sc-search-post></sc-search-post> </div> </div> <div if="{isLoading}"> <div class="siimple-spinner siimple-spinner--teal"></div> </div> <sc-list-post if="{list}"></sc-list-post> <sc-edit-post if="{edit}" postid="{post_id}"></sc-edit-post> <div>', 'sc-manage-post .sc-title,[data-is="sc-manage-post"] .sc-title{ padding: 5px; border-radius: 3px 3px 0px 0px; margin: -15px -15.5px 15px -15.5px } sc-manage-post .sc-panel,[data-is="sc-manage-post"] .sc-panel{ padding: 10px; margin: -15px -15px 20px -15px; }', '', function(opts) {
     this.list = true;
     this.edit = false;
     this.action = 'create';
     this.post_id = '';
     this.isLoading = false;
     this.acl = opts.acl;
+    this.title = 'Manage Post';
     var mainControl = this.riotx.get('main-control');
     var self = this;
 
@@ -1166,18 +1248,17 @@ riot.tag2('sc-manage-post', '<div class="siimple-alert siimple-alert--warning" i
         this.list = true;
         this.edit = false;
         this.post_id = '';
+        this.title = 'Manage Post';
         this.update();
       }else{
         this.list = false;
         this.edit = true;
         this.post_id = id;
+        this.title = 'Edit Post';
         this.update();
       }
     }.bind(this)
 
-    this.updateList = function(){
-
-    }.bind(this)
 });
 riot.tag2('sc-post-card', '<div class="siimple-card sc-card"> <div class="siimple-card-header"> <div class="siimple-card-title">{post.title}</div> </div> <div class="siimple-card-body"> <p> {displayContent(post.content)} </p> </div> <div class="siimple-card-footer"> <div class="siimple--clearfix"> <div class="siimple--float-left"> <div class="author">author</div> <div class="siimple--bg-primary siimple--color-white author"> {displayAuthor()} </div> </div> <div class="siimple--float-right"> views: {post.views} </div> </div> <div> <small>created {displayDate(post.createdAt)} </small> </div> <div> <div class="siimple--clearfix"> <div class="siimple-btn siimple-btn--primary siimple--width-25" onclick="{() => viewPost(post.PostID)}">View </div> <div class="siimple-btn siimple-btn--navy siimple--width-25" onclick="{() => editPost(post.PostID)}"> Edit </div> <div class="siimple-btn siimple-btn--error siimple--width-25" onclick="{() => deletePost(post.PostID)}"> Delete </div> </div> </div> </div> </div> <sc-notify></sc-notify>', 'sc-post-card .sc-card,[data-is="sc-post-card"] .sc-card{ display: inline-block !important; height: auto; margin: 10px 10px 10px 10px !important; border: 1px solid #ddd; max-width: 420px; } sc-post-card .author,[data-is="sc-post-card"] .author{ display: inline-block; padding: 0px 5px 0px 5px; border-radius: 4px; }', '', function(opts) {
     this.post = opts.post;
@@ -1199,7 +1280,7 @@ riot.tag2('sc-post-card', '<div class="siimple-card sc-card"> <div class="siimpl
     }.bind(this)
 
     this.displayAuthor = function(){
-      return self.post.UserPost !== null? self.post.UserPost.Username : '';
+      return self.post.createdBy !== null? self.post.createdBy : '';
     }.bind(this)
 
     this.viewPost = function(postId){
@@ -1255,6 +1336,10 @@ riot.tag2('sc-post-card', '<div class="siimple-card sc-card"> <div class="siimpl
     });
 
 });
+riot.tag2('sc-search-post', '<form> <div class="siimple-field sc-field"> <input type="text" class="sc-search siimple-input" placeholder="title, content, category, ..."> <div class="siimple-btn siimple-btn--green sc-search-btn"><box-icon name="search"></box-icon></div> </div> </form>', 'sc-search-post,[data-is="sc-search-post"]{ display: inline-block; float: right; } sc-search-post .sc-search,[data-is="sc-search-post"] .sc-search{ width: 15em; background: #f3f3f3; border-radius: 4px 0px 0px 4px; height: 34px; } sc-search-post .sc-field,[data-is="sc-search-post"] .sc-field{ display: flex; } sc-search-post .sc-search-btn,[data-is="sc-search-post"] .sc-search-btn{ line-height: 3; border-radius: 0px 4px 4px 0px; }', '', function(opts) {
+});
+
+
 riot.tag2('sc-edit-role', '<div class="simple-grid"> <div class="simple-grid-row"> <div class="siimple--display-block primary sc-content-title"> {act === \'create\'? \'Create\': \'Edit\'} Role </div> <div class="siimple--display-block siimple--bg-white sc-content-panel"> <div class="siimple-form"> <div class="siimple-form-title" if="{act===\'create\'}">Create a new Role</div> <div class="siimple-form-title" if="{act===\'edit\'}">Edit Role - {edit_role.Rolename}</div> <div class="siimple-form-detail">Please fill up the form to complete the form.</div> <div class="siimple-form-field"> <label class="siimple-label input-label">Role Name </label> <input type="text" ref="inpRoleName" class="siimple-input"> <div class="space"></div> <label class="siimple-label">Active</label> <div class="siimple-checkbox"> <input type="checkbox" ref="activeChk" id="activeChk"> <label for="activeChk"></label> </div> <div class="sc-block"></div> <div class="siimple-form-field"> <div class="siimple-btn siimple-btn--blue" onclick="{() => saveRole()}" if="{role_id !== \'\'}">Save</div> <div class="siimple-btn siimple-btn--blue" onclick="{() => createRole()}" if="{role_id === \'\'}">Create</div> &nbsp; <div class="siimple-btn siimple-btn--red" onclick="{() => cancelCreate()}">Cancel</div> </div> </div> </div> </div> </div> </div> <div class="siimple-tip siimple-tip--primary sc-tip"> Please select the role access right below. The updated access right will be reflect on the user next login. </div> <div class="simple-grid"> <div class="simple-grid-row"> <div class="siimple--display-block primary sc-content-title"> {act === \'create\'? \'Create\': \'Edit\'} Right - {edit_role.Rolename} </div> <div class="siimple--display-block siimple--bg-white sc-content-panel"> <div class="siimple-form"> <div class="siimple-form-field"> <div class="siimple-table"> <div class="siimple-table-header"> <div class="siimple-table-row"> <div class="siimple-table-cell">Modules</div> <div class="siimple-table-cell">Acess Level</div> </div> </div> <div class="siimple-table-body"> <div class="siimple-table-row"> <div class="siimple-table-cell">Admin</div> <div class="siimple-table-cell"> <select class="siimple-select" ref="adminRoleSel" onchange="{() => onChangeRight(\'admin\')}"> <option value="0">No Right</option> <option value="4">Read</option> <option value="6">Read & Write</option> <option value="7">Read & Write & Delete</option> </select> </div> </div> <div class="siimple-table-row"> <div class="siimple-table-cell">Page</div> <div class="siimple-table-cell"> <select class="siimple-select" ref="pageRoleSel" onchange="{() => onChangeRight(\'page\')}"> <option value="0">No Right</option> <option value="4">Read</option> <option value="6">Read & Write</option> <option value="7">Read & Write & Delete</option> </select> </div> </div> <div class="siimple-table-row"> <div class="siimple-table-cell">Post</div> <div class="siimple-table-cell"> <select class="siimple-select" ref="postRoleSel" onchange="{() => onChangeRight(\'post\')}"> <option value="0">No Right</option> <option value="4">Read</option> <option value="6">Read & Write</option> <option value="7">Read & Write & Delete</option> </select> </div> </div> <div class="siimple-table-row"> <div class="siimple-table-cell">Right</div> <div class="siimple-table-cell"> <select class="siimple-select" ref="rightRoleSel" onchange="{() => onChangeRight(\'right\')}"> <option value="0">No Right</option> <option value="4">Read</option> <option value="6">Read & Write</option> <option value="7">Read & Write & Delete</option> </select> </div> </div> <div class="siimple-table-row"> <div class="siimple-table-cell">Role</div> <div class="siimple-table-cell"> <select class="siimple-select" ref="roleRoleSel" onchange="{() => onChangeRight(\'role\')}"> <option value="0">No Right</option> <option value="4">Read</option> <option value="6">Read & Write</option> <option value="7">Read & Write & Delete</option> </select> </div> </div> <div class="siimple-table-row"> <div class="siimple-table-cell">User</div> <div class="siimple-table-cell"> <select class="siimple-select" ref="userRoleSel" onchange="{() => onChangeRight(\'user\')}"> <option value="0">No Right</option> <option value="4">Read</option> <option value="6">Read & Write</option> <option value="7">Read & Write & Delete</option> </select> </div> </div> </div> </div> </div> </div> </div> </div> </div> <div> <sc-notify></sc-notify>', 'sc-edit-role .sc-block,[data-is="sc-edit-role"] .sc-block{ margin:10px; height:5px; } sc-edit-role .space,[data-is="sc-edit-role"] .space{ width: 5%; display: inline-block; } sc-edit-role .close-btn,[data-is="sc-edit-role"] .close-btn{ margin: 5px 4px; } sc-edit-role .input-label,[data-is="sc-edit-role"] .input-label{ width: 15%; } sc-edit-role .label-btn,[data-is="sc-edit-role"] .label-btn{ height: 25px; width: 5%; text-align: center; line-height: 2.5; } sc-edit-role .sc-content-title,[data-is="sc-edit-role"] .sc-content-title{ padding: 5px; border-radius: 3px 3px 0px 0px; margin: 15px 0px 0px 0px; } sc-edit-role .sc-content-panel,[data-is="sc-edit-role"] .sc-content-panel{ padding: 15px; } sc-edit-role .sc-tip,[data-is="sc-edit-role"] .sc-tip{ margin: 15px 0px 15px 0px; }', '', function(opts) {
 var scAdminObserver = function () {
   riot.observable(this);
@@ -1861,6 +1946,69 @@ var scAdminObserver = function () {
       this.getRoleList();
       this.update();
     }.bind(this)
+
+});
+riot.tag2('sc-multi-select', '<div class="multi-select"> <ul class="selected"> <li each="{selected}"> <div class="selected-container">{name}<a onclick="{parent.remove}">x</a> </div> </li> <li class="selector" onclick="{show}">&nbsp;</li> </ul> <ul class="selections" show="{showing}"> <li each="{selections}"> <div onclick="{parent.select}">{name}</div> </li> </ul> </div>', 'sc-multi-select .selected,[data-is="sc-multi-select"] .selected{ min-height: 30px; min-width: 200px; border: 1px solid black; } sc-multi-select .multi-select ul,[data-is="sc-multi-select"] .multi-select ul{ list-style-type: none; padding: 0; margin-left: 0; border: 1px solid #ccc; font-weight: bold; border-radius: 0px 0px 4px 4px; } sc-multi-select .selected,[data-is="sc-multi-select"] .selected{ padding: 2px; margin: 0 0 -1px; width: 100%; display: table; table-layout: fixed; } sc-multi-select .selected li div,[data-is="sc-multi-select"] .selected li div{ border: 1px solid #bbb; padding: 5px; margin: 4px; cursor: pointer; } sc-multi-select .selected li div,[data-is="sc-multi-select"] .selected li div,sc-multi-select .selected li a,[data-is="sc-multi-select"] .selected li a{ float: left; margin-right: 5px; } sc-multi-select .selected li a,[data-is="sc-multi-select"] .selected li a{ text-decoration: none; color: darkblue; border: 1px solid darkblue; background-color: lightslategrey; padding: 0 5px; border-radius: 4px; } sc-multi-select .selector,[data-is="sc-multi-select"] .selector{ width: 100%; border: none; height: 30px; } sc-multi-select .selections,[data-is="sc-multi-select"] .selections{ border: 1px solid #ccc; margin-top: 0px; position: absolute; width: 400px; z-index: 10; background: #f4f4f4; border-radius: 0px 0px 4px 4px; line-height: 1.5; } sc-multi-select .selections li,[data-is="sc-multi-select"] .selections li{ padding: 5px; } sc-multi-select .selections li:hover,[data-is="sc-multi-select"] .selections li:hover{ background-color: #ccccff; cursor: pointer; } sc-multi-select .selected-container,[data-is="sc-multi-select"] .selected-container{ border-radius: 4px; } sc-multi-select label,[data-is="sc-multi-select"] label{ margin-top: 8px; } sc-multi-select .show,[data-is="sc-multi-select"] .show{ display: block; } sc-multi-select .hide,[data-is="sc-multi-select"] .hide{ display: none; }', '', function(opts) {
+
+    this.selections = opts.selections !== undefined? opts.selections.sort(function(a,b) {return a.name > b.name}) : '';
+    this.selected = [];
+    this.showing = false;
+    this.selectedFunc = opts.selectedFunc !== undefined? opts.selectedFunc: '';
+    this.setSelectedFunc = opts.setSelectedFunc !== undefined? opts.setSelectedFunc: '';
+    this.getSelectedFunc = opts.getSelectedFunc !== undefined? opts.getSelectedFunc: '';
+    var mainControl = this.riotx.get('main-control');
+    var self = this;
+
+    this.remove = function(e){
+      this._swap(e.item, this.selected, this.selections);
+      mainControl.action(this.selectedFunc, {param: e.item.id, action: 'remove'});
+      console.log(this.selected);
+    }.bind(this)
+
+    this.select = function(e){
+      this._swap(e.item, this.selections, this.selected);
+      mainControl.action(this.selectedFunc, {param: e.item.id, action: 'select'});
+      console.log(this.selected);
+    }.bind(this)
+
+    this.show = function(e){
+      this.showing = !this.showing;
+    }.bind(this)
+
+    this._swap = function(item, src, dest){
+      dest.push(item);
+      src.splice(src.indexOf(item), 1);
+      this.showing = false;
+    }.bind(this)
+
+    this.getSelected = function(type = 'string'){
+      var selectedCat = '';
+      if(type === 'string'){
+        for(var n in this.selected){
+          if(selectedStr.length > 0){
+            selectedCat += ', ' + this.selected[n];
+          }else{
+            selectedCat = this.selected[n];
+          }
+        }
+      }else{
+        selectedCat = this.selected;
+      }
+      return selectedCat;
+    }.bind(this)
+
+    this.setSelected = function(items){
+      for(var n in items){
+        this._swap(items[n], this.selections, this.selected);
+      }
+    }.bind(this)
+
+    mainControl.change(self.setSelectedFunc, function(state, c){
+      var selArray = c.getter(self.getSelectedFunc);
+      if(selArray.length > 0){
+        self.selected = selArray;
+      }
+    });
 
 });
 riot.tag2('sc-navbar', '<div class="siimple-navbar siimple-navbar--extra-large siimple-navbar--dark"> <div class="siimple-navbar-title">Admin panel</div> <div class="siimple--float-right"> <div class="siimple-navbar-item">Profile</div> <div class="siimple-navbar-item" onclick="{() => logout()}">Logout</div> </div> </div>', '', '', function(opts) {

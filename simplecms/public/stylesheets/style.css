@@ -659,3 +659,61 @@ input.input-line:focus {
   background-color: #ccc;
   border-radius: 0.25em;
 }
+
+.container {
+  padding: 0 5em;
+  margin: 0 auto;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.ball {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: rgb(207, 12, 12);
+  margin: 0 auto;
+  animation: bounce 0.5s;
+  animation-direction: alternate;
+  animation-timing-function: cubic-bezier(.5, 0.05, 1, .5);
+  animation-iteration-count: infinite;
+}
+
+@keyframes bounce {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(0, 80px, 0);
+  }
+}
+
+/* Prefix Support */
+ball {
+  -webkit-animation-name: bounce;
+  -webkit-animation-duration: 0.8s;
+  -webkit-animation-direction: alternate;
+  -webkit-animation-timing-function: cubic-bezier(.5, 0.05, 1, .5);
+  -webkit-animation-iteration-count: infinite;
+}
+
+@-webkit-keyframes bounce {
+  from {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    -webkit-transform: translate3d(0, 80px, 0);
+    transform: translate3d(0, 80px, 0);
+  }
+}
+
+.err-stack {
+  margin-top: 80px;
+  font-size: 0.8em;
+  
+}

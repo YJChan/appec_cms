@@ -76,7 +76,7 @@
     }
 
     displayAuthor(){
-      return self.post.UserPost !== null? self.post.UserPost.Username : '';
+      return self.post.createdBy !== null? self.post.createdBy : '';
     }
 
     viewPost(postId){

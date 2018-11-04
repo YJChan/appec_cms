@@ -5,6 +5,7 @@ const security = require('../utils/security');
 var resp = require('../utils/resp');
 const supp = require('../utils/supp');
 const {convertDeltaToHtml} = require('node-quill-converter');
+const config = require('./../config/config.json');
 
 /**
  * Create new Post
@@ -365,7 +366,7 @@ exports.paginatePost = async (req, res) => {
 
 
 /**Web Route */
-exports.webGetPost = async (req, res) => {
+exports.webGetPost = async (req, res, next) => {
 	let oPostM = new PostModel();
 	let oParam = {
 		PostID : '',
@@ -381,9 +382,20 @@ exports.webGetPost = async (req, res) => {
 	}
 
 	let oPostResult = await oPostM.webGetPost(oParam);
+	if(oPostResult !== null){
+		let jsonContent = JSON.parse(oPostResult.content);
+		let html = convertDeltaToHtml(jsonContent);
+		oPostResult.content = html;
+		res.render('../views/app/web/post/web-post', {
+			post: oPostResult,
+			blog: {
+				brand_title: config[config.environment].app_name,
+				brand_tagline: config[config.environment].app_desc,
+			}
+		});		
+	}else{
+		res.status(404);
+		next();
+	}
 	
-	let jsonContent = JSON.parse(oPostResult.content);	
-	let html = convertDeltaToHtml(jsonContent);	
-	
-	res.render('../views/app/web/web-post', {data: html});
 };

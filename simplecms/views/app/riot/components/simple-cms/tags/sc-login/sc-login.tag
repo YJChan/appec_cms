@@ -94,6 +94,8 @@
         if(loginStatus.token !== '' && loginStatus.token !== null){
           self.setCookie('auth_token', loginStatus.token, 1);
           self.setCookie('ssid', loginStatus.ssid, 3);
+          self.setCookie('uid', loginStatus.uid);
+          self.setCookie('aid', loginStatus.aid);
           self.login = true;
           if(loginStatus.security_phase){
             self.security_phase = true;

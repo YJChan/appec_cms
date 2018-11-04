@@ -489,12 +489,13 @@ router.post('/login', (req, res, next) => {
 										token: jwtoken,
 										security_phase: security_phase,
 										ssid: session.SessionID,
+										aid: session.loginUser,
+										uid: '',
 										path: config[config.environment].adminpanel
 									});
 
 									res.status(200).send(response);              
-								}).catch(e => {
-									console.log(e);									
+								}).catch(e => {															
 									res.status(500).send(response.initResp(null, {
 										message: 'Unable to create session',
 										code: 500,

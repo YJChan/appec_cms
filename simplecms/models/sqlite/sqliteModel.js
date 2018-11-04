@@ -305,6 +305,10 @@ const Post = db.define('Post', {
 	},
 	createdBy: {
 		type: Sequelize.TEXT    
+	},
+	AuthorID: {
+		type: Sequelize.TEXT,
+		allowNull: true
 	}
 });
 
@@ -718,25 +722,47 @@ Right.belongsTo(Role, {
 //   foreignKey: 'RightID',
 //   as: 'SpecialRight'
 // });
+// Admin.hasMany(Post, {
+// 	foreignKey: 'AdminID',
+// 	as: 'AdminPost'
+// });
+
+// Post.belongsTo(Admin, {
+// 	foreignKey: 'AdminID',
+// 	constraints: false,
+// 	as: 'AdminPost'
+// });
+
+// User.hasMany(Post, {
+// 	foreignKey: 'UserID',
+// 	as: 'UserPost'
+// });
+
+// Post.belongsTo(User, {
+// 	foreignKey: 'UserID',
+// 	constraints: false,
+// 	as:'UserPost'
+// });
+
 Admin.hasMany(Post, {
-	foreignKey: 'AdminID',
-	as: 'AdminPost'
+	foreignKey: 'AuthorID',
+	as:'AdminPost'
 });
 
 Post.belongsTo(Admin, {
-	foreignKey: 'AdminID',
-	constraints: false,
+	foreignKey: 'AuthorID',
+	constraints: true,
 	as: 'AdminPost'
 });
 
 User.hasMany(Post, {
-	foreignKey: 'UserID',
+	foreignKey: 'AuthorID',
 	as: 'UserPost'
 });
 
 Post.belongsTo(User, {
-	foreignKey: 'UserID',
-	constraints: false,
+	foreignKey: 'AuthorID',
+	constraints: true,
 	as:'UserPost'
 });
 
@@ -771,9 +797,15 @@ Post.belongsTo(User, {
 if(config.environment === 'development' && config.dbChange){
 	//db.sync({alter: true});
 	//Post.sync({alter:true});
-	Image.sync({
+	Admin.sync({
 		alter: true
 	});
+	User.sync({
+		alter: true
+	});
+	Post.sync({
+		alter: true
+	});	
 }
 
 module.exports = {

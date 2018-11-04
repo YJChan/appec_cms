@@ -5,15 +5,16 @@
   <div class="simple-grid" if={acl.post.acl > 4}>
     <div class="simple-grid-row">
       <div class="siimple--display-block primary sc-title">
-        Manage Post
+        { title }
       </div>
-      <div class="siimple--display-block siimple--bg-light sc-panel">
+      <div class="siimple--display-block siimple--bg-light sc-panel" if={list}>
         <div class="siimple-btn siimple-btn--navy {action === 'edit'? 'siimple-btn--disabled': ''}"
           if={acl.post.acl >= 7}
           onclick="{() => createPost()}">Create</div>        
-        <div class="siimple-btn siimple-btn--success siimple--float-right {action === 'edit'? 'siimple-btn--disabled': ''}" 
+        <!--  <div class="siimple-btn siimple-btn--success siimple--float-right {action === 'edit'? 'siimple-btn--disabled': ''}" 
           if={acl.post.acl >= 4}
-          onclick="{() => refreshPost()}">Refresh</div>
+          onclick="{() => refreshPost()}">Refresh</div>  -->
+        <sc-search-post></sc-search-post>
       </div>
     </div>
     <div if={isLoading}>
@@ -39,7 +40,8 @@
     this.action = 'create';
     this.post_id = '';
     this.isLoading = false;
-    this.acl = opts.acl;    
+    this.acl = opts.acl;
+    this.title = 'Manage Post';
     var mainControl = this.riotx.get('main-control');
     var self = this;
 
@@ -62,17 +64,16 @@
         this.list = true;
         this.edit = false;
         this.post_id = '';        
+        this.title = 'Manage Post';
         this.update();        
       }else{
         this.list = false;
         this.edit = true;
-        this.post_id = id;        
+        this.post_id = id;
+        this.title = 'Edit Post';
         this.update();
       }
     }
-
-    updateList(){
-      
-    }    
+    
   </script>
 </sc-manage-post>

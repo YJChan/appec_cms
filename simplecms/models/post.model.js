@@ -43,11 +43,11 @@ class PostModel{
 				where: oPost,
 				include: [{
 					model: User,
-					as: 'UserPost',
+					as: 'UserPost',					
 					attributes: ['Username', 'email']
 				},{
 					model: Admin,
-					as: 'AdminPost',
+					as: 'AdminPost',					
 					attributes: ['AdminName', 'AdminEmail']
 				}]			
 			}).then(oPostGet => {
@@ -208,7 +208,11 @@ class PostModel{
 					model: User,
 					as: 'UserPost',
 					attributes: ['Username', 'email']
-				}]
+				}, {
+					model: Admin,
+					as: 'AdminPost',
+					attributes: ['AdminName', 'AdminEmail']
+				}]				
 			}).then(oPosts => {
 				resolve(oPosts);
 			}).catch(err => {
@@ -460,11 +464,8 @@ class PostModel{
 			break;
 		case 'CREATEDBY':
 			isExist = true;
-			break;
-		case 'USERID':
-			isExist = true;
-			break;
-		case 'ADMINID':
+			break;		
+		case 'AUTHORID':
 			isExist = true;
 			break;
 		default:
@@ -516,7 +517,7 @@ class PostModel{
 			},
 			metaTag: {
 				val: '',
-				type: 'empty',
+				type: 'NULLABLE',
 				check: true,
 				exclude: false
 			},
@@ -525,16 +526,10 @@ class PostModel{
 				type: 'NULLABLE',
 				check: true,
 				exclude: false
-			},
-			UserID: {
+			},			
+			AuthorID: {
 				val: '',
-				type: 'uuid',
-				check: true,
-				exclude: false
-			},
-			AdminID: {
-				val: '',
-				type: 'uuid',
+				type: 'NULLABLE',
 				check: true,
 				exclude: false
 			}

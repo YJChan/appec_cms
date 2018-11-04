@@ -10,46 +10,16 @@ const config = require('../../config/config.json');
 const supp = require('../../utils/supp');
 const _ = require('lodash');
 const PostController = require('../../controllers/post.controller');
-router.use(bodyParser.json({
-	json: {
-		limit: '50mb',
-		extended: true
-	},
-	urlencoded: {
-		limit: '50mb',
-		extended: true
-	}
-}));
-
-let fTagParam = () => ({
-	TagID: utils.guid(),
-
-	tagname: {
-		val: '',
-		type: 'empty',
-		check: true
-	}
-});
-
-let fPostImgParam = () => ({
-	ImageID: utils.guid(),
-	inDb: 1,
-	fileType: '',
-	fileSize: 0,
-	binaryFile: '',
-	filePath: ''
-});
-
-let fPostCategoryParam = () => ({
-	CatID: utils.guid(),
-
-	catname: {
-		val: '',
-		type: 'empty',
-		check: true
-	}
-});
-
+// router.use(bodyParser.json({
+// 	json: {
+// 		limit: '50mb',
+// 		extended: true
+// 	},
+// 	urlencoded: {
+// 		limit: '50mb',
+// 		extended: true
+// 	}
+// }));
 let isAuthenticated = (req, res, next) => {
 	const response = new resp();
 	let token = req.get('Authorization') !== null || req.get('Authorization') !== undefined ? req.get('Authorization') : '';

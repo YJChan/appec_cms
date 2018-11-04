@@ -266,15 +266,20 @@ var checkThis = (type, val) => {
        
 		break;
 	case 'UUID':
-		var strArr = val.split('-');
-		var prefixLen = strArr[0].length;
-		var uuidStr = val.substring(prefixLen, val.length);
-		if(! validator.isUUID(uuidStr)){
-			checkObj.errmsg = 'Invalid Object ID.';
-			checkObj.status - false;
-		}else{
+		if(validator.isUUID(val)){
 			checkObj.status = true;
 			checkObj.val = val;
+		}else{
+			var strArr = val.split('-');
+			var prefixLen = strArr[0].length + 1;
+			var uuidStr = val.substring(prefixLen, val.length);
+			if(! validator.isUUID(uuidStr)){
+				checkObj.errmsg = 'Invalid Object ID.';
+				checkObj.status - false;
+			}else{
+				checkObj.status = true;
+				checkObj.val = val;
+			}
 		}
 		break;
 	case 'EMAIL':

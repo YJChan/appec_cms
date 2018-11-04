@@ -1,14 +1,14 @@
 function resp(){
   this.error = {
     message: '',
-    code: '000',
+    code: 000,
     reason: 'Nothing',
     status: false
   };
   this.success = {
     status: true,
     message: '',
-    code: '200'
+    code: 200
   }
   this.result = '';    
   this.initResp = function(resultObj, err = null, suc= null){
@@ -17,6 +17,8 @@ function resp(){
       this.error.code = err.code;
       this.error.reason = err.stack;
       this.error.status = err.status;
+      this.success.status = false;
+      this.success.message = err.msg;
     }else{
       this.success.message = 'Request successfully processed';
       this.success.status = true;
