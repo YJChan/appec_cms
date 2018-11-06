@@ -26,10 +26,10 @@
       </div>
       <div>
         <div class="siimple--clearfix">          
-            <div class="siimple-btn siimple-btn--primary siimple--width-25"
+            <div class="siimple-btn siimple-btn--grey siimple--width-25"
               onclick="{() => viewPost(post.PostID)}">View
             </div>            
-            <div class="siimple-btn siimple-btn--navy siimple--width-25"
+            <div class="siimple-btn siimple-btn--yellow siimple--width-25"
               onclick="{() => editPost(post.PostID)}">
               Edit
             </div>
@@ -60,14 +60,23 @@
     this.post = opts.post;
     var self = this;
     var mainControl = this.riotx.get('main-control');
-
+    var baseUrl = '';
     this.on('mount', function(){
 
     });
 
     displayContent(content){
-      var postContent = JSON.parse(content);
-      return postContent.ops[0].insert.substring(0, 10);
+      var postContent = JSON.parse(content);    
+      content = '';
+      for(var r = 0; r < 4; r++){
+        if(postContent.ops[r] !== undefined){
+          if(typeof(postContent.ops[r].insert) !== 'object') {
+            content += postContent.ops[r].insert + '\n';  
+          }      
+        }
+      }
+
+      return content.substring(0, 300) + '...';
     }
 
     displayDate(dte){
@@ -79,8 +88,10 @@
       return self.post.createdBy !== null? self.post.createdBy : '';
     }
 
-    viewPost(postId){
-      window.open('http://localhost:3000/post/' + postId, '_blank');
+    viewPost(postId){      
+      self.baseUrl = mainControl.getter('baseURLGetter');
+      console.log(self.baseUrl);
+      window.open(self.baseUrl + 'post/' + postId, '_blank');
     }
 
     editPost(postId, backToList = false){
@@ -128,7 +139,7 @@
           visible: true
         });   
       }                  
-      self.parent.updateList();
+      self.parent.updateList();      
     });
 
   </script>

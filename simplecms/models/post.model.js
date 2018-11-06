@@ -21,12 +21,52 @@ class PostModel{
 	/**
 	 * @param  {} oPost
 	 */
-	createPost(oPost){
-		return new Promise((resolve, reject) => {						
-			Post.create(oPost).then(oPostCreated => {				
-				resolve(oPostCreated.get({
-					plain: true
-				}));
+	createPost(oPost){		
+		return new Promise((resolve, reject) => {
+			let arrCat = [];
+
+			if(oPost.categories !== undefined && oPost.categories !== null){
+				if(Array.isArray(oPost.categories)){
+					arrCat = oPost.categories.slice();
+					delete oPost.categories;
+				}
+			}
+
+			Post.create(oPost).then(oPostCreated => {
+				let PostID = oPostCreated.PostID;
+				let arrCatToSave = [];				
+				if (arrCat.length > 0) {
+					for(var n in arrCat){
+						arrCatToSave.push({
+							PostCategoryID: utils.guid().toUpperCase(),
+							CatID : arrCat[n].id,
+							PostID: PostID
+						});
+					}
+					PostCategory.bulkCreate(arrCatToSave)
+						.then(() => {
+							Post.findOne({
+								where: {
+									PostID: PostID
+								},
+								include: [{
+									model: User,
+									as: 'UserPost',
+									attributes: ['Username', 'email']
+								}, {
+									model: Admin,
+									as: 'AdminPost',
+									attributes: ['AdminName', 'AdminEmail']
+								}, {
+									model: PostCategory,
+									as: 'Post_Category',
+									attributes: ['PostID', 'CatID']
+								}]
+							}).then(oPostResult => {
+								resolve(oPostResult);
+							});
+						});
+				}
 			}).catch(err =>{
 				reject(err);
 			});
@@ -48,7 +88,11 @@ class PostModel{
 				},{
 					model: Admin,
 					as: 'AdminPost',					
-					attributes: ['AdminName', 'AdminEmail']
+					attributes: ['AdminName', 'AdminEmail', 'avatar']
+				}, {
+					model: PostCategory,
+					as: 'Post_Category',
+					attributes: ['PostID', 'CatID']
 				}]			
 			}).then(oPostGet => {
 				resolve(oPostGet);
@@ -62,24 +106,106 @@ class PostModel{
 	 * @param  {} oPost
 	 * @param  {} PostId
 	 */
-	updatePost(oPost, PostId){
-		return new Promise((resolve, reject) => {
+	async updatePost(oPost, PostId){
+		let updatePost = null;
+		let updatePostCat = null;
+		let arrCat = [];
+
+		if (oPost.categories !== undefined && oPost.categories !== null) {
+			if (Array.isArray(oPost.categories)) {
+				arrCat = oPost.categories.slice();
+				delete oPost.categories;
+			}
+		}
+
+		let oPostToSave = new Promise((resolve, reject) => {
 			Post.findOne({
-				where: {
+				where : {
 					PostID: PostId
 				}
 			}).then(oPostToSave => {
 				oPostToSave.update(oPost)
 					.then(oPostSaved => {
-						resolve(oPostSaved);
-					})
-					.catch(err => {
-						reject(err);
-					});
+						resolve(true);
+					});				
 			}).catch(err => {
 				reject(err);
 			});
 		});
+
+		let oPostCatToSave = new Promise((resolve, reject) => {
+			PostCategory.destroy({
+				where: {
+					PostID: PostId
+				}
+			}).then(affectedRows => {				
+				let PostID = PostId;
+				let arrCatToSave = [];
+				if (arrCat.length > 0) {
+					for (var n in arrCat) {
+						arrCatToSave.push({
+							PostCategoryID: utils.guid().toUpperCase(),
+							CatID: arrCat[n].id,
+							PostID: PostID
+						});
+					}
+					PostCategory.bulkCreate(arrCatToSave)
+						.then(() => {
+							Post.findOne({
+								where: {
+									PostID: PostID
+								},
+								include: [{
+									model: User,
+									as: 'UserPost',
+									attributes: ['Username', 'email']
+								}, {
+									model: Admin,
+									as: 'AdminPost',
+									attributes: ['AdminName', 'AdminEmail']
+								}, {
+									model: PostCategory,
+									as: 'Post_Category',
+									attributes: ['PostID', 'CatID']
+								}]
+							}).then(oPostResult => {
+								resolve(oPostResult);
+							});
+						});
+				}
+			}).catch(err => {
+				reject(err);
+			});
+		});
+
+		try{
+			updatePost = await oPostToSave;
+			if(updatePost === true){
+				updatePostCat = await oPostCatToSave;
+				return updatePostCat;				
+			}
+		}catch(err){
+			return err;
+		}
+		
+		// return new Promise((resolve, reject) => {			
+		// 	Post.findOne({
+		// 		where: {
+		// 			PostID: PostId
+		// 		}
+		// 	}).then(oPostToSave => {
+		// 		oPostToSave.update(oPost)
+		// 			.then(oPostSaved => {
+						
+		// 				//resolve(oPostSaved);
+		// 			})
+		// 			.catch(err => {
+		// 				reject(err);
+		// 			});
+		// 	}).catch(err => {
+		// 		reject(err);
+		// 	});
+		// });
 	}
 	/**
 	 * @param  {string} PostId
@@ -178,7 +304,23 @@ class PostModel{
 			Post.findAll({
 				where: {
 					active: active
-				}
+				}, 
+				order: [
+					['createdAt', 'desc']
+				],
+				include: [{
+					model: User,
+					as: 'UserPost',
+					attributes: ['Username', 'email']
+				}, {
+					model: Admin,
+					as: 'AdminPost',
+					attributes: ['AdminName', 'AdminEmail']
+				}, {
+					model: PostCategory,
+					as: 'Post_Category',
+					attributes: ['PostID', 'CatID']
+				}]
 			}).then(oPosts => {
 				resolve(oPosts);
 			}).catch(err => {
@@ -193,11 +335,12 @@ class PostModel{
 	 */
 	paginatePost(pageNum = 0, active = 0){
 		return new Promise((resolve, reject) => {
-			pageNum = pageNum * 5;
+			//default pagination 10		
+			pageNum = pageNum * 10;
 			
 			Post.findAll({				
 				offset: pageNum, 
-				limit: 5, 
+				limit: 10, 
 				where:{
 					active: active
 				},
@@ -212,7 +355,11 @@ class PostModel{
 					model: Admin,
 					as: 'AdminPost',
 					attributes: ['AdminName', 'AdminEmail']
-				}]				
+				}, {
+					model: PostCategory,
+					as: 'Post_Category',
+					attributes: ['PostID', 'CatID']
+				}]
 			}).then(oPosts => {
 				resolve(oPosts);
 			}).catch(err => {
@@ -241,6 +388,19 @@ class PostModel{
 		return postCount.count;
 	}
 
+	async searchAutoComplete(query){
+		let queryText = query;
+		let oQueryResult = null;
+		try{
+			if(queryText.length >= 2){	
+				oQueryResult = await rQry.queryPostKeyWordSQL.bindAndExecute(db, {queryText: queryText});			
+			}		
+			return oQueryResult;
+		}catch(err){
+			throw err;
+		}
+	}
+
 	/**
 	 * Get post render in web by PostID and slug (title)
 	 * @param  {object} oParam
@@ -251,13 +411,17 @@ class PostModel{
 		return new Promise((resolve, reject) => {
 			let whereCond = {};
 			if(oParam.PostID !== ''){
-				whereCond['PostID'] = oParam.PostID;
+				//whereCond['PostID'] = oParam.PostID;
+				whereCond = db.where(db.fn('lower', db.col('PostID')), db.fn('lower', oParam.PostID));
 			}else{
-				whereCond['title'] = oParam.slug.replace(/-/g, ' ');
-			}
-			
+				//whereCond['title'] = oParam.slug.replace(/-/g, ' ');
+				//compare title in lowercase
+				whereCond = db.where(db.fn('lower', db.col('title')), db.fn('lower', oParam.slug.replace(/-/g, ' ')));
+			}									
 			Post.findOne({
-				where: whereCond,
+				where: {
+					whereCond					
+				},
 				include: [{
 					model: User,
 					as: 'UserPost',
@@ -265,9 +429,13 @@ class PostModel{
 				}, {
 					model: Admin,
 					as: 'AdminPost',
-					attributes: ['AdminName', 'AdminEmail']
+					attributes: ['AdminName', 'AdminEmail', 'avatar']
+				}, {
+					model: PostCategory,
+					as: 'Post_Category',
+					attributes: ['PostID', 'CatID']
 				}]
-			}).then(oPost => {
+			}).then(oPost => {				
 				resolve(oPost);
 			}).catch(err => {
 				reject(err);
@@ -468,6 +636,9 @@ class PostModel{
 		case 'AUTHORID':
 			isExist = true;
 			break;
+		case 'CATEGORIES':
+			isExist = true;
+			break;
 		default:
 			isExist = false;
 		}
@@ -530,6 +701,12 @@ class PostModel{
 			AuthorID: {
 				val: '',
 				type: 'NULLABLE',
+				check: true,
+				exclude: false
+			},
+			categories: {
+				val: '',
+				type: 'ARRAY',
 				check: true,
 				exclude: false
 			}

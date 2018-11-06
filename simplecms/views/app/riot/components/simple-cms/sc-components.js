@@ -1,4 +1,4 @@
-riot.tag2('sc-login', '<div class="center {theme}" if="{login === false}"> <div class="entry-logo"> </div> <div class="entry-form"> <h3>Welcome to </h3> <h2> Appec Simple CMS</h2> <small>Strength and growth come only through continuous effort and struggle.</small> <hr> <input ref="admin_email" class="login-input input-box" placeholder="email" type="email"> <input ref="admin_pwd" type="password" class="login-input input-box" placeholder="password"> <br> <button type="submit" class="primary btn" onclick="{() => AdminLogin()}">Login</button> </div> </div> <sc-notify></sc-notify>', 'sc-login .center,[data-is="sc-login"] .center{ position: absolute; left: 50%; transform: translate(-50%, 0%); text-align:center; height: 98.5% ; background-color: white; border: 1px solid #1c1f3d; border-radius: 3.5px; } sc-login .entry-logo,[data-is="sc-login"] .entry-logo{ background-image: url(\'/images/appec-logo-dark.png\'); background-repeat: no-repeat; background-size: 55%; height:250px; background-position: center; background-color: #161824; } sc-login .entry-form,[data-is="sc-login"] .entry-form{ padding: 50px; } sc-login h2,[data-is="sc-login"] h2{ font-weight: 400; } sc-login .login-input,[data-is="sc-login"] .login-input{ display: block; width: 80%; margin: 10px auto; font-family: \'Lato\', Helvetica, sans-serif; } sc-login .btn,[data-is="sc-login"] .btn{ display: inline-block; text-align: center; white-space: nowrap; vertical-align: middle; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; border: 1px solid transparent; padding: 0.3rem 0.75rem; font-size: 0.9rem; line-height: 1.5; width:85%; cursor:pointer; border-radius: 0.2rem; }', '', function(opts) {
+riot.tag2('sc-login', '<div class="center {theme}" if="{login === false}"> <div class="entry-logo"> </div> <div class="entry-form"> <div class="entry-field"> <h3>Welcome to </h3> <h2> Appec Simple CMS</h2> <small>Strength and growth come only through continuous effort and struggle.</small> </div> <hr> <div class="entry-field"> <input ref="admin_email" class="login-input input-box" placeholder="email" type="email"> <input ref="admin_pwd" type="password" class="login-input input-box" placeholder="password"> </div> <br> <div class="entry-btn"> <button type="submit" class="primary btn" onclick="{() => AdminLogin()}">Login</button> </div> </div> </div> <sc-notify></sc-notify>', '@media (min-width: 320px) and (max-width: 480px) { sc-login .entry-logo,[data-is="sc-login"] .entry-logo{ background-image: url(\'/images/appec-logo-dark.png\'); background-repeat: no-repeat; background-size: 55%; height:110px; background-position: center; background-color: #161824; } sc-login .entry-btn,[data-is="sc-login"] .entry-btn{ margin: 0 auto; text-align:center; } sc-login .entry-field,[data-is="sc-login"] .entry-field{ text-align: center; } } @media (min-width: 481px) and (max-width: 767px) { sc-login .entry-logo,[data-is="sc-login"] .entry-logo{ background-image: url(\'/images/appec-logo-dark.png\'); background-repeat: no-repeat; background-size: 55%; height:200px; background-position: center; background-color: #161824; } sc-login .entry-btn,[data-is="sc-login"] .entry-btn{ margin: 0 auto; text-align:center; } sc-login .entry-field,[data-is="sc-login"] .entry-field{ text-align: center; } } @media (min-width: 768px) and (max-width: 1024px) { sc-login .entry-logo,[data-is="sc-login"] .entry-logo{ background-image: url(\'/images/appec-logo-dark.png\'); background-repeat: no-repeat; background-size: 45%; height:300px; background-position: center; background-color: #161824; } sc-login .entry-btn,[data-is="sc-login"] .entry-btn{ margin: 0 auto; text-align:center; } sc-login .entry-field,[data-is="sc-login"] .entry-field{ text-align: center; } } @media (min-width: 1025px) and (max-width: 1920px) { sc-login .center,[data-is="sc-login"] .center{ position: absolute; left: 50%; transform: translate(-50%, 0%); text-align:center; height: 98.5% ; background-color: white; border: 1px solid #1c1f3d; border-radius: 3.5px; } sc-login .entry-logo,[data-is="sc-login"] .entry-logo{ background-image: url(\'/images/appec-logo-dark.png\'); background-repeat: no-repeat; background-size: 55%; height:250px; background-position: center; background-color: #161824; } sc-login .entry-form,[data-is="sc-login"] .entry-form{ padding: 50px; } } sc-login h2,[data-is="sc-login"] h2{ font-weight: 400; } sc-login .login-input,[data-is="sc-login"] .login-input{ display: block; width: 80%; margin: 10px auto; font-family: \'Lato\', Helvetica, sans-serif; } sc-login .btn,[data-is="sc-login"] .btn{ display: inline-block; text-align: center; white-space: nowrap; vertical-align: middle; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; border: 1px solid transparent; padding: 0.3rem 0.75rem; font-size: 0.9rem; line-height: 1.5; width:85%; cursor:pointer; border-radius: 0.2rem; }', '', function(opts) {
     this.mixin(minoCookie);
     this.theme = '';
     this.login = false;
@@ -418,7 +418,7 @@ var scAdminObserver = function () {
 
 });
 
-riot.tag2('sc-edit-post', '<div class="siimple-form"> <div class="siimple-field"> <label class="siimple-label">Title</label><br> <input type="text" class="siimple-input siimple-input--fluid sc-input" ref="inpPostTitle"> </div> <div class="siimple-field"> <label class="siimple-label">Category</label><br> <sc-multi-select ref="selCategories"></sc-multi-select> </div> <div class="siimple-field"> <div id="editor"> </div> </div> <div class="siimple-field"> <label class="siimple-label">Active</label> <div class="siimple-checkbox"> <input type="checkbox" id="chkActive" ref="chkActive"> <label for="chkActive"></label> </div> <div class="space"></div> <label class="siimple-label">Visibility</label> <div class="siimple-checkbox"> <input type="checkbox" id="chkVisible" ref="chkVisible"> <label for="chkVisible"></label> </div> <div class="space"></div> <label class="siimple-label">Allow Comment</label> <div class="siimple-checkbox"> <input type="checkbox" id="chkComment" ref="chkComment"> <label for="chkComment"></label> </div> <div class="space"></div> <label class="siimple-label">Publish Date</label> <mino-date theme="primary" type="modal" ref="inpDate"></mino-date> </div> <div class="siimple-field"> <label class="siimple-label">Creator Name</label> <input type="text" ref="inpCreator" class="siimple-input sc-input" maxlength="100" placeholder="Your name"> </div> <div class="siimple-btn siimple-btn--primary" onclick="{() => saveContent()}">Save</div> <div class="siimple-btn siimple-btn--warning" onclick="{() => backToList()}">Back</div> </div> <sc-notify></sc-notify>', 'sc-edit-post .space,[data-is="sc-edit-post"] .space{ width: 5%; display: inline-block; } sc-edit-post .sc-input,[data-is="sc-edit-post"] .sc-input{ background:#f3f3f3; border:1px solid #ccc; }', '', function(opts) {
+riot.tag2('sc-edit-post', '<div class="siimple-form"> <div class="siimple-field"> <label class="siimple-label">Title</label><br> <input type="text" class="siimple-input siimple-input--fluid sc-input" ref="inpPostTitle" onkeypress="{() => wrtingTitle()}" onkeyup="{() => wrtingTitle()}" onkeydown="{() => wrtingTitle()}"> <div class="siimple--display-block siimple--bg-light siimple--color-dark sc-hint"> <small> <box-icon name="link"></box-icon> {baseUrl}post/{slugText} </small> </div> </div> <div class="siimple-field"> <label class="siimple-label">Category</label><br> <sc-multi-select ref="selCategories"></sc-multi-select> </div> <div class="siimple-field"> <div id="editor"> </div> </div> <div class="siimple-field"> <label class="siimple-label">Active</label> <div class="siimple-checkbox"> <input type="checkbox" id="chkActive" ref="chkActive"> <label for="chkActive"></label> </div> <div class="space"></div> <label class="siimple-label">Visibility</label> <div class="siimple-checkbox"> <input type="checkbox" id="chkVisible" ref="chkVisible"> <label for="chkVisible"></label> </div> <div class="space"></div> <label class="siimple-label">Allow Comment</label> <div class="siimple-checkbox"> <input type="checkbox" id="chkComment" ref="chkComment"> <label for="chkComment"></label> </div> <div class="space"></div> <label class="siimple-label">Publish Date</label> <mino-date theme="primary" type="modal" ref="inpDate"></mino-date> </div> <div class="siimple-field"> <label class="siimple-label">Meta Tag</label><br> <input type="text" class="siimple-input siimple-input--fluid sc-input" ref="inpMetaTag"> <div class="siimple--display-block siimple--bg-light siimple--color-dark sc-hint"> <small> <box-icon name="info-circle"></box-icon> Meta tags contain information about a website. Search engines access certain meta tags so they can, for instance, display a page title and description in the search results. </small> </div> </div> <div class="siimple-field"> <label class="siimple-label">Author Name</label> <input type="text" ref="inpCreator" class="siimple-input sc-input" maxlength="100" placeholder="Your name"> </div> <div class="siimple--clearfix"> <div class="siimple--float-left"> <div class="siimple-btn siimple-btn--primary" onclick="{() => saveContent()}">Save</div> <div class="siimple-btn siimple-btn--warning" onclick="{() => backToList()}">Back</div> </div> <div class="siimple--float-right"> <div class="siimple-btn siimple-btn--light" onclick="{() => preview()}"> Preview </div> </div> </div> <sc-notify></sc-notify>', 'sc-edit-post .space,[data-is="sc-edit-post"] .space{ width: 5%; display: inline-block; } sc-edit-post .sc-input,[data-is="sc-edit-post"] .sc-input{ background:#f3f3f3; border:1px solid #ccc; } sc-edit-post .sc-hint,[data-is="sc-edit-post"] .sc-hint{ padding: 0.5em; margin-top: 5px; }', '', function(opts) {
 riot.tag2('mino-date', '<input type="text" ref="{rname}" class="cal {class}" onclick="{() => renderCalendar()}" riot-value="{date}"><br> <div class="{(render || mRender || yRender) && type=== \'modal\' ? \'modal-back\': \'\'}"></div> <div if="{render}" class="{type !== \'modal\'? \'calendar\': \'calendar-modal\'}"> <div class="title-wrapper"> <div class="t-year-title" onclick="{() => monthYearSelection(\'year\')}"> {minodate.year} </div> <div class="month-title" onclick="{() => monthYearSelection(\'month\')}"> {minodate.getMonthName(minodate.month)} </div> <button type="button" class="month-navigator" onclick="{() => minodate.prevMonth()}">&#8249;</button> <button type="button" class="month-navigator" onclick="{() => minodate.nextMonth()}">&#8250;</button> </div> <div> <div class="week-title">S</div> <div class="week-title">M</div> <div class="week-title">T</div> <div class="week-title">W</div> <div class="week-title">T</div> <div class="week-title">F</div> <div class="week-title">S</div> </div> <div class="month-wrapper"> <div class="week-wrapper" each="{week in weeks}"> <mino-week week="{week}" parentname="{rname}" theme="{theme}"></mino-week> </div> </div> <div class="bottom-action"> <div class="action-wrapper" onclick="{() => clearSelection()}"> clear </div> <div class="action-wrapper" onclick="{() => todaySelection()}"> TODAY </div> <div class="action-wrapper" onclick="{() => renderCalendar()}"> close </div> </div> </div> <div if="{mRender}" class="{type !== \'modal\'? \'calendar\': \'calendar-modal\'}" style="overflow: hidden;"> <div class="year-title" onclick="{() => monthYearSelection(\'year\')}">{minodate.year}</div> <div style="display:flex;"> <div class="month-year-selection"> <div class="month-selection" each="{month, m in minodate.getMonthNames()}" onclick="{() => monthSelection(m)}"> {month} </div> </div> </div> <div style="text-align:center;" class="{theme} monthyear-close" onclick="{() => monthYearClose()}">&times; close</div> </div> <div if="{yRender}" class="{type !== \'modal\'? \'calendar\': \'calendar-modal\'}" style="overflow: hidden;"> <div style="display:flex;"> <div class="month-year-selection"> <div class="year-selection" each="{year, y in minodate.getYearSelection(numOfYears)}" onclick="{() => yearSelection(year)}"> {year} </div> </div> </div> <div style="text-align:center;" class="{theme} monthyear-close" onclick="{() => monthYearClose()}">&times; close</div> </div>', 'mino-date,[data-is="mino-date"]{ font-family: \'Lato\', Helvetica, sans-serif; color: #333447; line-height: 1.5; } @media (min-width: 320px) and (max-width: 480px) { mino-date .calendar-modal,[data-is="mino-date"] .calendar-modal{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: 16px; top: 10%; left: 0; width: 90%; box-shadow: 2px 2px 2px 2px #5a5858; } mino-date .calendar,[data-is="mino-date"] .calendar{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: -5px -25px 20px 0px; width: 80%; } mino-date .month-title,[data-is="mino-date"] .month-title{ width: 52%; display: inline-block; text-align:left; font-weight: 600; font-size: x-large; cursor:pointer; } mino-date .t-year-title,[data-is="mino-date"] .t-year-title{ width: 20%; display: inline-block; text-align:center; font-size: large; cursor:pointer; } mino-date .week-title,[data-is="mino-date"] .week-title{ width:11.25%; text-align: center; display:inline-block; padding:1%; } } @media (min-width: 481px) and (max-width: 767px) { mino-date .calendar-modal,[data-is="mino-date"] .calendar-modal{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: 25px; top: 0; left: 6%; width: 45%; box-shadow: 2px 2px 2px 2px #5a5858; } mino-date .calendar,[data-is="mino-date"] .calendar{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: -5px -25px 20px 0px; width: 290px; } mino-date .month-title,[data-is="mino-date"] .month-title{ width: 48%; display: inline-block; text-align:left; font-weight: 600; font-size: x-large; cursor:pointer; border-radius: 0.2em; padding: 1%; } mino-date .t-year-title,[data-is="mino-date"] .t-year-title{ width: 19.5%; display: inline-block; text-align:center; font-size: large; cursor:pointer; border-radius: 0.2em; padding: 1.5%; } mino-date .week-title,[data-is="mino-date"] .week-title{ width:10.5%; text-align: center; display:inline-block; padding:1%; } } @media (min-width: 768px) and (max-width: 1024px) { mino-date .calendar-modal,[data-is="mino-date"] .calendar-modal{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: 25px; top: 0; left: 6%; width: 45%; box-shadow: 2px 2px 2px 2px #5a5858; } mino-date .calendar,[data-is="mino-date"] .calendar{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: -5px -25px 20px 0px; width: 290px; } mino-date .month-title,[data-is="mino-date"] .month-title{ width: 48%; display: inline-block; text-align:left; font-weight: 600; font-size: x-large; cursor:pointer; border-radius: 0.2em; padding: 1%; } mino-date .t-year-title,[data-is="mino-date"] .t-year-title{ width: 19.5%; display: inline-block; text-align:center; font-size: large; cursor:pointer; border-radius: 0.2em; padding: 1.5%; } mino-date .week-title,[data-is="mino-date"] .week-title{ width:11%; text-align: center; display:inline-block; padding:1%; } } @media (min-width: 1025px) and (max-width: 1920px) { mino-date .calendar,[data-is="mino-date"] .calendar{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: -5px -25px 20px 0px; width: 280px; font-size: smaller; } mino-date .calendar-modal,[data-is="mino-date"] .calendar-modal{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: 25px; top: 10%; left: 35%; width: 350px; box-shadow: 2px 2px 2px 2px #5a5858; } mino-date .month-title,[data-is="mino-date"] .month-title{ width: 46%; display: inline-block; text-align:left; font-size: x-large; cursor:pointer; font-weight: 600; padding:2%; border-radius: 0.2em; } mino-date .t-year-title,[data-is="mino-date"] .t-year-title{ width: 19.5%; display: inline-block; text-align:center; font-size: large; cursor:pointer; padding:2%; border-radius: 0.2em; } mino-date .week-title,[data-is="mino-date"] .week-title{ width:11%; text-align: center; display:inline-block; padding:1%; } } mino-date .modal-back,[data-is="mino-date"] .modal-back{ position: fixed; z-index: 0; padding-top: 100px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.4); } mino-date .bottom-action,[data-is="mino-date"] .bottom-action{ width: 100%; padding: 1px; } mino-date .action-wrapper,[data-is="mino-date"] .action-wrapper{ box-sizing: border-box; display: inline-block; width: 32%; padding: 4px; text-decoration: none; color: inherit; border: 0; background: transparent; text-align: center; cursor: pointer; border-radius: 0.15em; } mino-date .action-wrapper:hover,[data-is="mino-date"] .action-wrapper:hover{ background: #ddd; color: #161125; } mino-date input.input-line:focus,[data-is="mino-date"] input.input-line:focus{ outline-width: 0; } mino-date .input-box,[data-is="mino-date"] .input-box{ display: inline; padding: 0.2rem 0.45rem; font-size: 1rem; line-height: 1.5; color: #1D2F3A; background-color: #fff; background-clip: padding-box; border: 1.35px solid #ced4da; border-radius: 0.2rem; transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; margin: 5px; } mino-date .input-line,[data-is="mino-date"] .input-line{ display: inline; padding: 0.2rem 0.45rem; font-size: 1rem; line-height: 1.5; color: #1D2F3A; background-color: #fff; background-clip: padding-box; border: 1.35px solid #364a4c; border-top: 0; border-left: 0; border-right: 0; border-radius: 0.2rem; transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; margin: 5px; border-radius: 0; } mino-date .title-wrapper,[data-is="mino-date"] .title-wrapper{ padding: 1%; } mino-date ::-webkit-scrollbar,[data-is="mino-date"] ::-webkit-scrollbar{ display: none; } mino-date .month-year-selection,[data-is="mino-date"] .month-year-selection{ overflow:scroll; box-sizing: content-box; height:auto; margin:0px 15px; text-align:center; width:100%; padding: 1% display: inline-block; } mino-date .month-selection,[data-is="mino-date"] .month-selection{ height:20px; padding: 10px 15px; display: inline-block; border-radius: 0.2em; cursor: pointer; } mino-date .year-selection,[data-is="mino-date"] .year-selection{ height:20px; padding: 15px 15px; display: inline-block; border-radius: 0.2em; cursor: pointer; margin: 5px; } mino-date .t-year-title:hover,[data-is="mino-date"] .t-year-title:hover{ background-color: #ddd; } mino-date .year-selection:hover,[data-is="mino-date"] .year-selection:hover{ background-color: #ddd; } mino-date .month-title:hover,[data-is="mino-date"] .month-title:hover{ background-color: #ddd; } mino-date .month-selection:hover,[data-is="mino-date"] .month-selection:hover{ background-color: #ddd; } mino-date .year-title,[data-is="mino-date"] .year-title{ font-size: 15.5pt; text-align: center; cursor: pointer; padding: 2%; border-radius: 0.2em; } mino-date .year-title:hover,[data-is="mino-date"] .year-title:hover{ background: #ddd; } mino-date .monthyear-close,[data-is="mino-date"] .monthyear-close{ cursor: pointer } mino-date .display-wrapper,[data-is="mino-date"] .display-wrapper{ text-align: center; } mino-date .month-wrapper,[data-is="mino-date"] .month-wrapper{ display:inline-block; width: 100%; } mino-date .week-wrapper,[data-is="mino-date"] .week-wrapper{ width: 100%; height:auto; display:block; padding: 1%; } mino-date .month-navigator,[data-is="mino-date"] .month-navigator{ width:11%; border-radius: 0.2em; border: 0; font-size: 15.5pt; padding: 0px; cursor: pointer; background-color: #f3f3f3; } mino-date .month-navigator:hover,[data-is="mino-date"] .month-navigator:hover{ background: #ddd; } mino-date .light,[data-is="mino-date"] .light{ background-color: #f4f4f4; color: #1D2F3A; } mino-date .warning,[data-is="mino-date"] .warning{ background-color: #F32260; color: #FCF7FA; } mino-date .success,[data-is="mino-date"] .success{ background-color: #1ECE80; color: #FCF7FA; } mino-date .primary,[data-is="mino-date"] .primary{ background-color: #456990; color: #FCF7FA; } mino-date .dark,[data-is="mino-date"] .dark{ background-color: #323C46; color: #FCF7FA; } mino-date .note,[data-is="mino-date"] .note{ background-color: #FFD011; color: #1D2F3A; } mino-date .default,[data-is="mino-date"] .default{ background-color: #989898; color: #FCF7FA; } mino-date .cal,[data-is="mino-date"] .cal{ background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhRE9DVFlQRSBzdmcgIFBVQkxJQyAnLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4nICAnaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkJz48c3ZnIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDgwIDgwIiBoZWlnaHQ9IjgwcHgiIGlkPSJJY29ucyIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgODAgODAiIHdpZHRoPSI4MHB4IiB4bWw6c3BhY2U9InByZXNlcnZlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48Zz48cGF0aCBkPSJNNjEsMjAuMDQ3aC02VjE1aC01djUuMDQ3SDMwVjE1aC01djUuMDQ3aC01LjkxOWMtMi4yMDksMC00LDEuNzkxLTQsNFY2MWMwLDIuMjA5LDEuNzkxLDQsNCw0SDYxYzIuMjA5LDAsNC0xLjc5MSw0LTQgICBWMjQuMDQ3QzY1LDIxLjgzOCw2My4yMDksMjAuMDQ3LDYxLDIwLjA0N3ogTTYwLDYwSDIwVjM1aDQwVjYweiBNNjAsMzBIMjB2LTVoNDBWMzB6Ii8+PHJlY3QgaGVpZ2h0PSI1IiB3aWR0aD0iNSIgeD0iMzgiIHk9IjQwIi8+PHJlY3QgaGVpZ2h0PSI1IiB3aWR0aD0iNSIgeD0iNDgiIHk9IjQwIi8+PHJlY3QgaGVpZ2h0PSI1IiB3aWR0aD0iNSIgeD0iMzgiIHk9IjUwIi8+PHJlY3QgaGVpZ2h0PSI1IiB3aWR0aD0iNSIgeD0iMjgiIHk9IjUwIi8+PC9nPjwvc3ZnPg==) no-repeat scroll 4.5px 4.5px; background-position: right; background-repeat: no-repeat; background-size: 30px; }', '', function(opts) {
 var minoDateObserver = function () {
   riot.observable(this);
@@ -889,6 +889,8 @@ riot.tag2('mino-week', '<mino-day each="{week}" day="{day}" month="{month}" year
     var postContent = null;
     var author = null;
     var categoriesSelected = '';
+    var baseUrl = '';
+    var slugText
     var toolbarOptions = [
       [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
       ['bold', 'italic', 'underline', 'strike'],
@@ -920,21 +922,22 @@ riot.tag2('mino-week', '<mino-day each="{week}" day="{day}" month="{month}" year
     this.mixin(minoCookie);
 
     this.on('before-mount', function(){
-      if(self.opts.postid !== ''){
-        self.getContent(self.opts.postid);
+      if(self.opts.postid === ''){
+        self.getAuthorInfo();
       }
+      mainControl.action('getCategoriesAction', {param: 'all'});
     });
 
     this.on('mount', function () {
+      if(self.opts.postid !== ''){
+        self.getContent(self.opts.postid);
+      }
       editor = new Quill('#editor', options);
 
       editor.getModule('toolbar').addHandler('image', () => {
         self.selectLocalImage();
       });
-      if(self.opts.postid === ''){
-        self.getAuthorInfo();
-      }
-      mainControl.action('getCategoriesAction', {param: 'all'});
+      self.wrtingTitle();
     });
 
     this.getAuthorInfo = function(){
@@ -949,11 +952,22 @@ riot.tag2('mino-week', '<mino-day each="{week}" day="{day}" month="{month}" year
       mainControl.action('getPostByIDAction', {param: id});
     }.bind(this)
 
+    this.wrtingTitle = function(){
+      var titleText = this.refs.inpPostTitle.value !== undefined? this.refs.inpPostTitle.value: '';
+      if(titleText !== ''){
+        var slug = titleText.replace(/ /g,"-").toLowerCase();
+        self.update({
+          slugText: slug
+        });
+      }
+    }.bind(this)
+
     this.saveContent = function(){
       var creator = self.getCookie('uid');
       if(creator === undefined || creator === ''){
         creator = self.getCookie('aid');
       }
+      self.categoriesSelected = self.refs.selCategories.getSelected('array');
       var oPost = {
         postId: self.postId,
         title: self.refs.inpPostTitle.value,
@@ -964,9 +978,10 @@ riot.tag2('mino-week', '<mino-day each="{week}" day="{day}" month="{month}" year
         publishDate: self.refs.inpDate.value,
         AuthorID: creator,
         createdBy: self.refs.inpCreator.value,
-        categories: self.categoriesSelected
+        categories: self.categoriesSelected,
+        metaTag: self.refs.inpMetaTag.value
       }
-
+      console.log(oPost);
       mainControl.action('savePostAction', oPost);
     }.bind(this)
 
@@ -977,14 +992,24 @@ riot.tag2('mino-week', '<mino-day each="{week}" day="{day}" month="{month}" year
     }.bind(this)
 
     this.initPost = function(p){
+      console.log(p);
       this.refs.inpPostTitle.value = p.title;
       this.refs.chkActive.checked = p.active === 1 ? true: false;
       this.refs.chkVisible.checked = p.visibility === 1 ? true: false;
       this.refs.chkComment.checked = p.allowComment === 1 ? true: false;
       this.refs.inpDate.date = self.formatDate(p.publishDate);
       this.refs.inpCreator.value = p.createdBy;
+      this.refs.inpMetaTag.value = p.metaTag;
       postContent = JSON.parse(p.content);
+      if(p.Post_Category !== null){
+        console.log(p.Post_Category);
+        this.refs.selCategories.setSelected(p.Post_Category);
+      }
       editor.setContents(postContent);
+    }.bind(this)
+
+    this.preview = function(){
+      window.open(self.baseUrl + 'post/' + postId, '_blank');
     }.bind(this)
 
     this.notify = function(notifyObj){
@@ -1004,10 +1029,12 @@ riot.tag2('mino-week', '<mino-day each="{week}" day="{day}" month="{month}" year
 
     mainControl.change('SinglePostRetrieved', function(state, c){
       var singlePost = c.getter('getSinglePostByIDGetter');
+      var baseUrl = c.getter('baseURLGetter');
       if (singlePost.success.status){
         self.postId = singlePost.result.PostID;
         self.post = singlePost.result;
         self.initPost(self.post);
+        self.baseUrl = baseUrl;
         self.update();
       }else{
         console.log(singlePost.error);
@@ -1073,12 +1100,10 @@ riot.tag2('mino-week', '<mino-day each="{week}" day="{day}" month="{month}" year
         self.cat = carArr;
         console.log(self.cat);
 
-        riot.mount('sc-multi-select', {
-          selections: self.cat,
-          selectedFunc : 'selectCategoryAction',
-          setSelectedFunc : 'CategorySelected',
-          getSelectedFunc : 'getSelectedCategoriesGetter'
-        });
+          self.refs.selCategories.update({
+            selections: self.cat
+          });
+
         self.update();
       }else{
         self.notify({
@@ -1177,11 +1202,11 @@ riot.tag2('mino-week', '<mino-day each="{week}" day="{day}" month="{month}" year
       editor.insertEmbed(range.index, 'image', url);
     }.bind(this)
 });
-riot.tag2('sc-list-post', '<div class="siimple-content siimple-content--fluid"> <div> <sc-post-card each="{p, index in list_of_post}" post="{p}"></sc-post-card> </div> </div>', '', '', function(opts) {
+riot.tag2('sc-list-post', '<div class="siimple-content siimple-content--fluid {searching}"> <div> <sc-post-card each="{p, index in list_of_post}" post="{p}"></sc-post-card> </div> </div>', 'sc-list-post .blur-bg,[data-is="sc-list-post"] .blur-bg{ filter: blur(2px); }', '', function(opts) {
     this.list_of_post = [];
     this.delPost = false;
     this.delMsg = '';
-
+    this.searching  = ''
     var mainControl = this.riotx.get('main-control');
     var self = this;
 
@@ -1204,9 +1229,10 @@ riot.tag2('sc-list-post', '<div class="siimple-content siimple-content--fluid"> 
       var result = c.getter('getPaginatePostGetter');
       console.log(result);
       self.list_of_post = result.result.posts;
-      self.parent.isLoading = false;
+      self.parent.update({
+        isLoading : false
+      });
       self.update();
-      self.parent.update();
     });
 
     this.editPost = function(id, backToList = false){
@@ -1214,11 +1240,23 @@ riot.tag2('sc-list-post', '<div class="siimple-content siimple-content--fluid"> 
     }.bind(this)
 
     this.updateList = function(){
-      self.getPostList();
+      self.getPostList(0);
+    }.bind(this)
+
+    this.onblur = function(status){
+      if(status){
+        self.update({
+          searching: 'blur-bg'
+        });
+      }else{
+        self.update({
+          searching: ''
+        });
+      }
     }.bind(this)
 
 });
-riot.tag2('sc-manage-post', '<div class="siimple-alert siimple-alert--warning" if="{acl.post === undefined || acl.post === null}"> You are not allow to access this module! </div> <div class="simple-grid" if="{acl.post.acl > 4}"> <div class="simple-grid-row"> <div class="siimple--display-block primary sc-title"> {title} </div> <div class="siimple--display-block siimple--bg-light sc-panel" if="{list}"> <div class="siimple-btn siimple-btn--navy {action === \'edit\'? \'siimple-btn--disabled\': \'\'}" if="{acl.post.acl >= 7}" onclick="{() => createPost()}">Create</div> <sc-search-post></sc-search-post> </div> </div> <div if="{isLoading}"> <div class="siimple-spinner siimple-spinner--teal"></div> </div> <sc-list-post if="{list}"></sc-list-post> <sc-edit-post if="{edit}" postid="{post_id}"></sc-edit-post> <div>', 'sc-manage-post .sc-title,[data-is="sc-manage-post"] .sc-title{ padding: 5px; border-radius: 3px 3px 0px 0px; margin: -15px -15.5px 15px -15.5px } sc-manage-post .sc-panel,[data-is="sc-manage-post"] .sc-panel{ padding: 10px; margin: -15px -15px 20px -15px; }', '', function(opts) {
+riot.tag2('sc-manage-post', '<div class="siimple-alert siimple-alert--warning" if="{acl.post === undefined || acl.post === null}"> You are not allow to access this module! </div> <div class="simple-grid" if="{acl.post.acl > 4}"> <div class="simple-grid-row"> <div class="siimple--display-block primary sc-title"> {title} </div> <div class="siimple--display-block siimple--bg-light sc-panel" if="{list}"> <div class="siimple-btn siimple-btn--navy {action === \'edit\'? \'siimple-btn--disabled\': \'\'}" if="{acl.post.acl >= 7}" onclick="{() => createPost()}">Create</div> <sc-search-post></sc-search-post> </div> </div> <div if="{isLoading}"> <div class="siimple-spinner siimple-spinner--teal"></div> </div> <sc-list-post if="{list}" ref="postListing"></sc-list-post> <sc-edit-post if="{edit}" postid="{post_id}"></sc-edit-post> <div>', 'sc-manage-post .sc-title,[data-is="sc-manage-post"] .sc-title{ padding: 5px; border-radius: 3px 3px 0px 0px; margin: -15px -15.5px 15px -15.5px } sc-manage-post .sc-panel,[data-is="sc-manage-post"] .sc-panel{ padding: 10px; margin: -15px -15px 20px -15px; }', '', function(opts) {
     this.list = true;
     this.edit = false;
     this.action = 'create';
@@ -1259,19 +1297,32 @@ riot.tag2('sc-manage-post', '<div class="siimple-alert siimple-alert--warning" i
       }
     }.bind(this)
 
+    this.onSearching = function(status){
+      this.tags['sc-list-post'].onblur(status);
+    }.bind(this)
+
 });
-riot.tag2('sc-post-card', '<div class="siimple-card sc-card"> <div class="siimple-card-header"> <div class="siimple-card-title">{post.title}</div> </div> <div class="siimple-card-body"> <p> {displayContent(post.content)} </p> </div> <div class="siimple-card-footer"> <div class="siimple--clearfix"> <div class="siimple--float-left"> <div class="author">author</div> <div class="siimple--bg-primary siimple--color-white author"> {displayAuthor()} </div> </div> <div class="siimple--float-right"> views: {post.views} </div> </div> <div> <small>created {displayDate(post.createdAt)} </small> </div> <div> <div class="siimple--clearfix"> <div class="siimple-btn siimple-btn--primary siimple--width-25" onclick="{() => viewPost(post.PostID)}">View </div> <div class="siimple-btn siimple-btn--navy siimple--width-25" onclick="{() => editPost(post.PostID)}"> Edit </div> <div class="siimple-btn siimple-btn--error siimple--width-25" onclick="{() => deletePost(post.PostID)}"> Delete </div> </div> </div> </div> </div> <sc-notify></sc-notify>', 'sc-post-card .sc-card,[data-is="sc-post-card"] .sc-card{ display: inline-block !important; height: auto; margin: 10px 10px 10px 10px !important; border: 1px solid #ddd; max-width: 420px; } sc-post-card .author,[data-is="sc-post-card"] .author{ display: inline-block; padding: 0px 5px 0px 5px; border-radius: 4px; }', '', function(opts) {
+riot.tag2('sc-post-card', '<div class="siimple-card sc-card"> <div class="siimple-card-header"> <div class="siimple-card-title">{post.title}</div> </div> <div class="siimple-card-body"> <p> {displayContent(post.content)} </p> </div> <div class="siimple-card-footer"> <div class="siimple--clearfix"> <div class="siimple--float-left"> <div class="author">author</div> <div class="siimple--bg-primary siimple--color-white author"> {displayAuthor()} </div> </div> <div class="siimple--float-right"> views: {post.views} </div> </div> <div> <small>created {displayDate(post.createdAt)} </small> </div> <div> <div class="siimple--clearfix"> <div class="siimple-btn siimple-btn--grey siimple--width-25" onclick="{() => viewPost(post.PostID)}">View </div> <div class="siimple-btn siimple-btn--yellow siimple--width-25" onclick="{() => editPost(post.PostID)}"> Edit </div> <div class="siimple-btn siimple-btn--error siimple--width-25" onclick="{() => deletePost(post.PostID)}"> Delete </div> </div> </div> </div> </div> <sc-notify></sc-notify>', 'sc-post-card .sc-card,[data-is="sc-post-card"] .sc-card{ display: inline-block !important; height: auto; margin: 10px 10px 10px 10px !important; border: 1px solid #ddd; max-width: 420px; } sc-post-card .author,[data-is="sc-post-card"] .author{ display: inline-block; padding: 0px 5px 0px 5px; border-radius: 4px; }', '', function(opts) {
     this.post = opts.post;
     var self = this;
     var mainControl = this.riotx.get('main-control');
-
+    var baseUrl = '';
     this.on('mount', function(){
 
     });
 
     this.displayContent = function(content){
       var postContent = JSON.parse(content);
-      return postContent.ops[0].insert.substring(0, 10);
+      content = '';
+      for(var r = 0; r < 4; r++){
+        if(postContent.ops[r] !== undefined){
+          if(typeof(postContent.ops[r].insert) !== 'object') {
+            content += postContent.ops[r].insert + '\n';
+          }
+        }
+      }
+
+      return content.substring(0, 300) + '...';
     }.bind(this)
 
     this.displayDate = function(dte){
@@ -1284,7 +1335,9 @@ riot.tag2('sc-post-card', '<div class="siimple-card sc-card"> <div class="siimpl
     }.bind(this)
 
     this.viewPost = function(postId){
-      window.open('http://localhost:3000/post/' + postId, '_blank');
+      self.baseUrl = mainControl.getter('baseURLGetter');
+      console.log(self.baseUrl);
+      window.open(self.baseUrl + 'post/' + postId, '_blank');
     }.bind(this)
 
     this.editPost = function(postId, backToList = false){
@@ -1336,7 +1389,61 @@ riot.tag2('sc-post-card', '<div class="siimple-card sc-card"> <div class="siimpl
     });
 
 });
-riot.tag2('sc-search-post', '<form> <div class="siimple-field sc-field"> <input type="text" class="sc-search siimple-input" placeholder="title, content, category, ..."> <div class="siimple-btn siimple-btn--green sc-search-btn"><box-icon name="search"></box-icon></div> </div> </form>', 'sc-search-post,[data-is="sc-search-post"]{ display: inline-block; float: right; } sc-search-post .sc-search,[data-is="sc-search-post"] .sc-search{ width: 15em; background: #f3f3f3; border-radius: 4px 0px 0px 4px; height: 34px; } sc-search-post .sc-field,[data-is="sc-search-post"] .sc-field{ display: flex; } sc-search-post .sc-search-btn,[data-is="sc-search-post"] .sc-search-btn{ line-height: 3; border-radius: 0px 4px 4px 0px; }', '', function(opts) {
+riot.tag2('sc-search-post', '<form> <div class="siimple-field sc-field"> <input type="text" class="sc-search siimple-input" placeholder="title, content, category, ..." ref="inpSearch" onkeyup="{() => searchKeyWord()}" onkeydown="{() => searchKeyWord()}" onkeypress="{() => searchKeyWord()}"> <div class="siimple-btn siimple-btn--green sc-search-btn"><box-icon name="search"></box-icon></div> </div> <div class="sc-search-result"> <div class="sc-result-row" each="{r, index in listOfResults}" onclick="{() => gotoPost(r.PostID)}" riot-style="margin-top: {index > 0 ? ((index -1) * 24)+ (index * 65): -20}px"> <b> {r.title} </b><br> <div class="siimple--clearfix"> <div class="siimple--float-left"> <span class="siimple-tag siimple-tag--green">{r.catname}</span> </div> <div class="siimple--float-right"> <span class="siimple-tag siimple-tag--primary siimple-tag--rounded"> by {r.createdBy} </span> </div> </div> <div class="sc-result-btn siimple--bg-light siimple--display-block siimple--color-dark">view</div> </div> </div> </form> <sc-notify></sc-notify>', 'sc-search-post,[data-is="sc-search-post"]{ display: inline-block; float: right; } sc-search-post .sc-search,[data-is="sc-search-post"] .sc-search{ width: 25em; background: #f3f3f3; border-radius: 4px 0px 0px 4px; height: 34px; } sc-search-post .sc-field,[data-is="sc-search-post"] .sc-field{ display: flex; } sc-search-post .sc-search-btn,[data-is="sc-search-post"] .sc-search-btn{ line-height: 3; border-radius: 0px 4px 4px 0px; } sc-search-post .sc-search-result,[data-is="sc-search-post"] .sc-search-result{ } sc-search-post .sc-result-row,[data-is="sc-search-post"] .sc-result-row{ border: 1px solid #ddd; padding: 10px; width: 25em; z-index: 999; position: absolute; background: white; margin-top: -22px; right: 5%; cursor: pointer; } sc-search-post .sc-result-btn,[data-is="sc-search-post"] .sc-result-btn{ padding: 0px 50px; margin-top: 10px; text-align: center; margin: 10px -10px -10px -10px; }', '', function(opts) {
+    var self = this;
+    var listOfResults = [];
+    var baseUrl = '';
+    var mainControl = this.riotx.get('main-control');
+
+    this.searchKeyWord = function(){
+      var text = this.refs.inpSearch.value !== ''? this.refs.inpSearch.value: '';
+      if(text.length >= 2){
+        self.parent.onSearching(true);
+        mainControl.action('searchPostAction', {param: text});
+      }else{
+        self.parent.onSearching(false);
+        self.update({
+          listOfResults: []
+        });
+      }
+    }.bind(this)
+
+    this.gotoPost = function(postId){
+      window.open(self.baseUrl + 'post/' + postId, '_blank');
+    }.bind(this)
+
+    this.notify = function(notifyObj){
+      if(notifyObj !== null){
+        riot.mount('sc-notify', {
+          position : notifyObj.position,
+          theme : notifyObj.theme,
+          leadstyle : notifyObj.leadstyle,
+          stay : notifyObj.stay,
+          message : notifyObj.message,
+          visible : true
+        });
+
+        self.update();
+      }
+    }.bind(this)
+
+    mainControl.change('SearchPostRetrieved', function(state, c){
+      var result = c.getter('searchPostGetter');
+      self.baseUrl = c.getter('baseURLGetter');
+      if(result.success.status){
+        self.update({
+          listOfResults: result.result.queryResult
+        });
+      }else{
+        self.notify({
+          position: 'bottom-left',
+          theme: 'warning',
+          leadstyle: 'primary',
+          stay: 3,
+          message: result.error.message !== ''? result.error.message : 'Unknown result'
+        });
+      }
+    });
 });
 
 
@@ -1950,7 +2057,7 @@ var scAdminObserver = function () {
 });
 riot.tag2('sc-multi-select', '<div class="multi-select"> <ul class="selected"> <li each="{selected}"> <div class="selected-container">{name}<a onclick="{parent.remove}">x</a> </div> </li> <li class="selector" onclick="{show}">&nbsp;</li> </ul> <ul class="selections" show="{showing}"> <li each="{selections}"> <div onclick="{parent.select}">{name}</div> </li> </ul> </div>', 'sc-multi-select .selected,[data-is="sc-multi-select"] .selected{ min-height: 30px; min-width: 200px; border: 1px solid black; } sc-multi-select .multi-select ul,[data-is="sc-multi-select"] .multi-select ul{ list-style-type: none; padding: 0; margin-left: 0; border: 1px solid #ccc; font-weight: bold; border-radius: 0px 0px 4px 4px; } sc-multi-select .selected,[data-is="sc-multi-select"] .selected{ padding: 2px; margin: 0 0 -1px; width: 100%; display: table; table-layout: fixed; } sc-multi-select .selected li div,[data-is="sc-multi-select"] .selected li div{ border: 1px solid #bbb; padding: 5px; margin: 4px; cursor: pointer; } sc-multi-select .selected li div,[data-is="sc-multi-select"] .selected li div,sc-multi-select .selected li a,[data-is="sc-multi-select"] .selected li a{ float: left; margin-right: 5px; } sc-multi-select .selected li a,[data-is="sc-multi-select"] .selected li a{ text-decoration: none; color: darkblue; border: 1px solid darkblue; background-color: lightslategrey; padding: 0 5px; border-radius: 4px; } sc-multi-select .selector,[data-is="sc-multi-select"] .selector{ width: 100%; border: none; height: 30px; } sc-multi-select .selections,[data-is="sc-multi-select"] .selections{ border: 1px solid #ccc; margin-top: 0px; position: absolute; width: 400px; z-index: 10; background: #f4f4f4; border-radius: 0px 0px 4px 4px; line-height: 1.5; } sc-multi-select .selections li,[data-is="sc-multi-select"] .selections li{ padding: 5px; } sc-multi-select .selections li:hover,[data-is="sc-multi-select"] .selections li:hover{ background-color: #ccccff; cursor: pointer; } sc-multi-select .selected-container,[data-is="sc-multi-select"] .selected-container{ border-radius: 4px; } sc-multi-select label,[data-is="sc-multi-select"] label{ margin-top: 8px; } sc-multi-select .show,[data-is="sc-multi-select"] .show{ display: block; } sc-multi-select .hide,[data-is="sc-multi-select"] .hide{ display: none; }', '', function(opts) {
 
-    this.selections = opts.selections !== undefined? opts.selections.sort(function(a,b) {return a.name > b.name}) : '';
+    this.selections = opts.selections !== undefined? opts.selections.sort(function(a,b) {return a.name > b.name}) : [];
     this.selected = [];
     this.showing = false;
     this.selectedFunc = opts.selectedFunc !== undefined? opts.selectedFunc: '';
@@ -1961,13 +2068,11 @@ riot.tag2('sc-multi-select', '<div class="multi-select"> <ul class="selected"> <
 
     this.remove = function(e){
       this._swap(e.item, this.selected, this.selections);
-      mainControl.action(this.selectedFunc, {param: e.item.id, action: 'remove'});
       console.log(this.selected);
     }.bind(this)
 
     this.select = function(e){
       this._swap(e.item, this.selections, this.selected);
-      mainControl.action(this.selectedFunc, {param: e.item.id, action: 'select'});
       console.log(this.selected);
     }.bind(this)
 
@@ -1998,17 +2103,20 @@ riot.tag2('sc-multi-select', '<div class="multi-select"> <ul class="selected"> <
     }.bind(this)
 
     this.setSelected = function(items){
-      for(var n in items){
-        this._swap(items[n], this.selections, this.selected);
+      if(this.selections.length > 0){
+        this.selectionCompare(items, this.selections);
       }
+      this.update();
     }.bind(this)
 
-    mainControl.change(self.setSelectedFunc, function(state, c){
-      var selArray = c.getter(self.getSelectedFunc);
-      if(selArray.length > 0){
-        self.selected = selArray;
-      }
-    });
+    this.selectionCompare = function(arr1, arr2){
+      const matchArr = [];
+      arr1.forEach((e1) => arr2.forEach((e2) => {
+        if(e1.CatID === e2.id){
+          this._swap(e2, this.selections, this.selected);
+        }
+      }));
+    }.bind(this)
 
 });
 riot.tag2('sc-navbar', '<div class="siimple-navbar siimple-navbar--extra-large siimple-navbar--dark"> <div class="siimple-navbar-title">Admin panel</div> <div class="siimple--float-right"> <div class="siimple-navbar-item">Profile</div> <div class="siimple-navbar-item" onclick="{() => logout()}">Logout</div> </div> </div>', '', '', function(opts) {
@@ -2018,7 +2126,7 @@ riot.tag2('sc-navbar', '<div class="siimple-navbar siimple-navbar--extra-large s
       mainControl.action('logoutAction', {})  ;
     }.bind(this)
 });
-riot.tag2('sc-notify', '<div class="{notify_pos} {theme} {leadstyle}" show="{visible}"> {message} </div>', 'sc-notify .light,[data-is="sc-notify"] .light{ background-color: #f4f4f4; color: #1D2F3A; } sc-notify .warning,[data-is="sc-notify"] .warning{ background-color: #F32260; color: #FCF7FA; } sc-notify .success,[data-is="sc-notify"] .success{ background-color: #1ECE80; color: #FCF7FA; } sc-notify .primary,[data-is="sc-notify"] .primary{ background-color: #456990; color: #FCF7FA; } sc-notify .dark,[data-is="sc-notify"] .dark{ background-color: #323C46; color: #FCF7FA; } sc-notify .note,[data-is="sc-notify"] .note{ background-color: #FFD011; color: #1D2F3A; } sc-notify .default,[data-is="sc-notify"] .default{ background-color: #989898; color: #FCF7FA; } sc-notify .primary-border-left,[data-is="sc-notify"] .primary-border-left{ border-left: 5px solid #456990 !important; } sc-notify .dark-border-left,[data-is="sc-notify"] .dark-border-left{ border-left: 5px solid #323c46 !important; } sc-notify .light-border-left,[data-is="sc-notify"] .light-border-left{ border-left: 5px solid #f4f4f4 !important; } sc-notify .warning-border-left,[data-is="sc-notify"] .warning-border-left{ border-left: 5px solid #f32260 !important; } sc-notify .note-border-left,[data-is="sc-notify"] .note-border-left{ border-left: 5px solid #FFD011 !important; } sc-notify .default-border-left,[data-is="sc-notify"] .default-border-left{ border-left: 5px solid #989898 !important; } sc-notify .success-border-left,[data-is="sc-notify"] .success-border-left{ border-left: 5px solid #1ECE80 !important; } sc-notify .notify-bottom-right,[data-is="sc-notify"] .notify-bottom-right{ right: 0; bottom: 0; border: 1px solid #ddd; border-radius: 0.2em; width: 20%; display: inline-block; padding: 20px; margin: 15px; position: absolute } sc-notify .notify-bottom-left,[data-is="sc-notify"] .notify-bottom-left{ left: 0; bottom: 0; border: 1px solid #ddd; border-radius: 0.2em; width: 20%; display: inline-block; padding: 20px; margin: 15px; position: absolute } sc-notify .notify-top-right,[data-is="sc-notify"] .notify-top-right{ right: 0; top: 0; border: 1px solid #ddd; border-radius: 0.2em; width: 20%; display: inline-block; padding: 15px; margin: 15px; position: absolute } sc-notify .notify-top-left,[data-is="sc-notify"] .notify-top-left{ left: 0; top: 0; border: 1px solid #ddd; border-radius: 0.2em; width: 20%; display: inline-block; padding: 20px; margin: 15px; position: absolute } sc-notify .notify-center,[data-is="sc-notify"] .notify-center{ left: 40%; top: 45%; border: 1px solid #ddd; border-radius: 0.2em; width: 20%; display: inline-block; padding: 20px; margin: 15px; position: absolute } sc-notify .notify-progress,[data-is="sc-notify"] .notify-progress{ width: 1%; height: 4px; bottom: 0; position: absolute; left: 0; }', '', function(opts) {
+riot.tag2('sc-notify', '<div class="{notify_pos} {theme} {leadstyle}" show="{visible}"> {message} </div>', 'sc-notify .light,[data-is="sc-notify"] .light{ background-color: #f4f4f4; color: #1D2F3A; } sc-notify .warning,[data-is="sc-notify"] .warning{ background-color: #F32260; color: #FCF7FA; } sc-notify .success,[data-is="sc-notify"] .success{ background-color: #1ECE80; color: #FCF7FA; } sc-notify .primary,[data-is="sc-notify"] .primary{ background-color: #456990; color: #FCF7FA; } sc-notify .dark,[data-is="sc-notify"] .dark{ background-color: #323C46; color: #FCF7FA; } sc-notify .note,[data-is="sc-notify"] .note{ background-color: #FFD011; color: #1D2F3A; } sc-notify .default,[data-is="sc-notify"] .default{ background-color: #989898; color: #FCF7FA; } sc-notify .primary-border-left,[data-is="sc-notify"] .primary-border-left{ border-left: 5px solid #456990 !important; } sc-notify .dark-border-left,[data-is="sc-notify"] .dark-border-left{ border-left: 5px solid #323c46 !important; } sc-notify .light-border-left,[data-is="sc-notify"] .light-border-left{ border-left: 5px solid #f4f4f4 !important; } sc-notify .warning-border-left,[data-is="sc-notify"] .warning-border-left{ border-left: 5px solid #f32260 !important; } sc-notify .note-border-left,[data-is="sc-notify"] .note-border-left{ border-left: 5px solid #FFD011 !important; } sc-notify .default-border-left,[data-is="sc-notify"] .default-border-left{ border-left: 5px solid #989898 !important; } sc-notify .success-border-left,[data-is="sc-notify"] .success-border-left{ border-left: 5px solid #1ECE80 !important; } @media (min-width: 320px) and (max-width: 480px) { sc-notify .notify-bottom-right,[data-is="sc-notify"] .notify-bottom-right{ right: 0; top: 0; border: 1px solid #ddd; border-radius: 0.2em; width: 60%; display: inline-block; padding: 20px; margin: 15px; position: absolute } sc-notify .notify-bottom-left,[data-is="sc-notify"] .notify-bottom-left{ left: 0; top: 0; border: 1px solid #ddd; border-radius: 0.2em; width: 60%; display: inline-block; padding: 20px; margin: 15px; position: absolute } sc-notify .notify-top-right,[data-is="sc-notify"] .notify-top-right{ right: 0; top: 0; border: 1px solid #ddd; border-radius: 0.2em; width: 60%; display: inline-block; padding: 15px; margin: 15px; position: absolute } sc-notify .notify-top-left,[data-is="sc-notify"] .notify-top-left{ left: 0; top: 0; border: 1px solid #ddd; border-radius: 0.2em; width: 60%; display: inline-block; padding: 20px; margin: 15px; position: absolute } sc-notify .notify-center,[data-is="sc-notify"] .notify-center{ left: 40%; top: 45%; border: 1px solid #ddd; border-radius: 0.2em; width: 60%; display: inline-block; padding: 20px; margin: 15px; position: absolute } } @media (min-width: 481px) and (max-width: 767px) { sc-notify .notify-bottom-right,[data-is="sc-notify"] .notify-bottom-right{ right: 0; bottom: 0; border: 1px solid #ddd; border-radius: 0.2em; width: 50%; display: inline-block; padding: 20px; margin: 15px; position: absolute } sc-notify .notify-bottom-left,[data-is="sc-notify"] .notify-bottom-left{ left: 0; bottom: 0; border: 1px solid #ddd; border-radius: 0.2em; width: 50%; display: inline-block; padding: 20px; margin: 15px; position: absolute } sc-notify .notify-top-right,[data-is="sc-notify"] .notify-top-right{ right: 0; top: 0; border: 1px solid #ddd; border-radius: 0.2em; width: 50%; display: inline-block; padding: 15px; margin: 15px; position: absolute } sc-notify .notify-top-left,[data-is="sc-notify"] .notify-top-left{ left: 0; top: 0; border: 1px solid #ddd; border-radius: 0.2em; width: 50%; display: inline-block; padding: 20px; margin: 15px; position: absolute } sc-notify .notify-center,[data-is="sc-notify"] .notify-center{ left: 40%; top: 45%; border: 1px solid #ddd; border-radius: 0.2em; width: 50%; display: inline-block; padding: 20px; margin: 15px; position: absolute } sc-notify .notify-progress,[data-is="sc-notify"] .notify-progress{ width: 1%; height: 4px; bottom: 0; position: absolute; left: 0; } } @media (min-width: 768px) and (max-width: 1024px) { sc-notify .notify-bottom-right,[data-is="sc-notify"] .notify-bottom-right{ right: 0; bottom: 0; border: 1px solid #ddd; border-radius: 0.2em; width: 30%; display: inline-block; padding: 20px; margin: 15px; position: absolute } sc-notify .notify-bottom-left,[data-is="sc-notify"] .notify-bottom-left{ left: 0; bottom: 0; border: 1px solid #ddd; border-radius: 0.2em; width: 30%; display: inline-block; padding: 20px; margin: 15px; position: absolute } sc-notify .notify-top-right,[data-is="sc-notify"] .notify-top-right{ right: 0; top: 0; border: 1px solid #ddd; border-radius: 0.2em; width: 30%; display: inline-block; padding: 15px; margin: 15px; position: absolute } sc-notify .notify-top-left,[data-is="sc-notify"] .notify-top-left{ left: 0; top: 0; border: 1px solid #ddd; border-radius: 0.2em; width: 30%; display: inline-block; padding: 20px; margin: 15px; position: absolute } sc-notify .notify-center,[data-is="sc-notify"] .notify-center{ left: 40%; top: 45%; border: 1px solid #ddd; border-radius: 0.2em; width: 30%; display: inline-block; padding: 20px; margin: 15px; position: absolute } sc-notify .notify-progress,[data-is="sc-notify"] .notify-progress{ width: 1%; height: 4px; bottom: 0; position: absolute; left: 0; } } @media (min-width: 1025px) and (max-width: 1920px) { sc-notify .notify-bottom-right,[data-is="sc-notify"] .notify-bottom-right{ right: 0; bottom: 0; border: 1px solid #ddd; border-radius: 0.2em; width: 20%; display: inline-block; padding: 20px; margin: 15px; position: absolute } sc-notify .notify-bottom-left,[data-is="sc-notify"] .notify-bottom-left{ left: 0; bottom: 0; border: 1px solid #ddd; border-radius: 0.2em; width: 20%; display: inline-block; padding: 20px; margin: 15px; position: absolute } sc-notify .notify-top-right,[data-is="sc-notify"] .notify-top-right{ right: 0; top: 0; border: 1px solid #ddd; border-radius: 0.2em; width: 20%; display: inline-block; padding: 15px; margin: 15px; position: absolute } sc-notify .notify-top-left,[data-is="sc-notify"] .notify-top-left{ left: 0; top: 0; border: 1px solid #ddd; border-radius: 0.2em; width: 20%; display: inline-block; padding: 20px; margin: 15px; position: absolute } sc-notify .notify-center,[data-is="sc-notify"] .notify-center{ left: 40%; top: 45%; border: 1px solid #ddd; border-radius: 0.2em; width: 20%; display: inline-block; padding: 20px; margin: 15px; position: absolute } sc-notify .notify-progress,[data-is="sc-notify"] .notify-progress{ width: 1%; height: 4px; bottom: 0; position: absolute; left: 0; } }', '', function(opts) {
 var scNotifyObserver = function () {
   riot.observable(this);
 }

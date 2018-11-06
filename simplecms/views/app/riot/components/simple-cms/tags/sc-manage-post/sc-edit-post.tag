@@ -2,7 +2,14 @@
   <div class="siimple-form">
     <div class="siimple-field">
       <label class="siimple-label">Title</label><br>
-      <input type="text" class="siimple-input siimple-input--fluid sc-input" ref="inpPostTitle">
+      <input type="text" class="siimple-input siimple-input--fluid sc-input" ref="inpPostTitle" onkeypress="{() => wrtingTitle()}"
+        onkeyup="{() => wrtingTitle()}" onkeydown="{() => wrtingTitle()}">
+      <div class="siimple--display-block siimple--bg-light siimple--color-dark sc-hint">        
+        <small>
+          <box-icon name='link'></box-icon>
+          { baseUrl }post/{ slugText }
+        </small>
+      </div>
     </div>
     <div class="siimple-field">
       <label class="siimple-label">Category</label><br>
@@ -35,12 +42,30 @@
       <mino-date theme="primary" type="modal" ref="inpDate"></mino-date>
     </div>
     <div class="siimple-field">
-      <label class="siimple-label">Creator Name</label>
+      <label class="siimple-label">Meta Tag</label><br>
+      <input type="text" class="siimple-input siimple-input--fluid sc-input" ref="inpMetaTag">
+      <div class="siimple--display-block siimple--bg-light siimple--color-dark sc-hint">        
+        <small>
+          <box-icon name='info-circle'></box-icon>
+          Meta tags contain information about a website. Search engines access certain meta tags so they can,  for instance, display a page title and description in the search results.
+        </small>
+      </div>
+    </div>
+    <div class="siimple-field">
+      <label class="siimple-label">Author Name</label>
       <input type="text" ref="inpCreator" class="siimple-input sc-input"  maxlength="100" placeholder="Your name"/>
     </div>
-    <div class="siimple-btn siimple-btn--primary" onclick="{() => saveContent()}">Save</div>
-    <div class="siimple-btn siimple-btn--warning" onclick="{() => backToList()}">Back</div>
-  </div>
+    <div class="siimple--clearfix">
+      <div class="siimple--float-left">
+        <div class="siimple-btn siimple-btn--primary" onclick="{() => saveContent()}">Save</div>
+        <div class="siimple-btn siimple-btn--warning" onclick="{() => backToList()}">Back</div>
+      </div>
+      <div class="siimple--float-right">        
+        <div class="siimple-btn siimple-btn--light" onclick="{() => preview()}">
+          Preview
+        </div>
+      </div>
+    </div>
   <sc-notify></sc-notify>
   <style>
     .space{
@@ -51,6 +76,10 @@
       background:#f3f3f3; 
       border:1px solid #ccc;
     }
+    .sc-hint{
+      padding: 0.5em;
+      margin-top: 5px;
+    }
   </style>
   <script src="../../../mino-ui/tags/mino-date/mino-date.js"></script>
   <script>
@@ -60,6 +89,8 @@
     var postContent = null;    
     var author = null;
     var categoriesSelected = '';
+    var baseUrl = '';
+    var slugText
     var toolbarOptions = [
       [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
       ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
@@ -90,22 +121,23 @@
     var self = this;
     this.mixin(minoCookie);
 
-    this.on('before-mount', function(){
-      if(self.opts.postid !== ''){
-        self.getContent(self.opts.postid);        
-      }
+    this.on('before-mount', function(){      
+      if(self.opts.postid === ''){
+        self.getAuthorInfo();
+      }      
+      mainControl.action('getCategoriesAction', {param: 'all'});      
     });
 
     this.on('mount', function () {
+      if(self.opts.postid !== ''){
+        self.getContent(self.opts.postid);        
+      }
       editor = new Quill('#editor', options);
       // quill editor add image handler
       editor.getModule('toolbar').addHandler('image', () => {
         self.selectLocalImage();
-      });
-      if(self.opts.postid === ''){
-        self.getAuthorInfo();
-      }
-      mainControl.action('getCategoriesAction', {param: 'all'});      
+      });      
+      self.wrtingTitle();      
     });
 
     getAuthorInfo(){
@@ -120,11 +152,22 @@
       mainControl.action('getPostByIDAction', {param: id});
     }
 
+    wrtingTitle(){
+      var titleText = this.refs.inpPostTitle.value !== undefined? this.refs.inpPostTitle.value: '';
+      if(titleText !== ''){
+        var slug = titleText.replace(/ /g,"-").toLowerCase();
+        self.update({
+          slugText: slug
+        });
+      }
+    }
+
     saveContent(){
       var creator = self.getCookie('uid');
       if(creator === undefined || creator === ''){
         creator = self.getCookie('aid');
       }      
+      self.categoriesSelected = self.refs.selCategories.getSelected('array');      
       var oPost = {
         postId: self.postId,  
         title: self.refs.inpPostTitle.value,
@@ -135,9 +178,10 @@
         publishDate: self.refs.inpDate.value,
         AuthorID: creator,
         createdBy: self.refs.inpCreator.value,
-        categories: self.categoriesSelected
+        categories: self.categoriesSelected,
+        metaTag: self.refs.inpMetaTag.value
       }
-      ///console.log(oPost);
+      console.log(oPost);
       mainControl.action('savePostAction', oPost);      
     }
 
@@ -148,14 +192,24 @@
     }
 
     initPost(p){
+      console.log(p);
       this.refs.inpPostTitle.value = p.title;
       this.refs.chkActive.checked = p.active === 1 ? true: false;
       this.refs.chkVisible.checked = p.visibility === 1 ? true: false;
       this.refs.chkComment.checked = p.allowComment === 1 ? true: false;
       this.refs.inpDate.date = self.formatDate(p.publishDate);     
-      this.refs.inpCreator.value = p.createdBy; 
+      this.refs.inpCreator.value = p.createdBy;
+      this.refs.inpMetaTag.value = p.metaTag;
       postContent = JSON.parse(p.content);
+      if(p.Post_Category !== null){
+        console.log(p.Post_Category);
+        this.refs.selCategories.setSelected(p.Post_Category);
+      }
       editor.setContents(postContent);
+    }
+
+    preview(){      
+      window.open(self.baseUrl + 'post/' + postId, '_blank');
     }
 
     notify(notifyObj){      
@@ -175,10 +229,12 @@
 
     mainControl.change('SinglePostRetrieved', function(state, c){
       var singlePost = c.getter('getSinglePostByIDGetter');
+      var baseUrl = c.getter('baseURLGetter');      
       if (singlePost.success.status){
         self.postId = singlePost.result.PostID;
-        self.post = singlePost.result;        
+        self.post = singlePost.result;         
         self.initPost(self.post);
+        self.baseUrl = baseUrl;
         self.update();    
       }else{
         console.log(singlePost.error);
@@ -243,13 +299,12 @@
         });
         self.cat = carArr;
         console.log(self.cat);
-
-        riot.mount('sc-multi-select', {
-          selections: self.cat,
-          selectedFunc : 'selectCategoryAction',
-          setSelectedFunc : 'CategorySelected',
-          getSelectedFunc : 'getSelectedCategoriesGetter'
-        });
+        
+        //if(self.postId === ''){        
+          self.refs.selCategories.update({
+            selections: self.cat          
+          });
+        //}        
         self.update();
       }else{
         self.notify({

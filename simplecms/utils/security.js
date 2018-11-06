@@ -382,7 +382,16 @@ var checkThis = (type, val) => {
 			checkObj.status = false;
 			checkObj.val = '';
 		}
-		break;	
+		break;
+	case 'ARRAY':
+		if(Array.isArray(val)){
+			checkObj.status = true;
+			checkObj.val = val;
+		}else{
+			checkObj.status = false;
+			checkObj.val = '';
+		}
+		break;
 	default:
 		var str = security.cleanUpStr(val);
 		checkObj.status = true,

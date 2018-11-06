@@ -53,6 +53,10 @@ const Admin = db.define('Admin', {
 	security_phase: {
 		type: Sequelize.TEXT,
 		allowNull: true
+	},
+	avatar: {
+		type: Sequelize.TEXT,
+		allowNull: true
 	}
 });
 
@@ -766,6 +770,31 @@ Post.belongsTo(User, {
 	as:'UserPost'
 });
 
+Post.hasMany(PostCategory, {
+	foreignKey: 'PostID',
+	constraints: true,
+	as: 'Post_Category'
+});
+
+PostCategory.belongsTo(Post, {
+	foreignKey: 'PostID',
+	constraints: true,
+	as: 'Post_Category'
+});
+
+Post.hasMany(PostTag, {
+	foreignKey: 'PostID',
+	constraints: true,
+	as: 'Post_Tag'
+});
+
+PostTag.belongsTo(Post, {
+	foreignKey: 'PostID',
+	constraints: true,
+	as: 'Post_Tag'
+});
+
+
 // Post.belongsToMany(Category, {
 // 	as: 'PostCategory',
 // 	through: 'Post_Category',
@@ -794,18 +823,18 @@ Post.belongsTo(User, {
 // 	otherKey: 'TagID'
 // });
 
-if(config.environment === 'development' && config.dbChange){
+if(config.environment === 'development' &&  config.dbChange){
 	//db.sync({alter: true});
 	//Post.sync({alter:true});
-	Admin.sync({
-		alter: true
-	});
-	User.sync({
-		alter: true
-	});
-	Post.sync({
-		alter: true
-	});	
+	// Post.sync({
+	// 	alter: true
+	// });
+	// PostCategory.sync({
+	// 	alter: true
+	// });
+	// PostTag.sync({
+	// 	alter: true
+	// });	
 }
 
 module.exports = {

@@ -3,14 +3,20 @@
     <div class="entry-logo">      
     </div>
     <div class="entry-form">
-      <h3>Welcome to </h3>
-      <h2> Appec Simple CMS</h2>
-      <small>Strength and growth come only through continuous effort and struggle.</small>
+      <div class="entry-field">
+        <h3>Welcome to </h3>
+        <h2> Appec Simple CMS</h2>
+        <small>Strength and growth come only through continuous effort and struggle.</small>
+      </div>
       <hr>
-      <input ref="admin_email" type="email" class="login-input input-box" placeholder="email"/>
-      <input ref="admin_pwd" type="password" class="login-input input-box" placeholder="password"/>
+      <div class="entry-field">
+        <input ref="admin_email" type="email" class="login-input input-box" placeholder="email"/>
+        <input ref="admin_pwd" type="password" class="login-input input-box" placeholder="password"/>
+      </div>
       <br/>
-      <button type="submit" class="primary btn" onclick="{() => AdminLogin()}">Login</button>    
+      <div class="entry-btn">
+        <button type="submit" class="primary btn" onclick="{() => AdminLogin()}">Login</button>    
+      </div>
     </div>
   </div>
   <!--  <div class="center {theme}" if={login === true && security_phase === true}>
@@ -20,6 +26,67 @@
   </div>  -->
   <sc-notify></sc-notify>
   <style>    
+  @media (min-width: 320px) and (max-width: 480px) {
+    .entry-logo{
+      background-image: url('/images/appec-logo-dark.png');
+      background-repeat: no-repeat;
+      background-size: 55%;
+      height:110px;
+      background-position: center;
+      background-color: #161824;
+    }
+
+    .entry-btn{
+      margin: 0 auto;
+      text-align:center;
+    }
+
+    .entry-field{
+      text-align: center;
+    }
+  }
+
+  @media (min-width: 481px) and (max-width: 767px) {
+    .entry-logo{
+      background-image: url('/images/appec-logo-dark.png');
+      background-repeat: no-repeat;
+      background-size: 55%;
+      height:200px;
+      background-position: center;
+      background-color: #161824;
+    }
+
+    .entry-btn{
+      margin: 0 auto;
+      text-align:center;
+    }
+
+    .entry-field{
+      text-align: center;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .entry-logo{
+      background-image: url('/images/appec-logo-dark.png');
+      background-repeat: no-repeat;
+      background-size: 45%;
+      height:300px;
+      background-position: center;
+      background-color: #161824;
+    }
+
+    .entry-btn{
+      margin: 0 auto;
+      text-align:center;
+    }
+
+    .entry-field{
+      text-align: center;
+    }
+  }
+
+  @media (min-width: 1025px) and (max-width: 1920px) {
     .center {
       position: absolute;      
       left: 50%;
@@ -44,6 +111,8 @@
       padding: 50px;
     }
 
+  }
+  
     h2{
       font-weight: 400;
     }

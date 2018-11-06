@@ -20,7 +20,7 @@
     <div if={isLoading}>
       <div class="siimple-spinner siimple-spinner--teal"></div>    
     </div>
-    <sc-list-post if={list}></sc-list-post>
+    <sc-list-post if={list} ref="postListing"></sc-list-post>
     <sc-edit-post if={edit} postid={post_id}></sc-edit-post>
   <div>
   <style>  
@@ -65,7 +65,7 @@
         this.edit = false;
         this.post_id = '';        
         this.title = 'Manage Post';
-        this.update();        
+        this.update();
       }else{
         this.list = false;
         this.edit = true;
@@ -73,6 +73,10 @@
         this.title = 'Edit Post';
         this.update();
       }
+    }
+
+    onSearching(status){      
+      this.tags['sc-list-post'].onblur(status);
     }
     
   </script>

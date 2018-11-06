@@ -1,5 +1,6 @@
 //Application Model
 const PostModel = require('../models/post.model');
+const CategoryModel = require('../models/category.model');
 //helper
 const security = require('../utils/security');
 var resp = require('../utils/resp');
@@ -25,11 +26,8 @@ exports.createPost = (req, res, next) => {
 			supp.prepareBodyReq(req, oPostReq)
 				.then(oPostValidated => oPostM.createPost(oPostValidated))
 				.then(oPostRec => {
-					//console.log(oPostRec);
 					res.status(200).send(response.initResp(oPostRec));
-				})      
-				.catch(error => {
-					//console.log(error);
+				}).catch(error => {					
 					res.status(400).send(response.initResp(null, error));
 				});
 		}
@@ -356,18 +354,45 @@ exports.paginatePost = async (req, res) => {
 
 	try{
 		result.pages = await oPostM.countPost(1);
-		result.posts = await oPostM.paginatePost(pageNum, 1);
-			
+		result.posts = await oPostM.paginatePost(pageNum, 1);		
 		res.status(200).send(response.initResp(result));
 	}catch(err){
 		res.status(400).send(response.initResp(null, err));
 	}
 };
 
+exports.searchAutoComplete = async(req, res) => {
+	let response = new resp();
+	let oPostM = new PostModel();
+	let query = req.body.queryText;
+	let searchResult = null;
+	
+	try{
+		if(query !== undefined && query !== null){
+			searchResult = await oPostM.searchAutoComplete(query);
+			if(searchResult !== null){
+				res.status(200).send(response.initResp({
+					queryResult: searchResult
+				}));
+			}else{
+				res.status(404).send(response.initResp({
+					queryResult: {}
+				}));
+			}
+		}else{
+			res.status(200).send(response.initResp({				
+				queryResult: {}
+			}));
+		}
+	}catch(err){
+		res.status(500).send(response.initResp(null, err));
+	}
+};
 
 /**Web Route */
 exports.webGetPost = async (req, res, next) => {
 	let oPostM = new PostModel();
+	let oCat = new CategoryModel();
 	let oParam = {
 		PostID : '',
 		slug: ''
@@ -382,12 +407,15 @@ exports.webGetPost = async (req, res, next) => {
 	}
 
 	let oPostResult = await oPostM.webGetPost(oParam);
+	let oCategories = await oCat.getAllCatories();
 	if(oPostResult !== null){
 		let jsonContent = JSON.parse(oPostResult.content);
 		let html = convertDeltaToHtml(jsonContent);
-		oPostResult.content = html;
+		oPostResult.content = html;		
 		res.render('../views/app/web/post/web-post', {
+			baseUrl: config[config.environment].base_url,
 			post: oPostResult,
+			category: oCategories,
 			blog: {
 				brand_title: config[config.environment].app_name,
 				brand_tagline: config[config.environment].app_desc,

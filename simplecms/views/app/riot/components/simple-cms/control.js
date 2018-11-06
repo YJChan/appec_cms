@@ -46,6 +46,7 @@ const loadingInterceptor = http.interceptors.request.use(function (config) {
 http.interceptors.request.eject(loadingInterceptor);
 
 const api = {
+	base_url: base_url,
 	admin:{
 		login: {
 			url: 'admin/login',
@@ -153,6 +154,11 @@ const api = {
 			delete: {
 				url: 'api/post/post-del'
 			}
+		},
+		searchPost: {
+			post: {
+				url: 'api/post/post-search'
+			}
 		}
 	},
 	category: {
@@ -216,7 +222,8 @@ var loginControl = new riotx.Store({
 			lists: '',
 			single_post: '',
 			updated_post: '',
-			deleted_post: ''
+			deleted_post: '',
+			search_result: ''
 		},
 		category: {
 			lists: '',
@@ -741,7 +748,12 @@ var loginControl = new riotx.Store({
 						if (! isNaN(data.visibility)) {
 							oPost['visibility'] = data.visibility;
 						}
-
+						if (Array.isArray(data.categories)) {
+							oPost['categories'] = data.categories;
+						}
+						if (data.metaTag.length > 0) {
+							oPost['metaTag'] = data.metaTag;
+						}
 						//save to existing post
 						if(postId !== undefined && postId !== null && postId !== ''){
 							http.patch(api.post.singlePost.patch.url + '/' + postId, oPost)
@@ -834,24 +846,20 @@ var loginControl = new riotx.Store({
 					}					
 				});
 		},
-		selectCategoryAction: function(context, data){
+		searchPostAction: function(context, data){
 			return Promise.resolve()
-				.then(function() {
-					var selected = data.param;
-					var action = data.action;
-					
-					if(selected !== undefined && selected !== null && selected !== ''){
-						if(action === 'select'){
-							context.commit('selectCategoryMutation', {
-								param: selected,
-								action: 'select'});
-						}else if(action === 'remove'){
-							context.commit('selectCategoryMutation', {
-								param: selected,
-								action: 'remove'});
-						}
-						
-					}
+				.then(function(){
+					try{
+						var queryText = data.param;						
+						http.post(api.post.searchPost.post.url, {queryText: queryText})
+							.then((response) => {
+								if(response.status === 200){									
+									context.commit('searchPostMutation', {param: response.data});
+								}
+							});						
+					}catch(err){
+						renderError(err);
+					}					
 				});
 		}
 	},	
@@ -945,16 +953,9 @@ var loginControl = new riotx.Store({
 			context.state.category.lists = data.param;
 			return ['CategoriesRetrieved'];
 		},
-		selectCategoryMutation: function(context, data){
-			var action = data.action;
-			var param = data.param;
-			if(action === 'select') {
-				context.state.category.selected.push(data.param);
-			}else if(action === 'remove'){
-				context.state.category.selected.splice(context.state.category.selected.indexOf(param), 1);
-			}
-			
-			return ['CategorySelected'];
+		searchPostMutation: function (context, data){
+			context.state.post.search_result = data.param;
+			return ['SearchPostRetrieved'];
 		}
 	},
 	getters: {
@@ -962,7 +963,7 @@ var loginControl = new riotx.Store({
 			return context.state.notification.global.notify_message;
 		},
 		baseURLGetter: function(context){
-			return context.state.baseURL;
+			return context.state.baseUrl;
 		},
 		loginStatusGetter: function (context) {
 			return {
@@ -1020,8 +1021,8 @@ var loginControl = new riotx.Store({
 		getCategoriesGetter: function(context){
 			return context.state.category.lists;
 		},
-		getSelectedCategoriesGetter: function(context){
-			return context.state.category.selected;
+		searchPostGetter: function (context) {
+			return context.state.post.search_result;
 		}
 	}
 });

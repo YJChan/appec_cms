@@ -90,7 +90,7 @@
     }
   </style>
   <script>  
-    this.selections = opts.selections !== undefined? opts.selections.sort(function(a,b) {return a.name > b.name}) : '';
+    this.selections = opts.selections !== undefined? opts.selections.sort(function(a,b) {return a.name > b.name}) : [];
     this.selected = [];    
     this.showing = false;
     this.selectedFunc = opts.selectedFunc !== undefined? opts.selectedFunc: '';
@@ -100,14 +100,12 @@
     var self = this;
 
     remove(e){
-      this._swap(e.item, this.selected, this.selections);
-      mainControl.action(this.selectedFunc, {param: e.item.id, action: 'remove'});
+      this._swap(e.item, this.selected, this.selections);      
       console.log(this.selected);
     }
 
     select(e){
-      this._swap(e.item, this.selections, this.selected);
-      mainControl.action(this.selectedFunc, {param: e.item.id, action: 'select'});
+      this._swap(e.item, this.selections, this.selected);      
       console.log(this.selected);
     }
 
@@ -115,8 +113,8 @@
       this.showing = !this.showing;
     }
 
-    _swap(item, src, dest){
-      dest.push(item);
+    _swap(item, src, dest){      
+      dest.push(item);      
       src.splice(src.indexOf(item), 1);
       this.showing = false;
     }
@@ -138,17 +136,20 @@
     }
 
     setSelected(items){
-      for(var n in items){
-        this._swap(items[n], this.selections, this.selected);
+      if(this.selections.length > 0){
+        this.selectionCompare(items, this.selections);
       }
+      this.update();
     }
 
-    mainControl.change(self.setSelectedFunc, function(state, c){
-      var selArray = c.getter(self.getSelectedFunc);
-      if(selArray.length > 0){
-        self.selected = selArray;
-      }
-    });
+    selectionCompare(arr1, arr2){
+      const matchArr = [];
+      arr1.forEach((e1) => arr2.forEach((e2) => {
+        if(e1.CatID === e2.id){          
+          this._swap(e2, this.selections, this.selected);
+        }
+      }));      
+    }
 
   </script>
 </sc-multi-select>

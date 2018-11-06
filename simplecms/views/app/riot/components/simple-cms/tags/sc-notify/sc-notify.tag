@@ -66,24 +66,25 @@
       border-left: 5px solid #1ECE80 !important;
     }
 
-    .notify-bottom-right{
-      right: 0;
-      bottom: 0;
-      border: 1px solid #ddd;
-      border-radius: 0.2em;
-      width: 20%;
-      display: inline-block;
-      padding: 20px;         
-      margin: 15px;
-      position: absolute
-    }
+    @media (min-width: 320px) and (max-width: 480px) {
+      .notify-bottom-right{
+        right: 0;
+        top: 0;
+        border: 1px solid #ddd;
+        border-radius: 0.2em;
+        width: 60%;
+        display: inline-block;
+        padding: 20px;         
+        margin: 15px;
+        position: absolute
+      }
 
     .notify-bottom-left{
       left: 0;
-      bottom: 0;
+      top: 0;
       border: 1px solid #ddd;
       border-radius: 0.2em;
-      width: 20%;
+      width: 60%;
       display: inline-block;
       padding: 20px;         
       margin: 15px;
@@ -95,7 +96,7 @@
       top: 0;
       border: 1px solid #ddd;
       border-radius: 0.2em;
-      width: 20%;
+      width: 60%;
       display: inline-block;
       padding: 15px;         
       margin: 15px;
@@ -107,7 +108,7 @@
       top: 0;
       border: 1px solid #ddd;
       border-radius: 0.2em;
-      width: 20%;
+      width: 60%;
       display: inline-block;
       padding: 20px;         
       margin: 15px;
@@ -119,19 +120,227 @@
       top: 45%;
       border: 1px solid #ddd;
       border-radius: 0.2em;
-      width: 20%;
+      width: 60%;
       display: inline-block;
       padding: 20px;         
       margin: 15px;
       position: absolute
     }
 
-    .notify-progress{
-      width: 1%;
-      height: 4px;      
-      bottom: 0;
-      position: absolute;
-      left: 0;
+
+    }
+
+    @media (min-width: 481px) and (max-width: 767px) {
+      
+      .notify-bottom-right{
+        right: 0;
+        bottom: 0;
+        border: 1px solid #ddd;
+        border-radius: 0.2em;
+        width: 50%;
+        display: inline-block;
+        padding: 20px;         
+        margin: 15px;
+        position: absolute
+      }
+
+      .notify-bottom-left{
+        left: 0;
+        bottom: 0;
+        border: 1px solid #ddd;
+        border-radius: 0.2em;
+        width: 50%;
+        display: inline-block;
+        padding: 20px;         
+        margin: 15px;
+        position: absolute
+      }
+      
+      .notify-top-right{
+        right: 0;
+        top: 0;
+        border: 1px solid #ddd;
+        border-radius: 0.2em;
+        width: 50%;
+        display: inline-block;
+        padding: 15px;         
+        margin: 15px;
+        position: absolute
+      }
+
+      .notify-top-left{
+        left: 0;
+        top: 0;
+        border: 1px solid #ddd;
+        border-radius: 0.2em;
+        width: 50%;
+        display: inline-block;
+        padding: 20px;         
+        margin: 15px;
+        position: absolute
+      }
+
+      .notify-center{
+        left: 40%;
+        top: 45%;
+        border: 1px solid #ddd;
+        border-radius: 0.2em;
+        width: 50%;
+        display: inline-block;
+        padding: 20px;         
+        margin: 15px;
+        position: absolute
+      }
+
+      .notify-progress{
+        width: 1%;
+        height: 4px;      
+        bottom: 0;
+        position: absolute;
+        left: 0;
+      }
+    }
+
+    @media (min-width: 768px) and (max-width: 1024px) {
+
+      .notify-bottom-right{
+        right: 0;
+        bottom: 0;
+        border: 1px solid #ddd;
+        border-radius: 0.2em;
+        width: 30%;
+        display: inline-block;
+        padding: 20px;         
+        margin: 15px;
+        position: absolute
+      }
+
+      .notify-bottom-left{
+        left: 0;
+        bottom: 0;
+        border: 1px solid #ddd;
+        border-radius: 0.2em;
+        width: 30%;
+        display: inline-block;
+        padding: 20px;         
+        margin: 15px;
+        position: absolute
+      }
+      
+      .notify-top-right{
+        right: 0;
+        top: 0;
+        border: 1px solid #ddd;
+        border-radius: 0.2em;
+        width: 30%;
+        display: inline-block;
+        padding: 15px;         
+        margin: 15px;
+        position: absolute
+      }
+
+      .notify-top-left{
+        left: 0;
+        top: 0;
+        border: 1px solid #ddd;
+        border-radius: 0.2em;
+        width: 30%;
+        display: inline-block;
+        padding: 20px;         
+        margin: 15px;
+        position: absolute
+      }
+
+      .notify-center{
+        left: 40%;
+        top: 45%;
+        border: 1px solid #ddd;
+        border-radius: 0.2em;
+        width: 30%;
+        display: inline-block;
+        padding: 20px;         
+        margin: 15px;
+        position: absolute
+      }
+
+      .notify-progress{
+        width: 1%;
+        height: 4px;      
+        bottom: 0;
+        position: absolute;
+        left: 0;
+      }
+    }
+
+    @media (min-width: 1025px) and (max-width: 1920px) {
+    
+      .notify-bottom-right{
+        right: 0;
+        bottom: 0;
+        border: 1px solid #ddd;
+        border-radius: 0.2em;
+        width: 20%;
+        display: inline-block;
+        padding: 20px;         
+        margin: 15px;
+        position: absolute
+      }
+
+      .notify-bottom-left{
+        left: 0;
+        bottom: 0;
+        border: 1px solid #ddd;
+        border-radius: 0.2em;
+        width: 20%;
+        display: inline-block;
+        padding: 20px;         
+        margin: 15px;
+        position: absolute
+      }
+      
+      .notify-top-right{
+        right: 0;
+        top: 0;
+        border: 1px solid #ddd;
+        border-radius: 0.2em;
+        width: 20%;
+        display: inline-block;
+        padding: 15px;         
+        margin: 15px;
+        position: absolute
+      }
+
+      .notify-top-left{
+        left: 0;
+        top: 0;
+        border: 1px solid #ddd;
+        border-radius: 0.2em;
+        width: 20%;
+        display: inline-block;
+        padding: 20px;         
+        margin: 15px;
+        position: absolute
+      }
+
+      .notify-center{
+        left: 40%;
+        top: 45%;
+        border: 1px solid #ddd;
+        border-radius: 0.2em;
+        width: 20%;
+        display: inline-block;
+        padding: 20px;         
+        margin: 15px;
+        position: absolute
+      }
+
+      .notify-progress{
+        width: 1%;
+        height: 4px;      
+        bottom: 0;
+        position: absolute;
+        left: 0;
+      }
     }
   </style>  
   <script type="text/javascript" src="../../observers/sc-notify-observer.js"></script>

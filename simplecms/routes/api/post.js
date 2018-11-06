@@ -10,16 +10,7 @@ const config = require('../../config/config.json');
 const supp = require('../../utils/supp');
 const _ = require('lodash');
 const PostController = require('../../controllers/post.controller');
-// router.use(bodyParser.json({
-// 	json: {
-// 		limit: '50mb',
-// 		extended: true
-// 	},
-// 	urlencoded: {
-// 		limit: '50mb',
-// 		extended: true
-// 	}
-// }));
+
 let isAuthenticated = (req, res, next) => {
 	const response = new resp();
 	let token = req.get('Authorization') !== null || req.get('Authorization') !== undefined ? req.get('Authorization') : '';
@@ -56,9 +47,11 @@ router.get('/post-get/:postid', isAuthenticated, PostController.getPost);
 
 router.patch('/post-update/:postid', isAuthenticated, PostController.updatePost);
 
-router.patch('/post-view/:postid', PostController.increasePostView);
+router.get('/post-view/:postid', PostController.increasePostView);
 
 router.delete('/post-del/:postid', isAuthenticated, PostController.deletePost);
+
+router.post('/post-search', PostController.searchAutoComplete);
 
 router.get('/all', PostController.getAllPost);
 

@@ -10,7 +10,6 @@
   <link rel='stylesheet' href='/scripts/quill/dist/quill.content.css'/> 
   <link rel='stylesheet' href="/stylesheets/blog-style.css" />  
 </head>
-
 <body>  
   <div id="layout" class="pure-g">
     <div class="sidebar pure-u-1 pure-u-md-1-4">
@@ -21,11 +20,8 @@
         <nav class="nav">
           <ul class="nav-list">
             <li class="nav-item">
-              <a class="pure-button" href="http://purecss.io">Pure</a>
-            </li>
-            <li class="nav-item">
-              <a class="pure-button" href="http://yuilibrary.com">YUI Library</a>
-            </li>
+              <a class="pure-button" href="https://github.com/YJChan/appec_cms">Github</a>
+            </li>            
           </ul>
         </nav>
       </div>
@@ -40,14 +36,23 @@
           <!-- A single blog post -->
           <section class="post">
             <header class="post-header">
-              <!--<img width="48" height="48" alt="Tilo Mitra&#x27;s avatar" class="post-avatar" src="img/common/tilo-avatar.png">               
-              <span class="post-author"><%= post.createdBy %></span>-->
-
+              <% if(post.AdminPost !== null){ %>
+              <img width="48" height="48" alt="<%= post.createdBy %>&#x27;s avatar" class="post-avatar" src="<%= post.AdminPost.avatar %>">
+              <!-- <span class="post-author"><%= post.createdBy %></span> -->
+              <% } %>
               <h2 class="post-title"><%=post.title %></h2>
 
               <p class="post-meta">
-                By <a href="#" class="post-author"><%= post.createdBy %></a> under <a class="post-category post-category-design"
-                  href="#">CSS</a> <a class="post-category post-category-pure" href="#">Pure</a>
+                By <a href="#" class="post-author"><%= post.createdBy %></a> 
+                <% post.Post_Category.forEach(function(oPostCat){ %>                  
+                  <% category.forEach(function(oCat){ %>
+                    <% if (oCat.CatID === oPostCat.CatID) {%>
+                    <a class="post-category post-category-pure">
+                      <%= oCat.catname %>
+                    </a>
+                    <% } %>
+                  <% }); %>
+                <% }); %>
               </p>
             </header>
 
@@ -62,15 +67,26 @@
         <div class="footer">
           <div class="pure-menu pure-menu-horizontal">
             <ul>
-              <li class="pure-menu-item"><a href="http://purecss.io/" class="pure-menu-link">About</a></li>
-              <li class="pure-menu-item"><a href="http://twitter.com/yuilibrary/" class="pure-menu-link">Twitter</a></li>
-              <li class="pure-menu-item"><a href="http://github.com/pure-css/pure/" class="pure-menu-link">GitHub</a></li>
+              <li class="pure-menu-item"><a href="http://appec.work/" class="pure-menu-link">About</a></li>
+              <li class="pure-menu-item"><a href="http://appec.work/" class="pure-menu-link">Services</a></li>
+              <li class="pure-menu-item"><a href="https://github.com/YJChan/appec_cms" class="pure-menu-link">GitHub</a></li>
             </ul>
           </div>
         </div>
       </div>
     </div>
   </div>
+  <script type="text/javascript" src="/scripts/axios/dist/axios.js"></script>
+  <script>
+    window.onload = postViewed();
+
+    function postViewed(){
+      axios.get('<%= baseUrl %>api/post/post-view/<%= post.PostID %>')
+        .then((response) => {
+          console.log(response);
+        });
+    }
+  </script>
 </body>
 
 </html>
