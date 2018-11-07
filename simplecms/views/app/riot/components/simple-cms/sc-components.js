@@ -2230,8 +2230,7 @@ riot.tag2('sc-route', '<div class="siimple-grid-col siimple-grid-col--2"> <div c
     ];
     this.post_routes = [
       {name: 'Manage Posts', url: 'manage-posts', module: 'post'},
-      {name: 'Manage Categories', url: 'manage-category', module: 'post'},
-      {name: 'Manage Tags', url: 'manage-tags', module: 'post'},
+
     ];
     this.admin_route = {
       m_admin: false,
