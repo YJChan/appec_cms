@@ -21,8 +21,10 @@
       <sc-manage-admin if={admin_route.m_admin} acl={acl}></sc-manage-admin>
       <sc-manage-role if={admin_route.m_role} acl={acl}></sc-manage-role>
       <sc-manage-post if={post_route.m_post} acl={acl}></sc-manage-post>
+      <sc-manage-category if={post_route.m_category} acl={acl}></sc-manage-category>
     </div>     
   </div>
+  <div id="modal-bd" class="modal-backdrop"></div>
   <style>
     .sc-menu{
       border: 1px solid #ddd;
@@ -45,8 +47,8 @@
     ];
     this.post_routes = [
       {name: 'Manage Posts', url: 'manage-posts', module: 'post'},
-      /*{name: 'Manage Categories', url: 'manage-category', module: 'post'},
-      {name: 'Manage Tags', url: 'manage-tags', module: 'post'},      */
+      {name: 'Manage Categories', url: 'manage-category', module: 'post'},
+      {name: 'Manage Tags', url: 'manage-tags', module: 'post'},
     ];
     this.admin_route = {
       m_admin: false,

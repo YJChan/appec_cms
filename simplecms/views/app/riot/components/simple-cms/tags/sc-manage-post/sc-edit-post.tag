@@ -116,8 +116,8 @@
       theme: 'snow',
       placeholder: 'Compose something...',            
     };    
-    var mainControl = this.riotx.get('main-control');    
-    this.cat = [{name: 'Something'}, {name:'Tech'}, {name: 'Others'}];
+    var mainControl = this.riotx.get('main-control');  
+    var cat = [];      
     var self = this;
     this.mixin(minoCookie);
 
@@ -125,7 +125,7 @@
       if(self.opts.postid === ''){
         self.getAuthorInfo();
       }      
-      mainControl.action('getCategoriesAction', {param: 'all'});      
+      this.getCategories();
     });
 
     this.on('mount', function () {
@@ -146,6 +146,10 @@
         authorId = self.getCookie('uid');
       }
       mainControl.action('getAuthorInfoAction', {param: authorId});
+    }
+
+    getCategories(){
+      mainControl.action('getCategoriesAction', {param: 'all'});      
     }
 
     getContent(id){
@@ -297,14 +301,10 @@
         category.result.forEach(function(oCat){
           carArr.push({id: oCat.CatID, name: oCat.catname});
         });
-        self.cat = carArr;
-        console.log(self.cat);
-        
-        //if(self.postId === ''){        
-          self.refs.selCategories.update({
-            selections: self.cat          
-          });
-        //}        
+        self.cat = carArr;                    
+        self.refs.selCategories.update({
+          selections: self.cat          
+        });    
         self.update();
       }else{
         self.notify({

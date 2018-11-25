@@ -417,7 +417,132 @@ var scAdminObserver = function () {
     });
 
 });
+riot.tag2('sc-list-category', '<table class="sc-table"> <tr class="sc-tr-header-left"> <td class="sc-th" style="width:60%;">Category Name</td> <td class="sc-th" style="width:10%;">Active</td> <td class="sc-th" style="width:30%;">Action</td> </tr> <tbody> <tr each="{list_of_cat}"> <td class="sc-td-data"> <div class="sc-edit-class"> <input type="text" class="input-readonly" ref="inpCatName{CatID}" riot-value="{catname}" readonly> </div> </td> <td class="sc-td-data"> <div class="siimple-switch"> <input type="checkbox" ref="chkActive{CatID}" id="{CatID}" checked="{active === 1? \'checked\': \'\'}"> <label for="{CatID}"></label> <div></div> </div> </td> <td class="sc-td-data"> <div class="siimple-btn siimple-btn--yellow" onclick="{() => editCategory(CatID)}"> Edit </div> <div class="siimple-btn siimple-btn--error"> Delete </div> </td> </tr> </tbody> </table> <sc-notify></sc-notify> <sc-modal title="Edit Category" ref="editModal" footeraction="1"> <yield to="body"> <div class="siimple-field"> <input ref="inpName" class="input-box md-input-fluid" riot-value="{mObj.catname}"> </div> <div class="siimple-field"> <div class="siimple-switch"> <input type="checkbox" ref="chkActive" id="md{mObj.CatID}" checked="{mObj.active? \'checked\': \'\'}"> <label for="md{mObj.CatID}"></label> <div></div> </div> </div> </yield> <yield to="footer"> </yield> </sc-modal>', 'sc-list-category .input-readonly,[data-is="sc-list-category"] .input-readonly{ display: inline; padding: 0.2rem 0.45rem; font-size: 1rem; line-height: 1.5; color: #1D2F3A; background-color: #f3f3f3; background-clip: padding-box; border: 0px; border-radius: 0.2rem; transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; margin: 5px; } sc-list-category .md-input-fluid,[data-is="sc-list-category"] .md-input-fluid{ width: 95%; }', '', function(opts) {
+    list_of_cat = [];
+    var mainControl = this.riotx.get('main-control');
+    var self = this;
 
+    this.on('before-mount', function(){
+
+    });
+
+    this.on('mount', function(){
+      this.getCategories();
+    });
+
+    this.on('update', function(){
+
+    })
+
+    this.notify = function(notifyObj){
+      if(notifyObj !== null){
+        riot.mount('sc-notify', {
+          position : notifyObj.position,
+          theme : notifyObj.theme,
+          leadstyle : notifyObj.leadstyle,
+          stay : notifyObj.stay,
+          message : notifyObj.message,
+          visible : true
+        });
+
+        self.update();
+      }
+    }.bind(this)
+
+    this.getCategories = function(){
+      mainControl.action('getCategoriesAction', {param: 'all'});
+    }.bind(this)
+
+    this.editCategory = function(catId = ''){
+      var oCat = null;
+      if(catId !== ''){
+        oCat = {
+          CatID : catId,
+          catname: this.refs['inpCatName' + catId].value,
+          active: this.refs['chkActive' + catId].checked
+        }
+      }
+      this.refs.editModal.showModal(oCat);
+    }.bind(this)
+
+    this.modalConfirm = function(){
+      var oCat = {
+        CatID : '',
+        catname: this.tags['sc-modal'].refs.inpName.value,
+        active: this.tags['sc-modal'].refs.chkActive.checked? 1 : 0
+      };
+      if(! self.isEmpty(mObj)){
+        oCat.CatID = mObj.CatID;
+      }
+      console.log(oCat);
+      mainControl.action('saveCategoryAction', {param: oCat});
+    }.bind(this)
+
+    this.modalCancel = function(){
+      this.refs.editModal.showModal();
+    }.bind(this)
+
+    mainControl.change('CategoriesRetrieved', function(state, c){
+      var category = c.getter('getCategoriesGetter');
+      var carArr = [];
+      if(category.success.status){
+        self.list_of_cat = category.result;
+        self.update();
+      }else{
+        self.notify({
+          position: 'bottom-left',
+          theme: 'warning',
+          leadstyle: 'note',
+          stay: 3,
+          message: category.error.message,
+          visibile: true
+        });
+      }
+    });
+
+    mainControl.change('SavedCategory', function(state, c){
+      var category = c.getter('getSavedCategoryGetter');
+      if(category.success.status){
+        self.refs.editModal.showModal();
+        self.getCategories();
+        self.notify({
+          position: 'bottom-left',
+          theme: 'success',
+          leadstyle: 'primary',
+          stay: 3,
+          message: category.success.message,
+          visibile: true
+        });
+      }else{
+        self.notify({
+          position: 'bottom-left',
+          theme: 'warning',
+          leadstyle: 'note',
+          stay: 3,
+          message: category.error.message,
+          visibile: true
+        });
+      }
+    });
+
+    this.isEmpty = function(obj) {
+      for(var key in obj) {
+        if(obj.hasOwnProperty(key)){
+          return false;
+        }
+      }
+      return true;
+    }.bind(this)
+});
+riot.tag2('sc-manage-category', '<div class="siimple-alert siimple-alert--warning" if="{acl.post === undefined || acl.post === null}"> You are not allow to access this module! </div> <div class="simple-grid" if="{acl.post.acl > 4}"> <div class="simple-grid-row"> <div class="siimple--display-block primary sc-title"> {title} </div> <div class="siimple--display-block siimple--bg-light sc-panel" if="{list}"> <div class="siimple-btn siimple-btn--navy {action === \'edit\'? \'siimple-btn--disabled\': \'\'}" if="{acl.post.acl >= 7}" onclick="{() => createCategory()}">Create</div> </div> </div> <div if="{isLoading}"> <div class="siimple-spinner siimple-spinner--teal"></div> </div> <sc-list-category></sc-list-category> <div>', 'sc-manage-category .sc-title,[data-is="sc-manage-category"] .sc-title{ padding: 5px; border-radius: 3px 3px 0px 0px; margin: -15px -15.5px 15px -15.5px } sc-manage-category .sc-panel,[data-is="sc-manage-category"] .sc-panel{ padding: 10px; margin: -15px -15px 20px -15px; }', '', function(opts) {
+    this.title = 'Manage Category';
+    this.list = true;
+    this.acl = opts.acl;
+
+    this.createCategory = function(){
+      this.tags['sc-list-category'].editCategory();
+    }.bind(this)
+});
 riot.tag2('sc-edit-post', '<div class="siimple-form"> <div class="siimple-field"> <label class="siimple-label">Title</label><br> <input type="text" class="siimple-input siimple-input--fluid sc-input" ref="inpPostTitle" onkeypress="{() => wrtingTitle()}" onkeyup="{() => wrtingTitle()}" onkeydown="{() => wrtingTitle()}"> <div class="siimple--display-block siimple--bg-light siimple--color-dark sc-hint"> <small> <box-icon name="link"></box-icon> {baseUrl}post/{slugText} </small> </div> </div> <div class="siimple-field"> <label class="siimple-label">Category</label><br> <sc-multi-select ref="selCategories"></sc-multi-select> </div> <div class="siimple-field"> <div id="editor"> </div> </div> <div class="siimple-field"> <label class="siimple-label">Active</label> <div class="siimple-checkbox"> <input type="checkbox" id="chkActive" ref="chkActive"> <label for="chkActive"></label> </div> <div class="space"></div> <label class="siimple-label">Visibility</label> <div class="siimple-checkbox"> <input type="checkbox" id="chkVisible" ref="chkVisible"> <label for="chkVisible"></label> </div> <div class="space"></div> <label class="siimple-label">Allow Comment</label> <div class="siimple-checkbox"> <input type="checkbox" id="chkComment" ref="chkComment"> <label for="chkComment"></label> </div> <div class="space"></div> <label class="siimple-label">Publish Date</label> <mino-date theme="primary" type="modal" ref="inpDate"></mino-date> </div> <div class="siimple-field"> <label class="siimple-label">Meta Tag</label><br> <input type="text" class="siimple-input siimple-input--fluid sc-input" ref="inpMetaTag"> <div class="siimple--display-block siimple--bg-light siimple--color-dark sc-hint"> <small> <box-icon name="info-circle"></box-icon> Meta tags contain information about a website. Search engines access certain meta tags so they can, for instance, display a page title and description in the search results. </small> </div> </div> <div class="siimple-field"> <label class="siimple-label">Author Name</label> <input type="text" ref="inpCreator" class="siimple-input sc-input" maxlength="100" placeholder="Your name"> </div> <div class="siimple--clearfix"> <div class="siimple--float-left"> <div class="siimple-btn siimple-btn--primary" onclick="{() => saveContent()}">Save</div> <div class="siimple-btn siimple-btn--warning" onclick="{() => backToList()}">Back</div> </div> <div class="siimple--float-right"> <div class="siimple-btn siimple-btn--light" onclick="{() => preview()}"> Preview </div> </div> </div> <sc-notify></sc-notify>', 'sc-edit-post .space,[data-is="sc-edit-post"] .space{ width: 5%; display: inline-block; } sc-edit-post .sc-input,[data-is="sc-edit-post"] .sc-input{ background:#f3f3f3; border:1px solid #ccc; } sc-edit-post .sc-hint,[data-is="sc-edit-post"] .sc-hint{ padding: 0.5em; margin-top: 5px; }', '', function(opts) {
 riot.tag2('mino-date', '<input type="text" ref="{rname}" class="cal {class}" onclick="{() => renderCalendar()}" riot-value="{date}"><br> <div class="{(render || mRender || yRender) && type=== \'modal\' ? \'modal-back\': \'\'}"></div> <div if="{render}" class="{type !== \'modal\'? \'calendar\': \'calendar-modal\'}"> <div class="title-wrapper"> <div class="t-year-title" onclick="{() => monthYearSelection(\'year\')}"> {minodate.year} </div> <div class="month-title" onclick="{() => monthYearSelection(\'month\')}"> {minodate.getMonthName(minodate.month)} </div> <button type="button" class="month-navigator" onclick="{() => minodate.prevMonth()}">&#8249;</button> <button type="button" class="month-navigator" onclick="{() => minodate.nextMonth()}">&#8250;</button> </div> <div> <div class="week-title">S</div> <div class="week-title">M</div> <div class="week-title">T</div> <div class="week-title">W</div> <div class="week-title">T</div> <div class="week-title">F</div> <div class="week-title">S</div> </div> <div class="month-wrapper"> <div class="week-wrapper" each="{week in weeks}"> <mino-week week="{week}" parentname="{rname}" theme="{theme}"></mino-week> </div> </div> <div class="bottom-action"> <div class="action-wrapper" onclick="{() => clearSelection()}"> clear </div> <div class="action-wrapper" onclick="{() => todaySelection()}"> TODAY </div> <div class="action-wrapper" onclick="{() => renderCalendar()}"> close </div> </div> </div> <div if="{mRender}" class="{type !== \'modal\'? \'calendar\': \'calendar-modal\'}" style="overflow: hidden;"> <div class="year-title" onclick="{() => monthYearSelection(\'year\')}">{minodate.year}</div> <div style="display:flex;"> <div class="month-year-selection"> <div class="month-selection" each="{month, m in minodate.getMonthNames()}" onclick="{() => monthSelection(m)}"> {month} </div> </div> </div> <div style="text-align:center;" class="{theme} monthyear-close" onclick="{() => monthYearClose()}">&times; close</div> </div> <div if="{yRender}" class="{type !== \'modal\'? \'calendar\': \'calendar-modal\'}" style="overflow: hidden;"> <div style="display:flex;"> <div class="month-year-selection"> <div class="year-selection" each="{year, y in minodate.getYearSelection(numOfYears)}" onclick="{() => yearSelection(year)}"> {year} </div> </div> </div> <div style="text-align:center;" class="{theme} monthyear-close" onclick="{() => monthYearClose()}">&times; close</div> </div>', 'mino-date,[data-is="mino-date"]{ font-family: \'Lato\', Helvetica, sans-serif; color: #333447; line-height: 1.5; } @media (min-width: 320px) and (max-width: 480px) { mino-date .calendar-modal,[data-is="mino-date"] .calendar-modal{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: 16px; top: 10%; left: 0; width: 90%; box-shadow: 2px 2px 2px 2px #5a5858; } mino-date .calendar,[data-is="mino-date"] .calendar{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: -5px -25px 20px 0px; width: 80%; } mino-date .month-title,[data-is="mino-date"] .month-title{ width: 52%; display: inline-block; text-align:left; font-weight: 600; font-size: x-large; cursor:pointer; } mino-date .t-year-title,[data-is="mino-date"] .t-year-title{ width: 20%; display: inline-block; text-align:center; font-size: large; cursor:pointer; } mino-date .week-title,[data-is="mino-date"] .week-title{ width:11.25%; text-align: center; display:inline-block; padding:1%; } } @media (min-width: 481px) and (max-width: 767px) { mino-date .calendar-modal,[data-is="mino-date"] .calendar-modal{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: 25px; top: 0; left: 6%; width: 45%; box-shadow: 2px 2px 2px 2px #5a5858; } mino-date .calendar,[data-is="mino-date"] .calendar{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: -5px -25px 20px 0px; width: 290px; } mino-date .month-title,[data-is="mino-date"] .month-title{ width: 48%; display: inline-block; text-align:left; font-weight: 600; font-size: x-large; cursor:pointer; border-radius: 0.2em; padding: 1%; } mino-date .t-year-title,[data-is="mino-date"] .t-year-title{ width: 19.5%; display: inline-block; text-align:center; font-size: large; cursor:pointer; border-radius: 0.2em; padding: 1.5%; } mino-date .week-title,[data-is="mino-date"] .week-title{ width:10.5%; text-align: center; display:inline-block; padding:1%; } } @media (min-width: 768px) and (max-width: 1024px) { mino-date .calendar-modal,[data-is="mino-date"] .calendar-modal{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: 25px; top: 0; left: 6%; width: 45%; box-shadow: 2px 2px 2px 2px #5a5858; } mino-date .calendar,[data-is="mino-date"] .calendar{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: -5px -25px 20px 0px; width: 290px; } mino-date .month-title,[data-is="mino-date"] .month-title{ width: 48%; display: inline-block; text-align:left; font-weight: 600; font-size: x-large; cursor:pointer; border-radius: 0.2em; padding: 1%; } mino-date .t-year-title,[data-is="mino-date"] .t-year-title{ width: 19.5%; display: inline-block; text-align:center; font-size: large; cursor:pointer; border-radius: 0.2em; padding: 1.5%; } mino-date .week-title,[data-is="mino-date"] .week-title{ width:11%; text-align: center; display:inline-block; padding:1%; } } @media (min-width: 1025px) and (max-width: 1920px) { mino-date .calendar,[data-is="mino-date"] .calendar{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: -5px -25px 20px 0px; width: 280px; font-size: smaller; } mino-date .calendar-modal,[data-is="mino-date"] .calendar-modal{ border: 0.15em solid #b9b5b5; display: inline-block; position: absolute; background: #f3f3f3; border-radius: 0.25em; height: auto; margin: 25px; top: 10%; left: 35%; width: 350px; box-shadow: 2px 2px 2px 2px #5a5858; } mino-date .month-title,[data-is="mino-date"] .month-title{ width: 46%; display: inline-block; text-align:left; font-size: x-large; cursor:pointer; font-weight: 600; padding:2%; border-radius: 0.2em; } mino-date .t-year-title,[data-is="mino-date"] .t-year-title{ width: 19.5%; display: inline-block; text-align:center; font-size: large; cursor:pointer; padding:2%; border-radius: 0.2em; } mino-date .week-title,[data-is="mino-date"] .week-title{ width:11%; text-align: center; display:inline-block; padding:1%; } } mino-date .modal-back,[data-is="mino-date"] .modal-back{ position: fixed; z-index: 0; padding-top: 100px; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.4); } mino-date .bottom-action,[data-is="mino-date"] .bottom-action{ width: 100%; padding: 1px; } mino-date .action-wrapper,[data-is="mino-date"] .action-wrapper{ box-sizing: border-box; display: inline-block; width: 32%; padding: 4px; text-decoration: none; color: inherit; border: 0; background: transparent; text-align: center; cursor: pointer; border-radius: 0.15em; } mino-date .action-wrapper:hover,[data-is="mino-date"] .action-wrapper:hover{ background: #ddd; color: #161125; } mino-date input.input-line:focus,[data-is="mino-date"] input.input-line:focus{ outline-width: 0; } mino-date .input-box,[data-is="mino-date"] .input-box{ display: inline; padding: 0.2rem 0.45rem; font-size: 1rem; line-height: 1.5; color: #1D2F3A; background-color: #fff; background-clip: padding-box; border: 1.35px solid #ced4da; border-radius: 0.2rem; transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; margin: 5px; } mino-date .input-line,[data-is="mino-date"] .input-line{ display: inline; padding: 0.2rem 0.45rem; font-size: 1rem; line-height: 1.5; color: #1D2F3A; background-color: #fff; background-clip: padding-box; border: 1.35px solid #364a4c; border-top: 0; border-left: 0; border-right: 0; border-radius: 0.2rem; transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; margin: 5px; border-radius: 0; } mino-date .title-wrapper,[data-is="mino-date"] .title-wrapper{ padding: 1%; } mino-date ::-webkit-scrollbar,[data-is="mino-date"] ::-webkit-scrollbar{ display: none; } mino-date .month-year-selection,[data-is="mino-date"] .month-year-selection{ overflow:scroll; box-sizing: content-box; height:auto; margin:0px 15px; text-align:center; width:100%; padding: 1% display: inline-block; } mino-date .month-selection,[data-is="mino-date"] .month-selection{ height:20px; padding: 10px 15px; display: inline-block; border-radius: 0.2em; cursor: pointer; } mino-date .year-selection,[data-is="mino-date"] .year-selection{ height:20px; padding: 15px 15px; display: inline-block; border-radius: 0.2em; cursor: pointer; margin: 5px; } mino-date .t-year-title:hover,[data-is="mino-date"] .t-year-title:hover{ background-color: #ddd; } mino-date .year-selection:hover,[data-is="mino-date"] .year-selection:hover{ background-color: #ddd; } mino-date .month-title:hover,[data-is="mino-date"] .month-title:hover{ background-color: #ddd; } mino-date .month-selection:hover,[data-is="mino-date"] .month-selection:hover{ background-color: #ddd; } mino-date .year-title,[data-is="mino-date"] .year-title{ font-size: 15.5pt; text-align: center; cursor: pointer; padding: 2%; border-radius: 0.2em; } mino-date .year-title:hover,[data-is="mino-date"] .year-title:hover{ background: #ddd; } mino-date .monthyear-close,[data-is="mino-date"] .monthyear-close{ cursor: pointer } mino-date .display-wrapper,[data-is="mino-date"] .display-wrapper{ text-align: center; } mino-date .month-wrapper,[data-is="mino-date"] .month-wrapper{ display:inline-block; width: 100%; } mino-date .week-wrapper,[data-is="mino-date"] .week-wrapper{ width: 100%; height:auto; display:block; padding: 1%; } mino-date .month-navigator,[data-is="mino-date"] .month-navigator{ width:11%; border-radius: 0.2em; border: 0; font-size: 15.5pt; padding: 0px; cursor: pointer; background-color: #f3f3f3; } mino-date .month-navigator:hover,[data-is="mino-date"] .month-navigator:hover{ background: #ddd; } mino-date .light,[data-is="mino-date"] .light{ background-color: #f4f4f4; color: #1D2F3A; } mino-date .warning,[data-is="mino-date"] .warning{ background-color: #F32260; color: #FCF7FA; } mino-date .success,[data-is="mino-date"] .success{ background-color: #1ECE80; color: #FCF7FA; } mino-date .primary,[data-is="mino-date"] .primary{ background-color: #456990; color: #FCF7FA; } mino-date .dark,[data-is="mino-date"] .dark{ background-color: #323C46; color: #FCF7FA; } mino-date .note,[data-is="mino-date"] .note{ background-color: #FFD011; color: #1D2F3A; } mino-date .default,[data-is="mino-date"] .default{ background-color: #989898; color: #FCF7FA; } mino-date .cal,[data-is="mino-date"] .cal{ background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhRE9DVFlQRSBzdmcgIFBVQkxJQyAnLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4nICAnaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkJz48c3ZnIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDgwIDgwIiBoZWlnaHQ9IjgwcHgiIGlkPSJJY29ucyIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgODAgODAiIHdpZHRoPSI4MHB4IiB4bWw6c3BhY2U9InByZXNlcnZlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48Zz48cGF0aCBkPSJNNjEsMjAuMDQ3aC02VjE1aC01djUuMDQ3SDMwVjE1aC01djUuMDQ3aC01LjkxOWMtMi4yMDksMC00LDEuNzkxLTQsNFY2MWMwLDIuMjA5LDEuNzkxLDQsNCw0SDYxYzIuMjA5LDAsNC0xLjc5MSw0LTQgICBWMjQuMDQ3QzY1LDIxLjgzOCw2My4yMDksMjAuMDQ3LDYxLDIwLjA0N3ogTTYwLDYwSDIwVjM1aDQwVjYweiBNNjAsMzBIMjB2LTVoNDBWMzB6Ii8+PHJlY3QgaGVpZ2h0PSI1IiB3aWR0aD0iNSIgeD0iMzgiIHk9IjQwIi8+PHJlY3QgaGVpZ2h0PSI1IiB3aWR0aD0iNSIgeD0iNDgiIHk9IjQwIi8+PHJlY3QgaGVpZ2h0PSI1IiB3aWR0aD0iNSIgeD0iMzgiIHk9IjUwIi8+PHJlY3QgaGVpZ2h0PSI1IiB3aWR0aD0iNSIgeD0iMjgiIHk9IjUwIi8+PC9nPjwvc3ZnPg==) no-repeat scroll 4.5px 4.5px; background-position: right; background-repeat: no-repeat; background-size: 30px; }', '', function(opts) {
 var minoDateObserver = function () {
@@ -917,7 +1042,7 @@ riot.tag2('mino-week', '<mino-day each="{week}" day="{day}" month="{month}" year
       placeholder: 'Compose something...',
     };
     var mainControl = this.riotx.get('main-control');
-    this.cat = [{name: 'Something'}, {name:'Tech'}, {name: 'Others'}];
+    var cat = [];
     var self = this;
     this.mixin(minoCookie);
 
@@ -925,7 +1050,7 @@ riot.tag2('mino-week', '<mino-day each="{week}" day="{day}" month="{month}" year
       if(self.opts.postid === ''){
         self.getAuthorInfo();
       }
-      mainControl.action('getCategoriesAction', {param: 'all'});
+      this.getCategories();
     });
 
     this.on('mount', function () {
@@ -946,6 +1071,10 @@ riot.tag2('mino-week', '<mino-day each="{week}" day="{day}" month="{month}" year
         authorId = self.getCookie('uid');
       }
       mainControl.action('getAuthorInfoAction', {param: authorId});
+    }.bind(this)
+
+    this.getCategories = function(){
+      mainControl.action('getCategoriesAction', {param: 'all'});
     }.bind(this)
 
     this.getContent = function(id){
@@ -1098,12 +1227,9 @@ riot.tag2('mino-week', '<mino-day each="{week}" day="{day}" month="{month}" year
           carArr.push({id: oCat.CatID, name: oCat.catname});
         });
         self.cat = carArr;
-        console.log(self.cat);
-
-          self.refs.selCategories.update({
-            selections: self.cat
-          });
-
+        self.refs.selCategories.update({
+          selections: self.cat
+        });
         self.update();
       }else{
         self.notify({
@@ -2055,6 +2181,44 @@ var scAdminObserver = function () {
     }.bind(this)
 
 });
+riot.tag2('sc-modal', '<div class="modal {size}" if="{show}"> <div class="modal-header"> <div class="siimple--clearfix"> <div class="siimple--float-left">{title}</div> <div class="siimple--float-right modal-btn" onclick="{() => exitModal()}"> <box-icon name="x"></box-icon> </div> </div> </div> <div class="modal-body"> <yield from="body"></yield> </div> <div class="modal-footer"> <yield from="footer"></yield> <div class="siimple-btn siimple-btn--primary" if="{footeraction}" onclick="{parent.modalConfirm}" ref="btnConfirm">Save</div> <div class="siimple-btn siimple-btn--red" if="{footeraction}" onclick="{parent.modalCancel}" ref="btnCancel">Cancel</div> </div> </div>', 'sc-modal .modal,[data-is="sc-modal"] .modal{ background-color: #f3f3f3; color: #111; border: 1px solid #ddd; position: absolute; top: 15%; left: 50%; transform: translate(-50%, -50%); z-index: 10002; padding: 15px; border-radius: 4px; } sc-modal .small,[data-is="sc-modal"] .small{ width: 70%; } sc-modal .medium,[data-is="sc-modal"] .medium{ width: 50%; } sc-modal .large,[data-is="sc-modal"] .large{ width: 30%; } sc-modal .modal-btn,[data-is="sc-modal"] .modal-btn{ cursor: pointer; }', '', function(opts) {
+    show = opts.show !==  undefined? true : false;
+    title = opts.title !== undefined? opts.title: "";
+    size = opts.size !== undefined? opts.size: "medium";
+    body = opts.body !== undefined? opts.body: "";
+    footer = opts.footer !== undefined? opts.footer: "";
+    mObj = opts.mObj !== undefined? opts.mObj: {};
+    footeraction = opts.footeraction === "1" ? true : false;
+    var self = this;
+
+    this.on('mount', function(){
+      if(show){
+        document.getElementById("modal-bd").style.display = "block";
+      }
+    })
+
+    this.showModal = function(oParam = null){
+      if(oParam !== null){
+        mObj = oParam;
+      }
+
+      if(this.show){
+        this.show = false;
+        document.getElementById("modal-bd").style.display = "none";
+        this.update();
+      }else{
+        this.show = true;
+        document.getElementById("modal-bd").style.display = "block";
+        this.update();
+      }
+    }.bind(this)
+
+    this.exitModal = function(){
+      this.show = false;
+      document.getElementById("modal-bd").style.display = "none";
+      this.update();
+    }.bind(this)
+});
 riot.tag2('sc-multi-select', '<div class="multi-select"> <ul class="selected"> <li each="{selected}"> <div class="selected-container">{name}<a onclick="{parent.remove}">x</a> </div> </li> <li class="selector" onclick="{show}">&nbsp;</li> </ul> <ul class="selections" show="{showing}"> <li each="{selections}"> <div onclick="{parent.select}">{name}</div> </li> </ul> </div>', 'sc-multi-select .selected,[data-is="sc-multi-select"] .selected{ min-height: 30px; min-width: 200px; border: 1px solid black; } sc-multi-select .multi-select ul,[data-is="sc-multi-select"] .multi-select ul{ list-style-type: none; padding: 0; margin-left: 0; border: 1px solid #ccc; font-weight: bold; border-radius: 0px 0px 4px 4px; } sc-multi-select .selected,[data-is="sc-multi-select"] .selected{ padding: 2px; margin: 0 0 -1px; width: 100%; display: table; table-layout: fixed; } sc-multi-select .selected li div,[data-is="sc-multi-select"] .selected li div{ border: 1px solid #bbb; padding: 5px; margin: 4px; cursor: pointer; } sc-multi-select .selected li div,[data-is="sc-multi-select"] .selected li div,sc-multi-select .selected li a,[data-is="sc-multi-select"] .selected li a{ float: left; margin-right: 5px; } sc-multi-select .selected li a,[data-is="sc-multi-select"] .selected li a{ text-decoration: none; color: darkblue; border: 1px solid darkblue; background-color: lightslategrey; padding: 0 5px; border-radius: 4px; } sc-multi-select .selector,[data-is="sc-multi-select"] .selector{ width: 100%; border: none; height: 30px; } sc-multi-select .selections,[data-is="sc-multi-select"] .selections{ border: 1px solid #ccc; margin-top: 0px; position: absolute; width: 400px; z-index: 10; background: #f4f4f4; border-radius: 0px 0px 4px 4px; line-height: 1.5; } sc-multi-select .selections li,[data-is="sc-multi-select"] .selections li{ padding: 5px; } sc-multi-select .selections li:hover,[data-is="sc-multi-select"] .selections li:hover{ background-color: #ccccff; cursor: pointer; } sc-multi-select .selected-container,[data-is="sc-multi-select"] .selected-container{ border-radius: 4px; } sc-multi-select label,[data-is="sc-multi-select"] label{ margin-top: 8px; } sc-multi-select .show,[data-is="sc-multi-select"] .show{ display: block; } sc-multi-select .hide,[data-is="sc-multi-select"] .hide{ display: none; }', '', function(opts) {
 
     this.selections = opts.selections !== undefined? opts.selections.sort(function(a,b) {return a.name > b.name}) : [];
@@ -2221,7 +2385,7 @@ var scNotifyObserver = function () {
 
     }.bind(this)
 });
-riot.tag2('sc-route', '<div class="siimple-grid-col siimple-grid-col--2"> <div class="siimple-menu sc-menu"> <div class="siimple-menu-group">Administration</div> <div each="{admin_routes}"> <a class="siimple-menu-item" href="#{url}">{name}</a> </div> </div> <div class="siimple-menu sc-menu"> <div class="siimple-menu-group">Post</div> <div each="{post_routes}"> <a class="siimple-menu-item" href="#{url}">{name}</a> </div> </div> </div> <div class="siimple-grid-col siimple-grid-col--10"> <div if="{isLoading}"> <div class="siimple-spinner siimple-spinner--teal"></div> </div> <div class="siimple-content siimple-content--fluid sc-main-panel" if="{isLoading === false}"> <sc-manage-admin if="{admin_route.m_admin}" acl="{acl}"></sc-manage-admin> <sc-manage-role if="{admin_route.m_role}" acl="{acl}"></sc-manage-role> <sc-manage-post if="{post_route.m_post}" acl="{acl}"></sc-manage-post> </div> </div>', 'sc-route .sc-menu,[data-is="sc-route"] .sc-menu{ border: 1px solid #ddd; padding:10px; border-radius: 4px; } sc-route .sc-main-panel,[data-is="sc-route"] .sc-main-panel{ padding: 15px; border: 1px solid #ddd; border-radius: 4px; }', '', function(opts) {
+riot.tag2('sc-route', '<div class="siimple-grid-col siimple-grid-col--2"> <div class="siimple-menu sc-menu"> <div class="siimple-menu-group">Administration</div> <div each="{admin_routes}"> <a class="siimple-menu-item" href="#{url}">{name}</a> </div> </div> <div class="siimple-menu sc-menu"> <div class="siimple-menu-group">Post</div> <div each="{post_routes}"> <a class="siimple-menu-item" href="#{url}">{name}</a> </div> </div> </div> <div class="siimple-grid-col siimple-grid-col--10"> <div if="{isLoading}"> <div class="siimple-spinner siimple-spinner--teal"></div> </div> <div class="siimple-content siimple-content--fluid sc-main-panel" if="{isLoading === false}"> <sc-manage-admin if="{admin_route.m_admin}" acl="{acl}"></sc-manage-admin> <sc-manage-role if="{admin_route.m_role}" acl="{acl}"></sc-manage-role> <sc-manage-post if="{post_route.m_post}" acl="{acl}"></sc-manage-post> <sc-manage-category if="{post_route.m_category}" acl="{acl}"></sc-manage-category> </div> </div> <div id="modal-bd" class="modal-backdrop"></div>', 'sc-route .sc-menu,[data-is="sc-route"] .sc-menu{ border: 1px solid #ddd; padding:10px; border-radius: 4px; } sc-route .sc-main-panel,[data-is="sc-route"] .sc-main-panel{ padding: 15px; border: 1px solid #ddd; border-radius: 4px; }', '', function(opts) {
     this.mixin(minoCookie);
     this.theme = '';
     this.admin_routes = [
@@ -2230,7 +2394,8 @@ riot.tag2('sc-route', '<div class="siimple-grid-col siimple-grid-col--2"> <div c
     ];
     this.post_routes = [
       {name: 'Manage Posts', url: 'manage-posts', module: 'post'},
-
+      {name: 'Manage Categories', url: 'manage-category', module: 'post'},
+      {name: 'Manage Tags', url: 'manage-tags', module: 'post'},
     ];
     this.admin_route = {
       m_admin: false,

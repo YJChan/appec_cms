@@ -154,6 +154,16 @@ input.input-line:focus {
   text-align: center;
 }
 
+.sc-tr-header-left {
+  vertical-align: bottom;
+  text-align: left;
+}
+
+.sc-tr-header-right {
+  vertical-align: bottom;
+  text-align: right;
+}
+
 .sc-th {
   font-weight: 700;
   border-bottom: 1px solid #fff !important;
@@ -171,6 +181,7 @@ input.input-line:focus {
 
 .sc-table .sc-td-data {
   background-color: #f3f3f3;
+  padding: 0.45em;
 }
 
 @media (min-width: 320px) and (max-width: 480px) {
@@ -715,5 +726,21 @@ ball {
 .err-stack {
   margin-top: 80px;
   font-size: 0.8em;
-  
+
+}
+
+.modal-backdrop {
+  background: #b1b1a68a;
+  filter: blur(10px);
+  -webkit-filter: blue(2px);
+  height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: absolute;
+  width: 100%;
+  z-index: 10001;
+  margin-top: -30px;
+  margin-left: -20px;
+  display: none;
 }

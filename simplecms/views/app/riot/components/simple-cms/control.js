@@ -164,7 +164,7 @@ const api = {
 	category: {
 		lists: {
 			get: {
-				url: 'api/category/all'
+				url: 'api/category/'
 			}
 		},
 		save: {
@@ -229,7 +229,8 @@ var loginControl = new riotx.Store({
 			lists: '',
 			save: '',
 			delete: '',
-			selected: []
+			selected: [],
+			saved_category: ''
 		}
 	},
 	actions: {
@@ -846,6 +847,48 @@ var loginControl = new riotx.Store({
 					}					
 				});
 		},
+		saveCategoryAction: function(context, data){
+			return Promise.resolve()
+				.then(function(){
+					try{
+						var param = data.param;
+						var oCat = {};
+						if(param.CatID.length > 0){
+							oCat['CatID'] = param.CatID;
+						}else{
+							oCat['CatID'] = '';
+						}
+						if(param.catname.length > 0){
+							oCat['catname'] = param.catname;
+						}
+						if(! isNaN(param.active)){
+							oCat['active'] = param.active;
+						}
+						if(oCat.CatID.length > 0){
+							http.patch(api.category.save.patch.url + oCat.CatID, oCat)
+								.then((response) => {
+									if (response.status === 200) {
+										console.log(response.data);
+										context.commit('saveCategoryMutation', { param: response.data });										
+									} else if (response.status === 401) {
+										unAuthRedirect();
+									}
+								});
+						}else{							
+							http.post(api.category.save.post.url, oCat)
+								.then((response) => {
+									if (response.status === 200) {
+										context.commit('saveCategoryMutation', { param: response.data });
+									} else if (response.status === 401) {
+										unAuthRedirect();
+									}
+								});
+						}
+					}catch(err){
+						renderError(err);						
+					}					
+				});
+		},
 		searchPostAction: function(context, data){
 			return Promise.resolve()
 				.then(function(){
@@ -956,6 +999,10 @@ var loginControl = new riotx.Store({
 		searchPostMutation: function (context, data){
 			context.state.post.search_result = data.param;
 			return ['SearchPostRetrieved'];
+		},
+		saveCategoryMutation: function(context, data){
+			context.state.post.saved_category = data.param;
+			return ['SavedCategory'];
 		}
 	},
 	getters: {
@@ -1020,6 +1067,9 @@ var loginControl = new riotx.Store({
 		},
 		getCategoriesGetter: function(context){
 			return context.state.category.lists;
+		},
+		getSavedCategoryGetter: function(context){
+			return context.state.post.saved_category;
 		},
 		searchPostGetter: function (context) {
 			return context.state.post.search_result;

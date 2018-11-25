@@ -10,10 +10,7 @@
       <div class="siimple--display-block siimple--bg-light sc-panel" if={list}>
         <div class="siimple-btn siimple-btn--navy {action === 'edit'? 'siimple-btn--disabled': ''}"
           if={acl.post.acl >= 7}
-          onclick="{() => createPost()}">Create</div>        
-        <!--  <div class="siimple-btn siimple-btn--success siimple--float-right {action === 'edit'? 'siimple-btn--disabled': ''}" 
-          if={acl.post.acl >= 4}
-          onclick="{() => refreshPost()}">Refresh</div>  -->
+          onclick="{() => createPost()}">Create</div>                
         <sc-search-post></sc-search-post>
       </div>
     </div>
