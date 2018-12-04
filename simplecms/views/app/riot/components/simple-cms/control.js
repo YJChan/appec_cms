@@ -164,7 +164,7 @@ const api = {
 	category: {
 		lists: {
 			get: {
-				url: 'api/category/'
+				url: 'api/category'
 			}
 		},
 		save: {
@@ -230,7 +230,8 @@ var loginControl = new riotx.Store({
 			save: '',
 			delete: '',
 			selected: [],
-			saved_category: ''
+			saved_category: '',
+			deleted_category: ''
 		}
 	},
 	actions: {
@@ -833,6 +834,9 @@ var loginControl = new riotx.Store({
 				.then(function(){
 					try{
 						var param = data.param;
+						if(param.indexOf('/') < 0){
+							param = '/' + param;
+						}
 						http.get(api.category.lists.get.url + param)
 							.then((response) => {
 								if(response.status === 200){
@@ -889,6 +893,26 @@ var loginControl = new riotx.Store({
 					}					
 				});
 		},
+		delCategoryAction: function(context, data){
+			return Promise.resolve()
+				.then(function(){
+					try{
+						var catID = data.param;
+						http.delete(api.category.remove.delete.url + catID, {
+							catid: catID
+						})
+							.then((response) => {
+								if(response.status === 200) {
+									context.commit('delCategoryMutation', {param: response.data});
+								}else if(response.status === 401){
+									unAuthRedirect();
+								}
+							});
+					}catch(err){
+						renderError(err);
+					}
+				});
+		},
 		searchPostAction: function(context, data){
 			return Promise.resolve()
 				.then(function(){
@@ -898,6 +922,8 @@ var loginControl = new riotx.Store({
 							.then((response) => {
 								if(response.status === 200){									
 									context.commit('searchPostMutation', {param: response.data});
+								} else if (response.status === 401) {
+									unAuthRedirect();
 								}
 							});						
 					}catch(err){
@@ -1003,6 +1029,10 @@ var loginControl = new riotx.Store({
 		saveCategoryMutation: function(context, data){
 			context.state.post.saved_category = data.param;
 			return ['SavedCategory'];
+		},
+		delCategoryMutation: function(context, data){
+			context.state.category.deleted_category = data.param;
+			return ['CategoryDeleted'];
 		}
 	},
 	getters: {
@@ -1073,6 +1103,9 @@ var loginControl = new riotx.Store({
 		},
 		searchPostGetter: function (context) {
 			return context.state.post.search_result;
+		},
+		getDelCategoryGetter: function (context) {
+			return context.state.category.deleted_category;
 		}
 	}
 });

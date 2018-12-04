@@ -417,7 +417,7 @@ var scAdminObserver = function () {
     });
 
 });
-riot.tag2('sc-list-category', '<table class="sc-table"> <tr class="sc-tr-header-left"> <td class="sc-th" style="width:60%;">Category Name</td> <td class="sc-th" style="width:10%;">Active</td> <td class="sc-th" style="width:30%;">Action</td> </tr> <tbody> <tr each="{list_of_cat}"> <td class="sc-td-data"> <div class="sc-edit-class"> <input type="text" class="input-readonly" ref="inpCatName{CatID}" riot-value="{catname}" readonly> </div> </td> <td class="sc-td-data"> <div class="siimple-switch"> <input type="checkbox" ref="chkActive{CatID}" id="{CatID}" checked="{active === 1? \'checked\': \'\'}"> <label for="{CatID}"></label> <div></div> </div> </td> <td class="sc-td-data"> <div class="siimple-btn siimple-btn--yellow" onclick="{() => editCategory(CatID)}"> Edit </div> <div class="siimple-btn siimple-btn--error"> Delete </div> </td> </tr> </tbody> </table> <sc-notify></sc-notify> <sc-modal title="Edit Category" ref="editModal" footeraction="1"> <yield to="body"> <div class="siimple-field"> <input ref="inpName" class="input-box md-input-fluid" riot-value="{mObj.catname}"> </div> <div class="siimple-field"> <div class="siimple-switch"> <input type="checkbox" ref="chkActive" id="md{mObj.CatID}" checked="{mObj.active? \'checked\': \'\'}"> <label for="md{mObj.CatID}"></label> <div></div> </div> </div> </yield> <yield to="footer"> </yield> </sc-modal>', 'sc-list-category .input-readonly,[data-is="sc-list-category"] .input-readonly{ display: inline; padding: 0.2rem 0.45rem; font-size: 1rem; line-height: 1.5; color: #1D2F3A; background-color: #f3f3f3; background-clip: padding-box; border: 0px; border-radius: 0.2rem; transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; margin: 5px; } sc-list-category .md-input-fluid,[data-is="sc-list-category"] .md-input-fluid{ width: 95%; }', '', function(opts) {
+riot.tag2('sc-list-category', '<table class="sc-table"> <tr class="sc-tr-header-left"> <td class="sc-th" style="width:60%;">Category Name</td> <td class="sc-th" style="width:10%;">Active</td> <td class="sc-th" style="width:30%;">Action</td> </tr> <tbody> <tr each="{list_of_cat}"> <td class="sc-td-data"> <div class="sc-edit-class"> <input type="text" class="input-readonly" ref="inpCatName{CatID}" riot-value="{catname}" readonly> </div> </td> <td class="sc-td-data"> <div class="siimple-switch"> <input type="checkbox" ref="chkActive{CatID}" id="{CatID}" checked="{active === 1? \'checked\': \'\'}"> <label for="{CatID}"></label> <div></div> </div> </td> <td class="sc-td-data"> <div class="siimple-btn siimple-btn--yellow" onclick="{() => editCategory(CatID)}"> Edit </div> <div class="siimple-btn siimple-btn--error" onclick="{() => delCategory(CatID)}"> Disable </div> </td> </tr> </tbody> </table> <sc-notify></sc-notify> <sc-modal title="Edit Category" ref="editModal" footeraction="1"> <yield to="body"> <div class="siimple-field"> <input ref="inpName" class="input-box md-input-fluid" riot-value="{mObj.catname}"> </div> <div class="siimple-field"> <div class="siimple-switch"> <input type="checkbox" ref="chkActive" id="md{mObj.CatID}" checked="{mObj.active? \'checked\': \'\'}"> <label for="md{mObj.CatID}"></label> <div></div> </div> </div> </yield> <yield to="footer"> </yield> </sc-modal>', 'sc-list-category .input-readonly,[data-is="sc-list-category"] .input-readonly{ display: inline; padding: 0.2rem 0.45rem; font-size: 1rem; line-height: 1.5; color: #1D2F3A; background-color: #f3f3f3; background-clip: padding-box; border: 0px; border-radius: 0.2rem; transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; margin: 5px; } sc-list-category .md-input-fluid,[data-is="sc-list-category"] .md-input-fluid{ width: 95%; }', '', function(opts) {
     list_of_cat = [];
     var mainControl = this.riotx.get('main-control');
     var self = this;
@@ -427,7 +427,7 @@ riot.tag2('sc-list-category', '<table class="sc-table"> <tr class="sc-tr-header-
     });
 
     this.on('mount', function(){
-      this.getCategories();
+      this.getCategories(true);
     });
 
     this.on('update', function(){
@@ -449,8 +449,12 @@ riot.tag2('sc-list-category', '<table class="sc-table"> <tr class="sc-tr-header-
       }
     }.bind(this)
 
-    this.getCategories = function(){
-      mainControl.action('getCategoriesAction', {param: 'all'});
+    this.getCategories = function(activeOnly = false){
+      if(activeOnly){
+        mainControl.action('getCategoriesAction', {param: '?active=1'});
+      }else{
+        mainControl.action('getCategoriesAction', {param: '/all'});
+      }
     }.bind(this)
 
     this.editCategory = function(catId = ''){
@@ -461,8 +465,29 @@ riot.tag2('sc-list-category', '<table class="sc-table"> <tr class="sc-tr-header-
           catname: this.refs['inpCatName' + catId].value,
           active: this.refs['chkActive' + catId].checked
         }
+      }else{
+        oCat = {
+          CatID : '',
+          catname: '',
+          active: true
+        }
       }
       this.refs.editModal.showModal(oCat);
+    }.bind(this)
+
+    this.delCategory = function(catId){
+      if(catId !== ''){
+        mainControl.action('delCategoryAction', {param: catId});
+      }else{
+        self.notify({
+          position: 'bottom-left',
+          theme: 'warning',
+          leadstyle: 'note',
+          stay: 3,
+          message: 'No category ID provided',
+          visibile: true
+        });
+      }
     }.bind(this)
 
     this.modalConfirm = function(){
@@ -474,12 +499,21 @@ riot.tag2('sc-list-category', '<table class="sc-table"> <tr class="sc-tr-header-
       if(! self.isEmpty(mObj)){
         oCat.CatID = mObj.CatID;
       }
-      console.log(oCat);
+
       mainControl.action('saveCategoryAction', {param: oCat});
     }.bind(this)
 
     this.modalCancel = function(){
-      this.refs.editModal.showModal();
+      this.tags['sc-modal'].refs.inpName.value = '';
+      this.refs.editModal.exitModal();
+    }.bind(this)
+
+    this.showAllCategory = function(status){
+      if(status){
+        this.getCategories(false);
+      }else{
+        this.getCategories(true);
+      }
     }.bind(this)
 
     mainControl.change('CategoriesRetrieved', function(state, c){
@@ -525,6 +559,31 @@ riot.tag2('sc-list-category', '<table class="sc-table"> <tr class="sc-tr-header-
       }
     });
 
+    mainControl.change('CategoryDeleted', function(state, c){
+      var category = c.getter('getDelCategoryGetter');
+      if(category.success.status){
+        self.parent.all = true;
+        self.showAllCategory(true);
+        self.notify({
+          position: 'bottom-left',
+          theme: 'success',
+          leadstyle: 'primary',
+          stay: 3,
+          message: category.success.message,
+          visibile: true
+        });
+      }else{
+        self.notify({
+          position: 'bottom-left',
+          theme: 'warning',
+          leadstyle: 'note',
+          stay: 3,
+          message: category.error.message,
+          visibile: true
+        });
+      }
+    });
+
     this.isEmpty = function(obj) {
       for(var key in obj) {
         if(obj.hasOwnProperty(key)){
@@ -534,13 +593,24 @@ riot.tag2('sc-list-category', '<table class="sc-table"> <tr class="sc-tr-header-
       return true;
     }.bind(this)
 });
-riot.tag2('sc-manage-category', '<div class="siimple-alert siimple-alert--warning" if="{acl.post === undefined || acl.post === null}"> You are not allow to access this module! </div> <div class="simple-grid" if="{acl.post.acl > 4}"> <div class="simple-grid-row"> <div class="siimple--display-block primary sc-title"> {title} </div> <div class="siimple--display-block siimple--bg-light sc-panel" if="{list}"> <div class="siimple-btn siimple-btn--navy {action === \'edit\'? \'siimple-btn--disabled\': \'\'}" if="{acl.post.acl >= 7}" onclick="{() => createCategory()}">Create</div> </div> </div> <div if="{isLoading}"> <div class="siimple-spinner siimple-spinner--teal"></div> </div> <sc-list-category></sc-list-category> <div>', 'sc-manage-category .sc-title,[data-is="sc-manage-category"] .sc-title{ padding: 5px; border-radius: 3px 3px 0px 0px; margin: -15px -15.5px 15px -15.5px } sc-manage-category .sc-panel,[data-is="sc-manage-category"] .sc-panel{ padding: 10px; margin: -15px -15px 20px -15px; }', '', function(opts) {
+riot.tag2('sc-manage-category', '<div class="siimple-alert siimple-alert--warning" if="{acl.post === undefined || acl.post === null}"> You are not allow to access this module! </div> <div class="simple-grid" if="{acl.post.acl > 4}"> <div class="simple-grid-row"> <div class="siimple--display-block primary sc-title"> {title} </div> <div class="siimple--display-block siimple--bg-light sc-panel" if="{list}"> <div class="siimple-btn siimple-btn--navy {action === \'edit\'? \'siimple-btn--disabled\': \'\'}" if="{acl.post.acl >= 7}" onclick="{() => createCategory()}">Create </div> <div class="siimple--float-right"> <label class="label">Show All:</label> <div class="siimple-switch"> <input type="checkbox" id="showAllSwitch"> <label for="showAllSwitch" onclick="{() => showAll()}"></label> <div></div> </div> </div> </div> </div> <div if="{isLoading}"> <div class="siimple-spinner siimple-spinner--teal"></div> </div> <sc-list-category></sc-list-category> <div>', 'sc-manage-category .sc-title,[data-is="sc-manage-category"] .sc-title{ padding: 5px; border-radius: 3px 3px 0px 0px; margin: -15px -15.5px 15px -15.5px } sc-manage-category .sc-panel,[data-is="sc-manage-category"] .sc-panel{ padding: 10px; margin: -15px -15px 20px -15px; } sc-manage-category .label,[data-is="sc-manage-category"] .label{ line-height: 34px; }', '', function(opts) {
     this.title = 'Manage Category';
     this.list = true;
     this.acl = opts.acl;
+    this.all = false;
 
     this.createCategory = function(){
-      this.tags['sc-list-category'].editCategory();
+      this.tags['sc-list-category'].editCategory('');
+    }.bind(this)
+
+    this.showAll = function(){
+      if(this.all){
+        this.all = false;
+        this.tags['sc-list-category'].showAllCategory(false);
+      }else{
+        this.all = true;
+        this.tags['sc-list-category'].showAllCategory(true);
+      }
     }.bind(this)
 });
 riot.tag2('sc-edit-post', '<div class="siimple-form"> <div class="siimple-field"> <label class="siimple-label">Title</label><br> <input type="text" class="siimple-input siimple-input--fluid sc-input" ref="inpPostTitle" onkeypress="{() => wrtingTitle()}" onkeyup="{() => wrtingTitle()}" onkeydown="{() => wrtingTitle()}"> <div class="siimple--display-block siimple--bg-light siimple--color-dark sc-hint"> <small> <box-icon name="link"></box-icon> {baseUrl}post/{slugText} </small> </div> </div> <div class="siimple-field"> <label class="siimple-label">Category</label><br> <sc-multi-select ref="selCategories"></sc-multi-select> </div> <div class="siimple-field"> <div id="editor"> </div> </div> <div class="siimple-field"> <label class="siimple-label">Active</label> <div class="siimple-checkbox"> <input type="checkbox" id="chkActive" ref="chkActive"> <label for="chkActive"></label> </div> <div class="space"></div> <label class="siimple-label">Visibility</label> <div class="siimple-checkbox"> <input type="checkbox" id="chkVisible" ref="chkVisible"> <label for="chkVisible"></label> </div> <div class="space"></div> <label class="siimple-label">Allow Comment</label> <div class="siimple-checkbox"> <input type="checkbox" id="chkComment" ref="chkComment"> <label for="chkComment"></label> </div> <div class="space"></div> <label class="siimple-label">Publish Date</label> <mino-date theme="primary" type="modal" ref="inpDate"></mino-date> </div> <div class="siimple-field"> <label class="siimple-label">Meta Tag</label><br> <input type="text" class="siimple-input siimple-input--fluid sc-input" ref="inpMetaTag"> <div class="siimple--display-block siimple--bg-light siimple--color-dark sc-hint"> <small> <box-icon name="info-circle"></box-icon> Meta tags contain information about a website. Search engines access certain meta tags so they can, for instance, display a page title and description in the search results. </small> </div> </div> <div class="siimple-field"> <label class="siimple-label">Author Name</label> <input type="text" ref="inpCreator" class="siimple-input sc-input" maxlength="100" placeholder="Your name"> </div> <div class="siimple--clearfix"> <div class="siimple--float-left"> <div class="siimple-btn siimple-btn--primary" onclick="{() => saveContent()}">Save</div> <div class="siimple-btn siimple-btn--warning" onclick="{() => backToList()}">Back</div> </div> <div class="siimple--float-right"> <div class="siimple-btn siimple-btn--light" onclick="{() => preview()}"> Preview </div> </div> </div> <sc-notify></sc-notify>', 'sc-edit-post .space,[data-is="sc-edit-post"] .space{ width: 5%; display: inline-block; } sc-edit-post .sc-input,[data-is="sc-edit-post"] .sc-input{ background:#f3f3f3; border:1px solid #ccc; } sc-edit-post .sc-hint,[data-is="sc-edit-post"] .sc-hint{ padding: 0.5em; margin-top: 5px; }', '', function(opts) {
@@ -1074,7 +1144,7 @@ riot.tag2('mino-week', '<mino-day each="{week}" day="{day}" month="{month}" year
     }.bind(this)
 
     this.getCategories = function(){
-      mainControl.action('getCategoriesAction', {param: 'all'});
+      mainControl.action('getCategoriesAction', {param: '?active=1'});
     }.bind(this)
 
     this.getContent = function(id){
@@ -2215,6 +2285,7 @@ riot.tag2('sc-modal', '<div class="modal {size}" if="{show}"> <div class="modal-
 
     this.exitModal = function(){
       this.show = false;
+
       document.getElementById("modal-bd").style.display = "none";
       this.update();
     }.bind(this)

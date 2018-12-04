@@ -83,6 +83,7 @@
 
     exitModal(){
       this.show = false;
+      //this.mObj = null;
       document.getElementById("modal-bd").style.display = "none";
       this.update();
     }

@@ -23,8 +23,8 @@
           <div class="siimple-btn siimple-btn--yellow" onclick={() => editCategory(CatID)}>
             Edit
           </div>
-          <div class="siimple-btn siimple-btn--error">
-            Delete
+          <div class="siimple-btn siimple-btn--error" onclick={() => delCategory(CatID)}>
+            Disable
           </div>
         </td>
       </tr>
@@ -76,7 +76,7 @@
     });
 
     this.on('mount', function(){
-      this.getCategories();      
+      this.getCategories(true);      
     });
 
     this.on('update', function(){
@@ -98,8 +98,12 @@
       }
     }
 
-    getCategories(){
-      mainControl.action('getCategoriesAction', {param: 'all'});
+    getCategories(activeOnly = false){
+      if(activeOnly){
+        mainControl.action('getCategoriesAction', {param: '?active=1'});
+      }else{
+        mainControl.action('getCategoriesAction', {param: '/all'});
+      }
     }
 
     editCategory(catId = ''){
@@ -110,8 +114,29 @@
           catname: this.refs['inpCatName' + catId].value,
           active: this.refs['chkActive' + catId].checked
         }
-      }      
+      }else{
+        oCat = {
+          CatID : '',
+          catname: '',
+          active: true
+        }
+      } 
       this.refs.editModal.showModal(oCat);
+    }
+    
+    delCategory(catId){
+      if(catId !== ''){
+        mainControl.action('delCategoryAction', {param: catId});
+      }else{
+        self.notify({
+          position: 'bottom-left',
+          theme: 'warning',
+          leadstyle: 'note',
+          stay: 3,
+          message: 'No category ID provided',
+          visibile: true
+        });
+      }
     }
 
     modalConfirm(){      
@@ -123,12 +148,21 @@
       if(! self.isEmpty(mObj)){
         oCat.CatID = mObj.CatID;
       }
-      console.log(oCat);
+      //console.log(oCat);
       mainControl.action('saveCategoryAction', {param: oCat});
     } 
 
     modalCancel(){
-      this.refs.editModal.showModal();
+      this.tags['sc-modal'].refs.inpName.value = '';
+      this.refs.editModal.exitModal();
+    }
+
+    showAllCategory(status){
+      if(status){
+        this.getCategories(false);
+      }else{
+        this.getCategories(true);
+      }
     }
 
     mainControl.change('CategoriesRetrieved', function(state, c){
@@ -154,6 +188,31 @@
       if(category.success.status){
         self.refs.editModal.showModal();
         self.getCategories();
+        self.notify({
+          position: 'bottom-left',
+          theme: 'success',
+          leadstyle: 'primary',
+          stay: 3,
+          message: category.success.message,
+          visibile: true
+        });
+      }else{
+        self.notify({
+          position: 'bottom-left',
+          theme: 'warning',
+          leadstyle: 'note',
+          stay: 3,
+          message: category.error.message,
+          visibile: true
+        });
+      }
+    });
+
+    mainControl.change('CategoryDeleted', function(state, c){
+      var category = c.getter('getDelCategoryGetter');
+      if(category.success.status){
+        self.parent.all = true;
+        self.showAllCategory(true);
         self.notify({
           position: 'bottom-left',
           theme: 'success',

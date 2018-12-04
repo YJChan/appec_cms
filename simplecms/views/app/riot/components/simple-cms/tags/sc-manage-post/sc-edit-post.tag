@@ -149,7 +149,7 @@
     }
 
     getCategories(){
-      mainControl.action('getCategoriesAction', {param: 'all'});      
+      mainControl.action('getCategoriesAction', {param: '?active=1'});      
     }
 
     getContent(id){
