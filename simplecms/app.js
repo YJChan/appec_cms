@@ -11,6 +11,7 @@ let resp = require('./utils/resp');
 let indexRouter = require('./routes/index');
 let adminRouter = require('./routes/web/admin');
 let postRouter = require('./routes/web/post');
+//let mainRouter = require('./routes/web/main');
 //let usersRouter = require('./routes//web/users');
 
 //api router
@@ -45,6 +46,7 @@ app.use('/riot', express.static(path.join(__dirname, '/views/app/riot/')));
 app.use('/', indexRouter);
 app.use('/' + config.development.adminpanel, adminRouter);
 app.use('/post', postRouter);
+//app.use('/', mainRouter);
 //app.use('/users', usersRouter);
 app.use('/admin', adminApi);
 app.use('/role', roleApi);

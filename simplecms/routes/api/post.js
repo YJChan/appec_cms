@@ -65,4 +65,10 @@ router.post('/post-tag', isAuthenticated, PostController.setPostTag);
 
 router.delete('/post-tag', isAuthenticated, PostController.delPostTag);
 
+router.post('/feature-post/:postid', isAuthenticated, PostController.setFeaturePost);
+
+router.get('/feature-post', PostController.getFeaturePost);
+
+router.delete('/feature-post/:postid', isAuthenticated, PostController.rmvFeaturePost);
+
 module.exports = router;

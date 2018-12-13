@@ -389,6 +389,93 @@ exports.searchAutoComplete = async(req, res) => {
 	}
 };
 
+exports.getFeaturePost = async(req, res) => {
+	let oPostM = new PostModel();
+	let oFeaturePost = null;
+	let response = new resp();
+
+	try{
+		oFeaturePost = await oPostM.getFeaturePost();
+		res.status(200).send(response.initResp(oFeaturePost));
+	}catch(err){
+		res.status(500).send(response.initResp(null, err));
+	}
+};
+
+exports.setFeaturePost = async(req, res, next) => {
+	let action = 'write';
+	let oPostM = new PostModel();
+	let oFeaturePost = null;
+	let response = new resp();
+	let postACL = {};	
+	let postID = req.params.postid;
+	let valid_permit = false;
+
+	try{
+		if (res.auth_token !== null) {
+			postACL = res.auth_token.role.post;
+			valid_permit = security.permit(action, postACL.acl);
+			if (valid_permit) {
+				if (security.isUUID(postID)) {
+					oFeaturePost = await oPostM.setFeaturePost({ PostID: postID });
+					res.status(200).send(response.initResp(oFeaturePost));
+				} else {
+					res.status(400).send(response.initResp(null, {
+						message: 'Invalid parameter, kindly provide a valid ID',
+						code: 400,
+						status: true
+					}));
+				}
+			} else {
+				return next({
+					message: 'Unauthorized access api',
+					api: true,
+					code: 401
+				});
+			}
+		}
+	}catch(err){
+		res.status(500).send(response.initResp(null, err));
+	}
+};
+
+exports.rmvFeaturePost = async(req, res, next) => {
+	let action = 'delete';
+	let oPostM = new PostModel();
+	let oFeaturePost = null;
+	let response = new resp();
+	let postACL = {};	
+	let postID = req.params.postid;
+	let valid_permit = false;
+
+	try{
+		if (res.auth_token !== null) {
+			postACL = res.auth_token.role.post;
+			valid_permit = security.permit(action, postACL.acl);
+			if (valid_permit) {
+				if (security.isUUID(postID)) {
+					oFeaturePost = await oPostM.removeFeaturePost({ PostID: postID });
+					res.status(200).send(response.initResp(oFeaturePost));
+				} else {
+					res.status(400).send(response.initResp(null, {
+						message: 'Invalid parameter, kindly provide a valid ID',
+						code: 400,
+						status: true
+					}));
+				}
+			} else {
+				return next({
+					message: 'Unauthorized access api',
+					api: true,
+					code: 401
+				});
+			}
+		}
+	}catch(err){
+		res.status(500).send(response.initResp(null, err));
+	}
+};
+
 /**Web Route */
 exports.webGetPost = async (req, res, next) => {
 	let oPostM = new PostModel();

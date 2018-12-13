@@ -1,10 +1,9 @@
 var express = require('express');
 var router = express.Router();
 const config = require('../config/config.json');
+const Index = require('../controllers/index.controller');
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('app/index', { title: config.development.app_name });
-});
+router.get('/', Index.webIndexPage);
 
 module.exports = router;

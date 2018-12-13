@@ -39,7 +39,7 @@
       </div>
       <div class="space"></div>
       <label class="siimple-label">Publish Date</label>
-      <mino-date theme="primary" type="modal" ref="inpDate"></mino-date>
+      <mino-date theme="primary" ref="inpDate"></mino-date>
     </div>
     <div class="siimple-field">
       <label class="siimple-label">Meta Tag</label><br>
@@ -81,7 +81,7 @@
       margin-top: 5px;
     }
   </style>
-  <script src="../../../mino-ui/tags/mino-date/mino-date.js"></script>
+  <script src="../../../mino-ui/mino-date/mino-date.js"></script>
   <script>
     var editor = null;
     var postId = opts.postid !== undefined? opts.postid: '';

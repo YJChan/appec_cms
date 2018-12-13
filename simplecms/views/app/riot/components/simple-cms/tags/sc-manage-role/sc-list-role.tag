@@ -52,7 +52,7 @@
       border-radius: 2px;      
     }
   </style>
-  <script src="../../../mino-ui/tags/mino-alert/mino-alert.js"></script>
+  <script src="../../../mino-ui/mino-alert/mino-alert.js"></script>
   <script>
     this.list_of_role = [];
     this.delRole = false;

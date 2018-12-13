@@ -313,6 +313,10 @@ const Post = db.define('Post', {
 	AuthorID: {
 		type: Sequelize.TEXT,
 		allowNull: true
+	},
+	isFeature: {
+		type: Sequelize.INTEGER,
+		allowNull: true
 	}
 });
 
@@ -823,11 +827,11 @@ PostTag.belongsTo(Post, {
 // 	otherKey: 'TagID'
 // });
 
-if(config.environment === 'development' &&  config.dbChange){
+if(config.environment === 'development' && config.dbChange){
 	//db.sync({alter: true});
 	//Post.sync({alter:true});
 	// Post.sync({
-	// 	alter: true
+	//  	alter: true
 	// });
 	// PostCategory.sync({
 	// 	alter: true

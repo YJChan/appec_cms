@@ -1,32 +1,34 @@
 //Sequelize Model
-const {Admin} = require('./sqlite/sqliteModel');
-const {Right} = require('./sqlite/sqliteModel');
-const {User} = require('./sqlite/sqliteModel');
-const {Tag} = require('./sqlite/sqliteModel');
-const {Post} = require('./sqlite/sqliteModel');
-const {PostCategory} =require('./sqlite/sqliteModel');
-const {PostTag} = require('./sqlite/sqliteModel');
-const {PostImage} = require('./sqlite/sqliteModel');
-const {Category} = require('./sqlite/sqliteModel');
-const {Image} = require('./sqlite/sqliteModel');
+const {	Admin } = require('./sqlite/sqliteModel');
+const {	Right } = require('./sqlite/sqliteModel');
+const {	User } = require('./sqlite/sqliteModel');
+const {	Tag } = require('./sqlite/sqliteModel');
+const {	Post } = require('./sqlite/sqliteModel');
+const {	PostCategory } = require('./sqlite/sqliteModel');
+const {	PostTag } = require('./sqlite/sqliteModel');
+const {	PostImage } = require('./sqlite/sqliteModel');
+const {	Category } = require('./sqlite/sqliteModel');
+const {	Image } = require('./sqlite/sqliteModel');
 const utils = require('../utils/utils');
-const {db} = require('./db');
+const {
+	db
+} = require('./db');
 const rQry = require('./sqlite/rawSQL');
 const Op = db.Op;
 
-class PostModel{
+class PostModel {
 	constructor() {
 
 	}
 	/**
 	 * @param  {} oPost
 	 */
-	createPost(oPost){		
+	createPost(oPost) {
 		return new Promise((resolve, reject) => {
 			let arrCat = [];
 
-			if(oPost.categories !== undefined && oPost.categories !== null){
-				if(Array.isArray(oPost.categories)){
+			if (oPost.categories !== undefined && oPost.categories !== null) {
+				if (Array.isArray(oPost.categories)) {
 					arrCat = oPost.categories.slice();
 					delete oPost.categories;
 				}
@@ -34,12 +36,12 @@ class PostModel{
 
 			Post.create(oPost).then(oPostCreated => {
 				let PostID = oPostCreated.PostID;
-				let arrCatToSave = [];				
+				let arrCatToSave = [];
 				if (arrCat.length > 0) {
-					for(var n in arrCat){
+					for (var n in arrCat) {
 						arrCatToSave.push({
 							PostCategoryID: utils.guid().toUpperCase(),
-							CatID : arrCat[n].id,
+							CatID: arrCat[n].id,
 							PostID: PostID
 						});
 					}
@@ -67,33 +69,33 @@ class PostModel{
 							});
 						});
 				}
-			}).catch(err =>{
+			}).catch(err => {
 				reject(err);
 			});
 		});
 	}
 
-	
+
 	/**
 	 * @param  {} oPost
 	 */
-	getPost(oPost){
+	getPost(oPost) {
 		return new Promise((resolve, reject) => {
 			Post.findOne({
 				where: oPost,
 				include: [{
 					model: User,
-					as: 'UserPost',					
+					as: 'UserPost',
 					attributes: ['Username', 'email']
-				},{
+				}, {
 					model: Admin,
-					as: 'AdminPost',					
+					as: 'AdminPost',
 					attributes: ['AdminName', 'AdminEmail', 'avatar']
 				}, {
 					model: PostCategory,
 					as: 'Post_Category',
 					attributes: ['PostID', 'CatID']
-				}]			
+				}]
 			}).then(oPostGet => {
 				resolve(oPostGet);
 			}).catch(err => {
@@ -106,7 +108,7 @@ class PostModel{
 	 * @param  {} oPost
 	 * @param  {} PostId
 	 */
-	async updatePost(oPost, PostId){
+	async updatePost(oPost, PostId) {
 		let updatePost = null;
 		let updatePostCat = null;
 		let arrCat = [];
@@ -120,14 +122,14 @@ class PostModel{
 
 		let oPostToSave = new Promise((resolve, reject) => {
 			Post.findOne({
-				where : {
+				where: {
 					PostID: PostId
 				}
 			}).then(oPostToSave => {
 				oPostToSave.update(oPost)
 					.then(oPostSaved => {
 						resolve(true);
-					});				
+					});
 			}).catch(err => {
 				reject(err);
 			});
@@ -138,7 +140,7 @@ class PostModel{
 				where: {
 					PostID: PostId
 				}
-			}).then(affectedRows => {				
+			}).then(affectedRows => {
 				let PostID = PostId;
 				let arrCatToSave = [];
 				if (arrCat.length > 0) {
@@ -178,16 +180,16 @@ class PostModel{
 			});
 		});
 
-		try{
+		try {
 			updatePost = await oPostToSave;
-			if(updatePost === true){
+			if (updatePost === true) {
 				updatePostCat = await oPostCatToSave;
-				return updatePostCat;				
+				return updatePostCat;
 			}
-		}catch(err){
+		} catch (err) {
 			return err;
 		}
-		
+
 		// return new Promise((resolve, reject) => {			
 		// 	Post.findOne({
 		// 		where: {
@@ -196,7 +198,7 @@ class PostModel{
 		// 	}).then(oPostToSave => {
 		// 		oPostToSave.update(oPost)
 		// 			.then(oPostSaved => {
-						
+
 		// 				//resolve(oPostSaved);
 		// 			})
 		// 			.catch(err => {
@@ -207,10 +209,11 @@ class PostModel{
 		// 	});
 		// });
 	}
+
 	/**
 	 * @param  {string} PostId
 	 */
-	increasePostView(PostId){
+	increasePostView(PostId) {
 		let numOfViews = 0;
 		return new Promise((resolve, reject) => {
 			Post.findOne({
@@ -234,7 +237,7 @@ class PostModel{
 		});
 	}
 
-	async deletePost(PostId){
+	async deletePost(PostId) {
 		let oPostResult = {
 			post: '',
 			postTag: '',
@@ -243,7 +246,9 @@ class PostModel{
 
 		let deletePost = new Promise((resolve, reject) => {
 			Post.findOne({
-				where: {PostID: PostId}
+				where: {
+					PostID: PostId
+				}
 			}).then(oPost => {
 				oPost.destroy();
 				resolve(oPost);
@@ -251,7 +256,7 @@ class PostModel{
 				reject(err);
 			});
 		});
-		
+
 		let deletePostCategory = new Promise((resolve, reject) => {
 			PostCategory.findOne({
 				where: {
@@ -278,33 +283,33 @@ class PostModel{
 			});
 		});
 
-		try{			
+		try {
 			let oPostCatDeleted = await deletePostCategory;
 			let oPostTagDeleted = await deletePostTag;
 			let oPostDeleted = await deletePost;
 			oPostResult.postTag = oPostTagDeleted;
-			oPostResult.postCat = oPostCatDeleted;			
+			oPostResult.postCat = oPostCatDeleted;
 			oPostResult.post = oPostDeleted;
 
 			return oPostResult;
-		}catch(e){
+		} catch (e) {
 			return e;
-		}finally{
+		} finally {
 			//logging
 		}
 
 	}
 
-	
+
 	/**
 	 * @param  {integer} active=0
 	 */
-	getAllPost(active = 0){
+	getAllPost(active = 0) {
 		return new Promise((resolve, reject) => {
 			Post.findAll({
 				where: {
 					active: active
-				}, 
+				},
 				order: [
 					['createdAt', 'desc']
 				],
@@ -333,20 +338,20 @@ class PostModel{
 	 * @param  {integer} pageNum=0
 	 * @param  {integer} active=0
 	 */
-	paginatePost(pageNum = 0, active = 0){
+	paginatePost(pageNum = 0, active = 0) {
 		return new Promise((resolve, reject) => {
 			//default pagination 10		
 			pageNum = pageNum * 10;
-			
-			Post.findAll({				
-				offset: pageNum, 
-				limit: 10, 
-				where:{
+
+			Post.findAll({
+				offset: pageNum,
+				limit: 10,
+				where: {
 					active: active
 				},
 				order: [
 					['createdAt', 'desc']
-				],				
+				],
 				include: [{
 					model: User,
 					as: 'UserPost',
@@ -367,7 +372,7 @@ class PostModel{
 			});
 		});
 	}
-		
+
 	/**
 	 * @param  {integer} active=1
 	 */
@@ -383,20 +388,22 @@ class PostModel{
 				reject(err);
 			});
 		});
-		
-		let postCount = await oPosts;		
+
+		let postCount = await oPosts;
 		return postCount.count;
 	}
 
-	async searchAutoComplete(query){
+	async searchAutoComplete(query) {
 		let queryText = query;
 		let oQueryResult = null;
-		try{
-			if(queryText.length >= 2){	
-				oQueryResult = await rQry.queryPostKeyWordSQL.bindAndExecute(db, {queryText: queryText});			
-			}		
+		try {
+			if (queryText.length >= 2) {
+				oQueryResult = await rQry.queryPostKeyWordSQL.bindAndExecute(db, {
+					queryText: queryText
+				});
+			}
 			return oQueryResult;
-		}catch(err){
+		} catch (err) {
 			throw err;
 		}
 	}
@@ -410,17 +417,17 @@ class PostModel{
 	webGetPost(oParam) {
 		return new Promise((resolve, reject) => {
 			let whereCond = {};
-			if(oParam.PostID !== ''){
+			if (oParam.PostID !== '') {
 				//whereCond['PostID'] = oParam.PostID;
 				whereCond = db.where(db.fn('lower', db.col('PostID')), db.fn('lower', oParam.PostID));
-			}else{
+			} else {
 				//whereCond['title'] = oParam.slug.replace(/-/g, ' ');
 				//compare title in lowercase
 				whereCond = db.where(db.fn('lower', db.col('title')), db.fn('lower', oParam.slug.replace(/-/g, ' ')));
-			}									
+			}
 			Post.findOne({
 				where: {
-					whereCond					
+					whereCond
 				},
 				include: [{
 					model: User,
@@ -435,7 +442,7 @@ class PostModel{
 					as: 'Post_Category',
 					attributes: ['PostID', 'CatID']
 				}]
-			}).then(oPost => {				
+			}).then(oPost => {
 				resolve(oPost);
 			}).catch(err => {
 				reject(err);
@@ -448,13 +455,13 @@ class PostModel{
 	 * @param  {string} oPostCat.CatID
 	 * @param  {string} oPostCat.PostID
 	 */
-	setPostCategory(oPostCat){
+	setPostCategory(oPostCat) {
 		return new Promise((resolve, reject) => {
 			PostCategory.create(oPostCat)
 				.then(oPostCatSaved => {
 					let catId = oPostCatSaved.CatID;
 					Category.findOne({
-						where:{
+						where: {
 							CatID: catId
 						}
 					}).then(oCategory => {
@@ -469,13 +476,13 @@ class PostModel{
 		});
 	}
 
-	
+
 	/**
 	 * @param  {Object} oPostCat
 	 * @param  {string} oPostCat.CatID
 	 * @param  {string} oPostCat.PostID
 	 */
-	delPostCategory(oPostCat){
+	delPostCategory(oPostCat) {
 		return new Promise((resolve, reject) => {
 			PostCategory.findOne({
 				where: oPostCat
@@ -529,7 +536,7 @@ class PostModel{
 			});
 		});
 	}
-	
+
 	/**
 	 * @param  {Object} oPostImage
 	 * @param  {string} oPostCat.ImageID
@@ -573,6 +580,98 @@ class PostModel{
 		});
 	}
 
+	
+	/**
+	 * @param  {Object} req
+	 * @param  {Object} oPost
+	 */
+	getFeaturePost(){
+		return new Promise((resolve, reject) => {
+			Post.findAll({where: {
+				isFeature: 1
+			}}).then(oPosts => {
+				resolve(oPosts);
+			}).catch(err => {
+				reject(err);
+			});
+		});
+	}
+
+	/**	 
+	 * @param  {Object} oPost
+	 */
+	setFeaturePost(oPost){
+		return new Promise((resolve, reject) => {
+			let postId = oPost.PostID;
+			Post.findOne({where: {
+				PostID : postId
+			}}).then(oPostSet => {
+				oPostSet.update({isFeature: 1})
+					.then(oPostUpdated => {
+						resolve(oPostUpdated);
+					}).catch(err => {
+						reject(err);
+					});
+			}).catch(err => {
+				reject(err);
+			});
+		});
+	}
+
+	/**	 
+	 * @param  {Object} oPost
+	 */
+	removeFeaturePost(oPost){
+		return new Promise((resolve, reject) => {
+			let postId = oPost.PostID;
+			Post.findOne({where: {
+				PostID: postId
+			}}).then(oPostRmv => {
+				oPostRmv.update({isFeature: 0})
+					.then(oPostUpdated => {
+						resolve(oPostUpdated);
+					}).catch(err => {
+						reject(err);
+					});
+			}).catch(err => {
+				reject(err);
+			});
+		});		
+	}
+	
+	/**
+	 * @param  {Date} dteRecent
+	 */
+	getRecentPost(dteRecent){
+		return new Promise((resolve, reject) => {
+			let dteTmp = new Date();
+			dteTmp.setDate(dteRecent.getDate());
+			dteTmp.setMonth(dteRecent.getMonth() - 1);
+			dteTmp.setFullYear(dteRecent.getFullYear());
+
+			Post.findAll({where:{
+				publishDate: {[Op.gte]: dteTmp},
+				include: [{
+					model: User,
+					as: 'UserPost',
+					attributes: ['Username', 'email']
+				}, {
+					model: Admin,
+					as: 'AdminPost',
+					attributes: ['AdminName', 'AdminEmail', 'avatar']
+				}, {
+					model: PostCategory,
+					as: 'Post_Category',
+					attributes: ['PostID', 'CatID']
+				}]
+			}}).then(oPostGet => {
+				resolve(oPostGet);
+			}).catch(err => {
+				reject(err);
+			});			
+		});
+	}
+
 	/**
 	 * Check on what parameter has been passed from front end
 	 * @param  {Object} req
@@ -600,7 +699,7 @@ class PostModel{
 		return oPostReq;
 	}
 
-	
+
 	/**
 	 * To check the value that exist in param
 	 * @param  {string} paramName
@@ -608,7 +707,7 @@ class PostModel{
 	IsParamExist(paramName) {
 		let isExist = false;
 
-		switch(paramName) {
+		switch (paramName) {
 		case 'TITLE':
 			isExist = true;
 			break;
@@ -632,7 +731,7 @@ class PostModel{
 			break;
 		case 'CREATEDBY':
 			isExist = true;
-			break;		
+			break;
 		case 'AUTHORID':
 			isExist = true;
 			break;
@@ -649,14 +748,19 @@ class PostModel{
 	postParam(withId = true) {
 		let GUID = utils.guid();
 		return {
-			PostID: withId ? `POST-${GUID.toUpperCase()}`: {val: '', type: 'nullable', check: false, exclude: true},
-			title:{
+			PostID: withId ? `POST-${GUID.toUpperCase()}` : {
+				val: '',
+				type: 'nullable',
+				check: false,
+				exclude: true
+			},
+			title: {
 				val: '',
 				type: 'string',
 				check: true,
 				exclude: false
 			},
-			content: {				
+			content: {
 				val: '',
 				type: 'JSON',
 				check: true,
@@ -679,7 +783,7 @@ class PostModel{
 				type: 'integer',
 				check: true,
 				exclude: false
-			},			
+			},
 			allowComment: {
 				val: 1,
 				type: 'integer',
@@ -697,7 +801,7 @@ class PostModel{
 				type: 'NULLABLE',
 				check: true,
 				exclude: false
-			},			
+			},
 			AuthorID: {
 				val: '',
 				type: 'NULLABLE',
