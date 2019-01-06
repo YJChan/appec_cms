@@ -159,6 +159,17 @@ const api = {
 			post: {
 				url: 'api/post/post-search'
 			}
+		},
+		feature: {
+			post: {
+				url: 'api/post/feature-post/'
+			},
+			get: {
+				url: 'api/post/feature-post'
+			},
+			delete: {
+				url: 'api/post/feature-post/'
+			}
 		}
 	},
 	category: {
@@ -223,7 +234,8 @@ var loginControl = new riotx.Store({
 			single_post: '',
 			updated_post: '',
 			deleted_post: '',
-			search_result: ''
+			search_result: '',
+			feature_post: ''
 		},
 		category: {
 			lists: '',
@@ -930,6 +942,42 @@ var loginControl = new riotx.Store({
 						renderError(err);
 					}					
 				});
+		},
+		setFeaturePostAction: function(context, data) {
+			return Promise.resolve()
+				.then(function() {
+					try{
+						var postId = data.postId;
+						http.post(api.post.feature.post.url + postId, {})
+							.then((response) => {
+								if(response.status === 200){
+									context.commit('setFeaturePostMutation', {param: response.data});
+								}else if(response.state === 401){
+									unAuthRedirect();
+								}
+							});
+					}catch(err){
+						renderError(err);
+					}
+				});
+		},
+		rmvFeaturePostAction: function(context, data) {
+			return Promise.resolve()
+				.then(function() {
+					try{
+						var postId = data.postId;
+						http.delete(api.post.feature.delete.url + postId, {})
+							.then((response) => {
+								if(response.status === 200){
+									context.commit('rmvFeaturePostMutation', {param: response.data});
+								}else if(response.state === 401){
+									unAuthRedirect();
+								}
+							});
+					}catch(err){
+						renderError(err);
+					}
+				});
 		}
 	},	
 	mutations: {   
@@ -1033,6 +1081,14 @@ var loginControl = new riotx.Store({
 		delCategoryMutation: function(context, data){
 			context.state.category.deleted_category = data.param;
 			return ['CategoryDeleted'];
+		},
+		setFeaturePostMutation: function(context, data){
+			context.state.post.feature_post = data.param;
+			return ['FeaturePostSet'];
+		},
+		rmvFeaturePostMutation: function (context, data) {
+			context.state.post.feature_post = data.param;
+			return ['FeaturePostRemoved'];
 		}
 	},
 	getters: {
@@ -1106,6 +1162,12 @@ var loginControl = new riotx.Store({
 		},
 		getDelCategoryGetter: function (context) {
 			return context.state.category.deleted_category;
+		},
+		setFeaturePostGetter: function(context){
+			return context.state.post.feature_post;
+		},
+		rmvFeaturePostGetter: function(context){
+			return context.state.post.feature_post;
 		}
 	}
 });

@@ -28,13 +28,13 @@ const oSettingDefault ={
 
 class SettingModel {
 	constructor() {
-
+		
 	}
 
 	/**
    * @param  {Object} oSetting
    */
-	getBlogSetting(whereCond){
+	getBlogSetting(whereCond = {}){
 		return new Promise((resolve, reject) => {
 			Setting.findAll({active: 1})
 				.then(oSettings => {

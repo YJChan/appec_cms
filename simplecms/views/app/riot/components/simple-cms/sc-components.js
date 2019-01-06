@@ -1519,11 +1519,12 @@ riot.tag2('sc-manage-post', '<div class="siimple-alert siimple-alert--warning" i
     }.bind(this)
 
 });
-riot.tag2('sc-post-card', '<div class="siimple-card sc-card"> <div class="siimple-card-header"> <div class="siimple-card-title">{post.title}</div> </div> <div class="siimple-card-body"> <p> {displayContent(post.content)} </p> </div> <div class="siimple-card-footer"> <div class="siimple--clearfix"> <div class="siimple--float-left"> <div class="author">author</div> <div class="siimple--bg-primary siimple--color-white author"> {displayAuthor()} </div> </div> <div class="siimple--float-right"> views: {post.views} </div> </div> <div> <small>created {displayDate(post.createdAt)} </small> </div> <div> <div class="siimple--clearfix"> <div class="siimple-btn siimple-btn--grey siimple--width-25" onclick="{() => viewPost(post.PostID)}">View </div> <div class="siimple-btn siimple-btn--yellow siimple--width-25" onclick="{() => editPost(post.PostID)}"> Edit </div> <div class="siimple-btn siimple-btn--error siimple--width-25" onclick="{() => deletePost(post.PostID)}"> Delete </div> </div> </div> </div> </div> <sc-notify></sc-notify>', 'sc-post-card .sc-card,[data-is="sc-post-card"] .sc-card{ display: inline-block !important; height: auto; margin: 10px 10px 10px 10px !important; border: 1px solid #ddd; max-width: 420px; } sc-post-card .author,[data-is="sc-post-card"] .author{ display: inline-block; padding: 0px 5px 0px 5px; border-radius: 4px; }', '', function(opts) {
+riot.tag2('sc-post-card', '<div class="siimple-card sc-card"> <div class="siimple-card-body"> <div style="float:left; width:90%; font-weight:700;">{post.title}</div> <div style="float: right; cursor:pointer;" onclick="{() => setFeaturePost(post.PostID)}"> <box-icon name="star" type="solid" if="{isFeature === 1}"></box-icon> <box-icon name="star" if="{isFeature !== 1}"></box-icon> </div> <p> {displayContent(post.content)} </p> </div> <div class="siimple-card-footer"> <div class="siimple--clearfix"> <div class="siimple--float-left"> <div class="author">author</div> <div class="siimple--bg-primary siimple--color-white author"> {displayAuthor()} </div> </div> <div class="siimple--float-right"> views: {post.views} </div> </div> <div> <small>created {displayDate(post.createdAt)} </small> </div> <div> <div class="siimple--clearfix"> <div class="siimple-btn siimple-btn--grey siimple--width-25" style="padding:0px 10px 0px 10px;" onclick="{() => viewPost(post.PostID)}">View </div> <div class="siimple-btn siimple-btn--yellow siimple--width-25" style="padding:0px 10px 0px 10px;" onclick="{() => editPost(post.PostID)}"> Edit </div> <div class="siimple-btn siimple-btn--error siimple--width-25" style="padding:0px 10px 0px 10px;" onclick="{() => deletePost(post.PostID)}"> Delete </div> </div> </div> </div> </div> <sc-notify></sc-notify>', 'sc-post-card .sc-card,[data-is="sc-post-card"] .sc-card{ display: inline-block !important; height: auto; margin: 10px 10px 10px 10px !important; border: 1px solid #ddd; max-width: 420px; } sc-post-card .author,[data-is="sc-post-card"] .author{ display: inline-block; padding: 0px 5px 0px 5px; border-radius: 4px; }', '', function(opts) {
     this.post = opts.post;
     var self = this;
     var mainControl = this.riotx.get('main-control');
     var baseUrl = '';
+    this.isFeature = opts.post.isFeature !== undefined? opts.post.isFeature: 0;
     this.on('mount', function(){
 
     });
@@ -1565,6 +1566,14 @@ riot.tag2('sc-post-card', '<div class="siimple-card sc-card"> <div class="siimpl
       mainControl.action('deleteSinglePostAction', {postId: postId});
     }.bind(this)
 
+    this.setFeaturePost = function(postId){
+      if(this.isFeature === 0){
+        mainControl.action('setFeaturePostAction', {postId: postId});
+      }else{
+        mainControl.action('rmvFeaturePostAction', {postId: postId});
+      }
+    }.bind(this)
+
     this.notify = function(notifyObj){
       if(notifyObj !== null){
         riot.mount('sc-notify', {
@@ -1582,7 +1591,6 @@ riot.tag2('sc-post-card', '<div class="siimple-card sc-card"> <div class="siimpl
 
     mainControl.change('SinglePostDeleted', function(state, c){
       var result = c.getter('deleteSinglePostGetter');
-      console.log(result);
       if(result.success.status){
         self.notify({
           position: 'bottom-left',
@@ -1605,6 +1613,55 @@ riot.tag2('sc-post-card', '<div class="siimple-card sc-card"> <div class="siimpl
       self.parent.updateList();
     });
 
+    mainControl.change('FeaturePostSet', function(state, c){
+      var result = c.getter('setFeaturePostGetter');
+      if(result.success.status)  {
+        self.isFeature = 1;
+        self.notify({
+          position: 'bottom-left',
+          theme: 'success',
+          leadstyle: 'note',
+          stay: 3,
+          message: 'Selected post has been set featured.',
+          visible: true
+        });
+      }else{
+        self.notify({
+          position: 'bottom-left',
+          theme: 'warning',
+          leadstyle: 'note',
+          stay: 3,
+          message: result.error.message,
+          visible: true
+        });
+      }
+      self.parent.updateList();
+    });
+
+    mainControl.change('FeaturePostRemoved', function(state, c){
+      var result = c.getter('rmvFeaturePostGetter');
+      if(result.success.status)  {
+        self.isFeature = 0;
+        self.notify({
+          position: 'bottom-left',
+          theme: 'success',
+          leadstyle: 'note',
+          stay: 3,
+          message: 'Selected post has been set featured.',
+          visible: true
+        });
+      }else{
+        self.notify({
+          position: 'bottom-left',
+          theme: 'warning',
+          leadstyle: 'note',
+          stay: 3,
+          message: result.error.message,
+          visible: true
+        });
+      }
+      self.parent.updateList();
+    });
 });
 riot.tag2('sc-search-post', '<form> <div class="siimple-field sc-field"> <input type="text" class="sc-search siimple-input" placeholder="title, content, category, ..." ref="inpSearch" onkeyup="{() => searchKeyWord()}" onkeydown="{() => searchKeyWord()}" onkeypress="{() => searchKeyWord()}"> <div class="siimple-btn siimple-btn--green sc-search-btn"><box-icon name="search"></box-icon></div> </div> <div class="sc-search-result"> <div class="sc-result-row" each="{r, index in listOfResults}" onclick="{() => gotoPost(r.PostID)}" riot-style="margin-top: {index > 0 ? ((index -1) * 24)+ (index * 65): -20}px"> <b> {r.title} </b><br> <div class="siimple--clearfix"> <div class="siimple--float-left"> <span class="siimple-tag siimple-tag--green">{r.catname}</span> </div> <div class="siimple--float-right"> <span class="siimple-tag siimple-tag--primary siimple-tag--rounded"> by {r.createdBy} </span> </div> </div> <div class="sc-result-btn siimple--bg-light siimple--display-block siimple--color-dark">view</div> </div> </div> </form> <sc-notify></sc-notify>', 'sc-search-post,[data-is="sc-search-post"]{ display: inline-block; float: right; } sc-search-post .sc-search,[data-is="sc-search-post"] .sc-search{ width: 25em; background: #f3f3f3; border-radius: 4px 0px 0px 4px; height: 34px; } sc-search-post .sc-field,[data-is="sc-search-post"] .sc-field{ display: flex; } sc-search-post .sc-search-btn,[data-is="sc-search-post"] .sc-search-btn{ line-height: 3; border-radius: 0px 4px 4px 0px; } sc-search-post .sc-search-result,[data-is="sc-search-post"] .sc-search-result{ } sc-search-post .sc-result-row,[data-is="sc-search-post"] .sc-result-row{ border: 1px solid #ddd; padding: 10px; width: 25em; z-index: 999; position: absolute; background: white; margin-top: -22px; right: 5%; cursor: pointer; } sc-search-post .sc-result-btn,[data-is="sc-search-post"] .sc-result-btn{ padding: 0px 50px; margin-top: 10px; text-align: center; margin: 10px -10px -10px -10px; }', '', function(opts) {
     var self = this;

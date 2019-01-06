@@ -1,9 +1,11 @@
 <sc-post-card>
   <div class="siimple-card sc-card">
-    <div class="siimple-card-header">
-      <div class="siimple-card-title">{post.title}</div>      
-    </div>
     <div class="siimple-card-body">
+      <div style='float:left; width:90%; font-weight:700;'>{post.title}</div>
+      <div style='float: right; cursor:pointer;' onclick="{() => setFeaturePost(post.PostID)}">
+        <box-icon name='star' type='solid' if={isFeature === 1}></box-icon>
+        <box-icon name='star' if={isFeature !== 1}></box-icon>
+      </div>
       <p>  
         {displayContent(post.content)}
       </p>
@@ -26,14 +28,14 @@
       </div>
       <div>
         <div class="siimple--clearfix">          
-            <div class="siimple-btn siimple-btn--grey siimple--width-25"
+            <div class="siimple-btn siimple-btn--grey siimple--width-25" style='padding:0px 10px 0px 10px;'
               onclick="{() => viewPost(post.PostID)}">View
             </div>            
-            <div class="siimple-btn siimple-btn--yellow siimple--width-25"
+            <div class="siimple-btn siimple-btn--yellow siimple--width-25" style='padding:0px 10px 0px 10px;'
               onclick="{() => editPost(post.PostID)}">
               Edit
             </div>
-            <div class="siimple-btn siimple-btn--error siimple--width-25"
+            <div class="siimple-btn siimple-btn--error siimple--width-25" style='padding:0px 10px 0px 10px;'
               onclick="{() => deletePost(post.PostID)}">
               Delete
             </div>
@@ -61,6 +63,7 @@
     var self = this;
     var mainControl = this.riotx.get('main-control');
     var baseUrl = '';
+    this.isFeature = opts.post.isFeature !== undefined? opts.post.isFeature: 0;
     this.on('mount', function(){
 
     });
@@ -102,6 +105,14 @@
       mainControl.action('deleteSinglePostAction', {postId: postId});
     }
 
+    setFeaturePost(postId){
+      if(this.isFeature === 0){
+        mainControl.action('setFeaturePostAction', {postId: postId});
+      }else{
+        mainControl.action('rmvFeaturePostAction', {postId: postId});
+      }
+    }
+
     notify(notifyObj){      
       if(notifyObj !== null){
         riot.mount('sc-notify', {
@@ -118,8 +129,7 @@
     }
 
     mainControl.change('SinglePostDeleted', function(state, c){
-      var result = c.getter('deleteSinglePostGetter');      
-      console.log(result);
+      var result = c.getter('deleteSinglePostGetter');            
       if(result.success.status){
         self.notify({
           position: 'bottom-left',
@@ -142,5 +152,54 @@
       self.parent.updateList();      
     });
 
+    mainControl.change('FeaturePostSet', function(state, c){
+      var result = c.getter('setFeaturePostGetter');
+      if(result.success.status)  {
+        self.isFeature = 1;
+        self.notify({
+          position: 'bottom-left',
+          theme: 'success',
+          leadstyle: 'note',
+          stay: 3,
+          message: 'Selected post has been set featured.',
+          visible: true
+        });  
+      }else{
+        self.notify({
+          position: 'bottom-left',
+          theme: 'warning',
+          leadstyle: 'note',
+          stay: 3,
+          message: result.error.message,
+          visible: true
+        });  
+      }
+      self.parent.updateList();
+    });
+
+    mainControl.change('FeaturePostRemoved', function(state, c){
+      var result = c.getter('rmvFeaturePostGetter');
+      if(result.success.status)  {
+        self.isFeature = 0;
+        self.notify({
+          position: 'bottom-left',
+          theme: 'success',
+          leadstyle: 'note',
+          stay: 3,
+          message: 'Selected post has been set featured.',
+          visible: true
+        });  
+      }else{
+        self.notify({
+          position: 'bottom-left',
+          theme: 'warning',
+          leadstyle: 'note',
+          stay: 3,
+          message: result.error.message,
+          visible: true
+        });  
+      }
+      self.parent.updateList();
+    });
   </script>
 </sc-post-card>

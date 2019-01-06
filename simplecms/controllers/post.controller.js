@@ -416,24 +416,23 @@ exports.setFeaturePost = async(req, res, next) => {
 			postACL = res.auth_token.role.post;
 			valid_permit = security.permit(action, postACL.acl);
 			if (valid_permit) {
-				if (security.isUUID(postID)) {
-					oFeaturePost = await oPostM.setFeaturePost({ PostID: postID });
-					res.status(200).send(response.initResp(oFeaturePost));
-				} else {
-					res.status(400).send(response.initResp(null, {
-						message: 'Invalid parameter, kindly provide a valid ID',
-						code: 400,
-						status: true
-					}));
-				}
-			} else {
+				oFeaturePost = await oPostM.setFeaturePost({ PostID: postID });
+				res.status(200).send(response.initResp(oFeaturePost));
+			}else {
 				return next({
 					message: 'Unauthorized access api',
 					api: true,
 					code: 401
 				});
 			}
+		} else {
+			return next({
+				message: 'Unauthorized access api',
+				api: true,
+				code: 401
+			});
 		}
+		//}
 	}catch(err){
 		res.status(500).send(response.initResp(null, err));
 	}
@@ -453,17 +452,9 @@ exports.rmvFeaturePost = async(req, res, next) => {
 			postACL = res.auth_token.role.post;
 			valid_permit = security.permit(action, postACL.acl);
 			if (valid_permit) {
-				if (security.isUUID(postID)) {
-					oFeaturePost = await oPostM.removeFeaturePost({ PostID: postID });
-					res.status(200).send(response.initResp(oFeaturePost));
-				} else {
-					res.status(400).send(response.initResp(null, {
-						message: 'Invalid parameter, kindly provide a valid ID',
-						code: 400,
-						status: true
-					}));
-				}
-			} else {
+				oFeaturePost = await oPostM.removeFeaturePost({ PostID: postID });
+				res.status(200).send(response.initResp(oFeaturePost));
+			} else {				
 				return next({
 					message: 'Unauthorized access api',
 					api: true,
