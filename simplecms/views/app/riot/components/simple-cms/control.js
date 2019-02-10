@@ -768,6 +768,15 @@ var loginControl = new riotx.Store({
 						if (data.metaTag.length > 0) {
 							oPost['metaTag'] = data.metaTag;
 						}
+						if (data.mode.length > 0){
+							oPost['mode'] = data.mode;
+						}
+						if(data.fileImg.length > 0){
+							oPost['postImg'] = data.fileImg;
+						}
+						if(data.postImgID.length > 0){
+							oPost['postImgID'] = data.postImgID;
+						}
 						//save to existing post
 						if(postId !== undefined && postId !== null && postId !== ''){
 							http.patch(api.post.singlePost.patch.url + '/' + postId, oPost)
@@ -778,7 +787,7 @@ var loginControl = new riotx.Store({
 										unAuthRedirect();
 									}
 								}).catch((err) => {
-									alert(err.response.data.error.message);
+									renderError(err);
 									console.error('%c ' + err.response.data.error.message, 'color: orange; font-weight: bold;');								
 								});
 						}else{

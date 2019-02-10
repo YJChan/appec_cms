@@ -16,6 +16,10 @@
       <sc-multi-select ref="selCategories"></sc-multi-select>
     </div>
     <div class="siimple-field">
+      <label class="siimple-label">Cover Photo</label><br>
+      <sc-image-select ref="selCoverImg"></sc-image-select>
+    </div>
+    <div class="siimple-field">
       <div id="editor">
       </div>
     </div>
@@ -36,10 +40,17 @@
       <div class="siimple-checkbox">
         <input type="checkbox" id="chkComment" ref="chkComment">
         <label for="chkComment"></label>
-      </div>
+      </div>      
+      <div class="space"></div>
+      <label class="siimple-label">Mode</label>
+      <select ref="selMode" class="siimple-select">
+        <option value="DRAFT">DRAFTING</option>
+        <option value="RELEASE">RELEASE</option>
+        <option value="ARCHIVED">ARCHIVED</option>
+      </select>
       <div class="space"></div>
       <label class="siimple-label">Publish Date</label>
-      <mino-date theme="primary" ref="inpDate"></mino-date>
+      <mino-date theme="primary" ref="inpDate" type='modal'></mino-date>
     </div>
     <div class="siimple-field">
       <label class="siimple-label">Meta Tag</label><br>
@@ -171,7 +182,9 @@
       if(creator === undefined || creator === ''){
         creator = self.getCookie('aid');
       }      
-      self.categoriesSelected = self.refs.selCategories.getSelected('array');      
+      self.categoriesSelected = self.refs.selCategories.getSelected('array');  
+      var coverPhotoID = self.refs.selCoverImg.getImageID()
+      var coverPhoto = self.refs.selCoverImg.getFileBase64String();
       var oPost = {
         postId: self.postId,  
         title: self.refs.inpPostTitle.value,
@@ -183,7 +196,10 @@
         AuthorID: creator,
         createdBy: self.refs.inpCreator.value,
         categories: self.categoriesSelected,
-        metaTag: self.refs.inpMetaTag.value
+        metaTag: self.refs.inpMetaTag.value,
+        mode: self.refs.selMode.value,
+        fileImg: coverPhoto,
+        postImgID: coverPhotoID  
       }
       console.log(oPost);
       mainControl.action('savePostAction', oPost);      
@@ -204,10 +220,14 @@
       this.refs.inpDate.date = self.formatDate(p.publishDate);     
       this.refs.inpCreator.value = p.createdBy;
       this.refs.inpMetaTag.value = p.metaTag;
+      this.refs.selMode.value = p.mode;
       postContent = JSON.parse(p.content);
-      if(p.Post_Category !== null){
-        console.log(p.Post_Category);
+      if(p.Post_Category.length > 0){
         this.refs.selCategories.setSelected(p.Post_Category);
+      }
+      if(p.Post_Image.length > 0){
+        this.refs.selCoverImg.setImageID(p.Post_Image[0].ImageID);
+        this.refs.selCoverImg.setImageUrl(p.Post_Image[0].url);
       }
       editor.setContents(postContent);
     }
@@ -257,6 +277,10 @@
       var singlePost = c.getter('savePostGetter');      
       if(singlePost.success.status){
         self.postId = singlePost.result.PostID;
+        if (singlePost.result.Post_Image.length > 0 ){
+          self.refs.selCoverImg.setImageID(singlePost.result.Post_Image[0].ImageID);
+        }
+        //self.refs.selCoverImg.setImageUrl(singlePost.result.Post_Image[0].url);
         self.notify({
           position: 'bottom-left',
           theme: 'success',
@@ -415,6 +439,7 @@
       // push image url to rich editor.
       const range = editor.getSelection();
       editor.insertEmbed(range.index, 'image', url);
-    }    
+    }
+
   </script>
 </sc-edit-post>

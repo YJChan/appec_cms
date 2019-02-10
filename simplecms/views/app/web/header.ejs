@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>
+        <%=data.title%>
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32" />
+    <link href="/scripts/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/scripts/boxicons/css/boxicons.min.css"/>
+    <script src="/scripts/jquery/dist/jquery.min.js"></script>
+    <script src="/scripts/bootstrap/dist/js/bootstrap.min.js"></script>
+    <link href="/stylesheets/blog.css" rel="stylesheet" />
+</head>
+<body>
+<% if(data.profiler !== undefined && data.profiler){%>
+  <%- include('profiler') -%>
+<%}%>

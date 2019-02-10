@@ -36,12 +36,13 @@ class SettingModel {
    */
 	getBlogSetting(whereCond = {}){
 		return new Promise((resolve, reject) => {
-			Setting.findAll({active: 1})
-				.then(oSettings => {
-					resolve(oSettings);
-				}).catch(err => {
-					reject(err);
-				});
+			Setting.findOne({
+				where: whereCond
+			}).then(oSettings => {
+				resolve(oSettings);
+			}).catch(err => {
+				reject(err);
+			});
 		});
 	}
 

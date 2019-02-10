@@ -1,0 +1,64 @@
+<% if(data.category !== ''){ %>
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+      <% if(data.page_num === 1 || data.page_num === 0){ %>
+      <%- '<li class="page-item disabled">' %>
+      <% }else{%>
+      <%- '<li class="page-item">' %>
+      <% } %>
+        <a class="page-link" href="Javascript: appec.blog.paginateRedirect(<%= data.page_num %>, 'prev', '<%= data.category %>');" 
+          tabindex="-1" aria-disabled="true">Previous</a>
+        </li>
+      <% if(data.page_count > 0){ %>    
+      <%  for(let n = 1; n <= data.page_count; n++){ %>
+        <% if(n === data.page_num){ %>
+          <%- '<li class="page-item active">' %>
+        <% }else{ %>
+          <%- '<li class="page-item">' %>
+        <% } %>      
+        <a class="page-link" href="Javascript: appec.blog.paginateRedirect(<%= n %>,'', '<%= data.category %>');">
+           <%= n %>
+        </a>
+        <%- '</li>' %>
+      <%  }%>  
+      <% } %>
+      <% if(data.page_num === data.page_count){ %>
+      <%- '<li class="page-item disabled">' %>
+      <% }else{%>
+      <%- '<li class="page-item">' %>
+      <% } %>
+        <a class="page-link" href="Javascript: appec.blog.paginateRedirect(<%= data.page_num %>, 'next', '<%= data.category %>');">Next</a>
+      </li>
+    </ul>
+  </nav>
+<% }else{ %>
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+      <% if(data.page_num === 1 || data.page_num === 0){ %>
+      <%- '<li class="page-item disabled">' %>
+      <% }else{%>
+      <%- '<li class="page-item">' %>
+      <% } %>
+        <a class="page-link" href="Javascript: appec.blog.paginateRedirect(<%= data.page_num %>, 'prev');" tabindex="-1" aria-disabled="true">Previous</a>
+      </li>
+      <% if(data.page_count > 0){ %>    
+      <%  for(let n = 1; n <= data.page_count; n++){ %>
+        <% if(n === data.page_num){ %>
+          <%- '<li class="page-item active">' %>
+        <% }else{ %>
+          <%- '<li class="page-item">' %>
+        <% } %>      
+        <%- '<a class="page-link" href="Javascript: appec.blog.paginateRedirect(' + n +');">' + n + '</a>' %>
+        <%- '</li>' %>
+      <%  }%>  
+      <% } %>
+      <% if(data.page_num === data.page_count){ %>
+      <%- '<li class="page-item disabled">' %>
+      <% }else{%>
+      <%- '<li class="page-item">' %>
+      <% } %>
+        <a class="page-link" href="Javascript: appec.blog.paginateRedirect(<%= data.page_num %>, 'next');">Next</a>
+      </li>
+    </ul>
+  </nav>
+<% } %>

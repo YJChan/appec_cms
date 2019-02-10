@@ -1,0 +1,27 @@
+<div class="col-md-8 blog-main mx-auto post-container">
+  <% if(recent_post.length > 0){ %>
+  <% recent_post.forEach(function(post){ %>
+  <div class="blog-post">
+    <a href="Javascript: appec.common.redirectTo('/post/' + '<%= post.title %>')">
+      <h2 class="blog-post-title">
+        <%= post.title %>
+      </h2>
+    </a>
+    <p class="blog-post-meta">
+      <%- post.publishDate.toDateString() %> by <a href="#">
+        <%= post.createdBy %></a></p>
+    <div class="row">
+      <div class="col-10 post-preview" onclick="Javascript: appec.common.redirectTo('/post/' + '<%= post.title %>')">
+        <%- post.htmlcontent %>
+      </div>
+    </div>
+    <button class="btn btn-info read-more" onclick="Javascript: appec.common.redirectTo('/post/' + '<%= post.title %>')">read
+      more...</button>
+  </div>
+  <% }); %>
+  <% }else{ %>
+  <p class="bg-warning text-center p-3">
+    No posts available...
+  </p>
+  <% } %>
+</div>

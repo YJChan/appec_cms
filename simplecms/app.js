@@ -4,6 +4,7 @@ let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 const config = require('./config/config.json');
+//const formidable = require('express-formidable');
 //const cors = require('cors');
 let resp = require('./utils/resp');
 
@@ -34,6 +35,7 @@ app.use(logger('dev'));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit:'5mb', extended: false }));
 app.use(cookieParser());
+//app.use(formidable());
 app.use(express.static(path.join(__dirname, '/public')));
 
 //serve files
@@ -42,7 +44,6 @@ app.use('/riot', express.static(path.join(__dirname, '/views/app/riot/')));
 
 //use cors
 //app.use(cors())
-
 app.use('/', indexRouter);
 app.use('/' + config.development.adminpanel, adminRouter);
 app.use('/post', postRouter);

@@ -316,7 +316,8 @@ const Post = db.define('Post', {
 	},
 	isFeature: {
 		type: Sequelize.INTEGER,
-		allowNull: true
+		allowNull: true,
+		defaultValue: 0
 	}
 });
 
@@ -539,6 +540,16 @@ const Setting = db.define('Setting', {
 			this.setDataValue('SiteURL', val);
 		}
 	},
+	SiteAbout:{
+		type: Sequelize.TEXT,
+		allowNull: true,
+		get(){
+			return this.getDataValue('SiteAbout');
+		},
+		set(val){
+			this.setDataValue('SiteAbout', val);
+		}
+	},
 	masterEmail: {    
 		type: Sequelize.TEXT,
 		allowNull: true,
@@ -651,11 +662,11 @@ const PostCategory = db.define('PostCategory', {
 	},
 	PostID: {
 		type: Sequelize.TEXT,
-		allowNull: false		
+		allowNull: true		
 	},
 	CatID: {
 		type: Sequelize.TEXT,
-		allowNull: false
+		allowNull: true
 	}
 });
 
@@ -668,11 +679,11 @@ const PostTag = db.define('PostTag', {
 	},
 	PostID: {
 		type: Sequelize.TEXT,
-		allowNull: false
+		allowNull: true
 	},
 	TagID: {
 		type: Sequelize.TEXT,
-		allowNull: false
+		allowNull: true
 	}
 });
 
@@ -685,11 +696,11 @@ const PostImage = db.define('PostImage', {
 	},
 	PostID: {
 		type: Sequelize.TEXT,
-		allowNull: false
+		allowNull: true
 	},
 	ImageID: {
 		type: Sequelize.TEXT,
-		allowNull: false
+		allowNull: true
 	}
 });
 
@@ -798,6 +809,29 @@ PostTag.belongsTo(Post, {
 	as: 'Post_Tag'
 });
 
+Post.hasMany(PostImage,{
+	foreignKey: 'PostID',
+	constraints: true,
+	as: 'Post_Image'
+});
+
+PostImage.belongsTo(Post, {
+	foreignKey: 'PostID',
+	constraints: true,
+	as: 'Post_Image'
+});
+
+Image.hasMany(PostImage, {
+	foreignKey: 'ImageID',
+	constraints: true,
+	as: 'Image_PostImage'
+});
+
+PostImage.belongsTo(Image, {
+	foreignKey: 'ImageID',
+	constraints: true,
+	as: 'Image_PostImage'
+});
 
 // Post.belongsToMany(Category, {
 // 	as: 'PostCategory',
@@ -829,16 +863,17 @@ PostTag.belongsTo(Post, {
 
 if(config.environment === 'development' && config.dbChange){
 	//db.sync({alter: true});
-	//Post.sync({alter:true});
-	// Post.sync({
-	//  	alter: true
-	// });
+	//Image.sync({alter:true});
+	Post.sync({
+		alter: true
+	});
 	// PostCategory.sync({
 	// 	alter: true
 	// });
-	// PostTag.sync({
-	// 	alter: true
-	// });	
+	//PostImage.sync({
+	//	alter: true
+	//});
+	//Setting.sync({alter: true});
 }
 
 module.exports = {

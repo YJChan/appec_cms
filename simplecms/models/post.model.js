@@ -10,6 +10,8 @@ const {	PostImage } = require('./sqlite/sqliteModel');
 const {	Category } = require('./sqlite/sqliteModel');
 const {	Image } = require('./sqlite/sqliteModel');
 const utils = require('../utils/utils');
+const supp = require('../utils/supp');
+const {convertDeltaToHtml} = require('node-quill-converter');
 const {
 	db
 } = require('./db');
@@ -50,20 +52,7 @@ class PostModel {
 							Post.findOne({
 								where: {
 									PostID: PostID
-								},
-								include: [{
-									model: User,
-									as: 'UserPost',
-									attributes: ['Username', 'email']
-								}, {
-									model: Admin,
-									as: 'AdminPost',
-									attributes: ['AdminName', 'AdminEmail']
-								}, {
-									model: PostCategory,
-									as: 'Post_Category',
-									attributes: ['PostID', 'CatID']
-								}]
+								}
 							}).then(oPostResult => {
 								resolve(oPostResult);
 							});
@@ -79,8 +68,8 @@ class PostModel {
 	/**
 	 * @param  {} oPost
 	 */
-	getPost(oPost) {
-		return new Promise((resolve, reject) => {
+	async getPost(oPost) {
+		let proGetPost = new Promise((resolve, reject) => {
 			Post.findOne({
 				where: oPost,
 				include: [{
@@ -95,13 +84,43 @@ class PostModel {
 					model: PostCategory,
 					as: 'Post_Category',
 					attributes: ['PostID', 'CatID']
+				}, {
+					model: PostImage,
+					as: 'Post_Image',
+					attributes: ['ImageID']
 				}]
 			}).then(oPostGet => {
-				resolve(oPostGet);
+				console.log('got post %o', oPostGet);
+				if(oPostGet.Post_Image.length > 0){
+					Image.findOne({
+						where: {
+							ImageID: oPostGet.Post_Image[0].ImageID
+						}
+					}).then(oImage => {
+						//console.log(oImage);
+						oPostGet.Post_Image[0].dataValues['url'] = oImage.url;
+						//console.log(oPostGet.Post_Image[0]);
+						resolve(oPostGet);
+					}).catch(err => {
+						//console.log(err);
+						reject(err);
+					});
+				}else{
+					resolve(oPostGet);
+				}
 			}).catch(err => {
 				reject(err);
 			});
 		});
+
+		let oPostResult = null;
+
+		try{
+			oPostResult = await proGetPost;
+			return oPostResult;
+		}catch(err){
+			return err;
+		}
 	}
 
 	/**
@@ -169,11 +188,20 @@ class PostModel {
 									model: PostCategory,
 									as: 'Post_Category',
 									attributes: ['PostID', 'CatID']
+								}, {
+									model: PostImage,
+									as: 'Post_Image',
+									attributes: ['ImageID']
 								}]
 							}).then(oPostResult => {
 								resolve(oPostResult);
 							});
 						});
+				}else{
+					reject({
+						code:'NO_CATEGORY',
+						msg: 'No category selected'
+					});
 				}
 			}).catch(err => {
 				reject(err);
@@ -186,6 +214,7 @@ class PostModel {
 				updatePostCat = await oPostCatToSave;
 				return updatePostCat;
 			}
+			return updatePost;
 		} catch (err) {
 			return err;
 		}
@@ -337,18 +366,27 @@ class PostModel {
 	/**
 	 * @param  {integer} pageNum=0
 	 * @param  {integer} active=0
+	 * @param  {integer} pageLimit=10
 	 */
-	paginatePost(pageNum = 0, active = 0) {
+	paginatePost(pageNum = 0, active = 0, pageLimit = 10, cat = '') {
 		return new Promise((resolve, reject) => {
 			//default pagination 10		
-			pageNum = pageNum * 10;
+			let limit = pageLimit;
+			pageNum = pageNum * limit;
+			let whereCond = {
+				active: active
+			};
+			let whereCatCond = {};
+			if(cat.category !== undefined){
+				if(cat.category !== ''){
+					whereCatCond['CatID'] = cat.category;
+				}
+			}
 
 			Post.findAll({
 				offset: pageNum,
-				limit: 10,
-				where: {
-					active: active
-				},
+				limit: limit,
+				where: whereCond,
 				order: [
 					['createdAt', 'desc']
 				],
@@ -363,9 +401,24 @@ class PostModel {
 				}, {
 					model: PostCategory,
 					as: 'Post_Category',
+					where: whereCatCond,
 					attributes: ['PostID', 'CatID']
 				}]
 			}).then(oPosts => {
+				if(! supp.isEmptyObj(oPosts)){
+					let pos = 0;
+					let jsonContent = null;
+					let html = null;
+					oPosts.forEach(function(p){
+						jsonContent = JSON.parse(p.content);
+						html = convertDeltaToHtml(jsonContent);
+						oPosts[pos]['htmlcontent'] = html;		
+						//to view it on profiler, it has to insert into dataValues object
+						oPosts[pos].dataValues['htmlcontent'] = html;						
+						pos++;
+					});
+				}
+
 				resolve(oPosts);
 			}).catch(err => {
 				reject(err);
@@ -382,8 +435,51 @@ class PostModel {
 				where: {
 					active: active
 				}
-			}).then(oPostPaginated => {
-				resolve(oPostPaginated);
+			}).then(oPostCount => {
+				resolve(oPostCount);
+			}).catch(err => {
+				reject(err);
+			});
+		});
+
+		let postCount = await oPosts;
+		return postCount.count;
+	}
+
+
+	/**
+	 * @param  {integer} active=1
+	 */
+	async countPostsWithCategory(active = 1, cat) {
+		let oPosts = new Promise((resolve, reject) => {
+			let whereCatCond = {};
+			if(cat.category !== undefined){
+				whereCatCond['CatID'] = cat.category;
+			}
+
+			Post.findAndCountAll({
+				where: {
+					active: active
+				},			
+				include: [{
+					nested: true,
+					all: true
+				},{
+					model: User,
+					as: 'UserPost',
+					attributes: ['Username', 'email']
+				}, {
+					model: Admin,
+					as: 'AdminPost',
+					attributes: ['AdminName', 'AdminEmail']
+				}, {
+					model: PostCategory,
+					as: 'Post_Category',
+					where: whereCatCond,
+					attributes: ['PostID', 'CatID']
+				}]
+			}).then(oPostCount => {
+				resolve(oPostCount);
 			}).catch(err => {
 				reject(err);
 			});
@@ -441,6 +537,10 @@ class PostModel {
 					model: PostCategory,
 					as: 'Post_Category',
 					attributes: ['PostID', 'CatID']
+				}, {
+					model: PostImage,
+					as: 'Post_Image',
+					attributes: ['ImageID']
 				}]
 			}).then(oPost => {
 				resolve(oPost);
@@ -544,10 +644,10 @@ class PostModel {
 	 */
 	setPostImage(oPostImage) {
 		return new Promise((resolve, reject) => {
-			PostTag.create(oPostImage)
+			PostImage.create(oPostImage)
 				.then(oPostImageSaved => {
 					let imgId = oPostImageSaved.ImgID;
-					Tag.findOne({
+					Image.findOne({
 						where: {
 							ImageID: imgId
 						}
@@ -570,10 +670,11 @@ class PostModel {
 	 */
 	delPostImage(oPostImage) {
 		return new Promise((resolve, reject) => {
-			PostTag.findOne({
+			PostImage.findOne({
 				where: oPostImage
 			}).then(oPostImageToRemove => {
 				oPostImageToRemove.destroy();
+				resolve(true);
 			}).catch(err => {
 				reject(err);
 			});
@@ -585,16 +686,84 @@ class PostModel {
 	 * @param  {Object} req
 	 * @param  {Object} oPost
 	 */
-	getFeaturePost(){
-		return new Promise((resolve, reject) => {
-			Post.findAll({where: {
-				isFeature: 1
-			}}).then(oPosts => {
+	async getFeaturePost(){
+		let proGetFeaturePosts = new Promise((resolve, reject) => {
+			Post.findAll({
+				where: {
+					isFeature: 1
+				},
+				include: [{
+					model: User,
+					as: 'UserPost',
+					attributes: ['Username', 'email']
+				}, {
+					model: Admin,
+					as: 'AdminPost',
+					attributes: ['AdminName', 'AdminEmail', 'avatar']
+				}, {
+					model: PostCategory,
+					as: 'Post_Category',
+					attributes: ['PostID', 'CatID']
+				}, {
+					model: PostImage,
+					as: 'Post_Image',
+					attributes: ['ImageID']
+				}]}).then(oPosts => {
+				if(! supp.isEmptyObj(oPosts)){
+					let pos = 0;
+					oPosts.forEach(function(p){
+						let jsonContent = JSON.parse(p.content);
+						let html = convertDeltaToHtml(jsonContent);
+						oPosts[pos]['htmlcontent'] = html;		
+						//to view it on profiler, it has to insert into dataValues object
+						oPosts[pos].dataValues['htmlcontent'] = html;						
+						pos++;
+					});
+				}
 				resolve(oPosts);
 			}).catch(err => {
 				reject(err);
 			});
 		});
+
+		const proGetFeaturePostImages = (imageID) => {
+			return new Promise((resolve, reject) => {
+				Image.findOne({
+					where: {
+						ImageID: imageID
+					}
+				}).then(oImage => {
+					resolve(oImage);
+				}).catch(err => {
+					reject(err);
+				});
+			});
+		};
+
+		try{
+			let oFeaturePost = await proGetFeaturePosts;
+			let oPostImage = null;
+			if(oFeaturePost !== null){
+				//console.log('feature post = %o', oFeaturePost);
+				for(var n = 0; n < oFeaturePost.length; n++){
+					if(oFeaturePost[n].Post_Image.length > 0){
+						oPostImage = await proGetFeaturePostImages(oFeaturePost[n].Post_Image[0].ImageID);
+					}
+					
+					if(oPostImage !== null){
+						oFeaturePost[n].Post_Image[0]['url'] = oPostImage.url;
+						//to view it on profiler, it has to insert into dataValues object
+						oFeaturePost[n].Post_Image[0].dataValues['url'] = oPostImage.url;
+					}else{
+						oFeaturePost[n].Post_Image.push({ImageID: '', url:''});
+					}
+				}
+			}
+			//console.log('with image %o', oFeaturePost);
+			return oFeaturePost;
+		}catch(err){
+			throw new Error(err);
+		}
 	}
 
 	/**	 
@@ -603,21 +772,34 @@ class PostModel {
 	setFeaturePost(oPost){
 		return new Promise((resolve, reject) => {
 			let postId = oPost.PostID;
-			Post.findOne({where: {
-				PostID : postId
-			}}).then(oPostSet => {
-				oPostSet.update({isFeature: 1})
-					.then(oPostUpdated => {
-						resolve(oPostUpdated);
-					}).catch(err => {
-						reject(err);
+			Post.findOne({
+				where: {
+					PostID : postId
+				}, include: [{
+					model: PostImage,
+					as: 'Post_Image',
+					attributes: ['ImageID']
+				}]
+			}).then(oPostSet => {
+				if (oPostSet.Post_Image.length > 0){
+					oPostSet.update({isFeature: 1})
+						.then(oPostUpdated => {
+							resolve(oPostUpdated);
+						}).catch(err => {
+							reject(err);
+						});
+				}else{
+					reject({
+						code: 'FEATURE_NO_IMG',
+						msg: 'Feature post has no cover image.'
 					});
+				}
 			}).catch(err => {
 				reject(err);
 			});
 		});
 	}
-
+	
 	/**	 
 	 * @param  {Object} oPost
 	 */
@@ -642,15 +824,25 @@ class PostModel {
 	/**
 	 * @param  {Date} dteRecent
 	 */
-	getRecentPost(dteRecent){
+	getRecentPost(dteRecent, pageNum = 0, rec = 3){
 		return new Promise((resolve, reject) => {
+			//console.log('recent date: %s', dteRecent.toDateString());
 			let dteTmp = new Date();
-			dteTmp.setDate(dteRecent.getDate());
+			dteTmp.setDate(dteRecent.getDate());	
 			dteTmp.setMonth(dteRecent.getMonth() - 1);
-			dteTmp.setFullYear(dteRecent.getFullYear());
-
-			Post.findAll({where:{
-				publishDate: {[Op.gte]: dteTmp},
+			if(dteTmp.getMonth() === 11){
+				dteTmp.setFullYear(dteRecent.getFullYear() - 1);
+			}else{
+				dteTmp.setFullYear(dteRecent.getFullYear());
+			}
+			//console.log('temp data is %s', dteTmp.toDateString());
+			Post.findAll({
+				offset: pageNum,
+				limit: rec,
+				where:{
+					publishDate: {[Op.gte]: dteTmp},
+					isFeature: 0
+				},
 				include: [{
 					model: User,
 					as: 'UserPost',
@@ -663,15 +855,117 @@ class PostModel {
 					model: PostCategory,
 					as: 'Post_Category',
 					attributes: ['PostID', 'CatID']
+				}, {
+					model: PostImage,
+					as: 'Post_Image',
+					attributes: ['ImageID']
 				}]
-			}}).then(oPostGet => {
-				resolve(oPostGet);
+			}).then(oPostGet => {
+				if(oPostGet.length >= 2){
+					if(! supp.isEmptyObj(oPostGet)){
+						let pos = 0;
+						oPostGet.forEach(function(p){
+							let jsonContent = JSON.parse(p.content);
+							let html = convertDeltaToHtml(jsonContent);
+							oPostGet[pos]['htmlcontent'] = html;		
+							//to view it on profiler, it has to insert into dataValues object
+							oPostGet[pos].dataValues['htmlcontent'] = html;						
+							pos++;
+						});
+					}
+
+					for (var n = 0; n < oPostGet.length; n++){
+						if(oPostGet[n].Post_Image.length > 0){
+							Image.findOne({
+								where: {
+									ImageID: oPostGet[n].Post_Image[0].ImageID
+								}
+							}).then(oImage => {
+								oPostGet[n].Post_Image[0]['url'] = oImage.url;
+								oPostGet[n].Post_Image[0].dataValues['url'] = oImage.url;
+							}).catch(err => {
+								reject(err);
+							});
+						}						
+					}	
+					resolve(oPostGet);				
+				}else{
+					Post.findAndCountAll()
+						.then(postCount => {
+							Post.findAll({
+								offset: postCount,
+								limit: 3,
+								where: {
+									active: 1
+								},
+								order: [
+									['createdAt', 'desc']
+								],
+								include: [{
+									model: User,
+									as: 'UserPost',
+									attributes: ['Username', 'email']
+								}, {
+									model: Admin,
+									as: 'AdminPost',
+									attributes: ['AdminName', 'AdminEmail']
+								}, {
+									model: PostCategory,
+									as: 'Post_Category',
+									attributes: ['PostID', 'CatID']
+								}]
+							}).then(oPosts => {
+								if(oPosts.length > 0){
+									if(! supp.isEmptyObj(oPostGet)){
+										let pos = 0;
+										oPostGet.forEach(function(p){
+											let jsonContent = JSON.parse(p.content);
+											let html = convertDeltaToHtml(jsonContent);
+											oPostGet[pos]['htmlcontent'] = html;		
+											//to view it on profiler, it has to insert into dataValues object
+											oPostGet[pos].dataValues['htmlcontent'] = html;						
+											pos++;
+										});
+									}
+
+									for (var n = 0; n < oPosts.length; n++){
+										if(oPosts[n].Post_Image.length > 0){
+											Image.findOne({
+												where: {
+													ImageID: oPosts[n].Post_Image[0].ImageID
+												}
+											}).then(oImage => {
+												//console.log(oImage);
+												oPosts[n].Post_Image[0]['url'] = oImage.url;
+												oPosts[n].Post_Image[0].dataValues['url'] = oImage.url;
+											}).catch(err => {
+												reject(err);
+											});
+										}
+										//resolve(oPosts);
+									}
+									resolve(oPosts);
+								}
+							}).catch(err => {
+								reject(err);
+							});
+						});
+				}
 			}).catch(err => {
 				reject(err);
 			});			
 		});
 	}
 
+	/*
+	getArchiveList(year){
+		let oArchiveList = null;
+
+		let proGetArchiveList = new Promise((resolve, reject) => {
+			Post.findAndCountAll
+		});
+	}
+	*/
 	/**
 	 * Check on what parameter has been passed from front end
 	 * @param  {Object} req
@@ -736,6 +1030,15 @@ class PostModel {
 			isExist = true;
 			break;
 		case 'CATEGORIES':
+			isExist = true;
+			break;
+		case 'MODE':
+			isExist = true;
+			break;
+		case 'POSTIMG':
+			isExist = true;
+			break;
+		case 'POSTIMGID':
 			isExist = true;
 			break;
 		default:
@@ -811,6 +1114,24 @@ class PostModel {
 			categories: {
 				val: '',
 				type: 'ARRAY',
+				check: true,
+				exclude: false
+			},
+			mode:{
+				val: '',
+				type: 'STRING',
+				check: true,
+				exclude: false
+			},
+			postImg: {
+				val: '',
+				type: 'NULLABLE',
+				check: true,
+				exclude: false
+			},
+			postImgID: {
+				val: '',
+				type:'NULLABLE',
 				check: true,
 				exclude: false
 			}

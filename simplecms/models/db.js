@@ -15,33 +15,34 @@ var dbopts      = utils.extract(config[environment].database[database], 'options
 var mongodbOrSQL = 2;
 
 switch (database){
-  case 'mongodb':
-    var connectionString = 'mongodb://' + dbuser + ':' + pwd + '@' + host + port + '/' + dbname;
-    mongoose.connect(connectionString, dbopts);
+case 'mongodb':
+	var connectionString = 'mongodb://' + dbuser + ':' + pwd + '@' + host + port + '/' + dbname;
+	mongoose.connect(connectionString, dbopts);
 
-    mongoConn = mongoose.connection;
-    mongoConn.on('error', console.error.bind(console, 'connection error:'));
-    mongoConn.once('open', function () {
-      console.log("Mongodb Connected! at " + new Date());
-    });
-    mongodbOrSQL = 1;        
-  case 'sqlite':  
-    sequelize = new Sequelize(database, dbuser, pwd, {
-      host: 'localhost',
-      dialect: 'sqlite',
-      operatorsAliases: false,
-      pool: {
-        max: 10,
-        min: 0,
-        acquire: 30000,
-        idle : 10000
-      },
-      storage: './models/appec_cms.db'
-    });  
-    mongodbOrSQL = 2;    
-    //syncing database table with definition    
-  default:
-    console.error('no database connection.');
+	mongoConn = mongoose.connection;
+	mongoConn.on('error', console.error.bind(console, 'connection error:'));
+	mongoConn.once('open', function () {
+		console.log('Mongodb Connected! at ' + new Date());
+	});
+	mongodbOrSQL = 1;        
+case 'sqlite':  
+	sequelize = new Sequelize(database, dbuser, pwd, {
+		host: 'localhost',
+		dialect: 'sqlite',
+		operatorsAliases: false,
+		pool: {
+			max: 10,
+			min: 0,
+			acquire: 30000,
+			idle : 10000
+		},
+		storage: './models/appec_cms.db',
+		logging: false
+	});  
+	mongodbOrSQL = 2;    
+	//syncing database table with definition    
+default:
+	console.error('no database connection.');
 }
 
 const db = mongodbOrSQL == 1 ? mongoConn : sequelize;

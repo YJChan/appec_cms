@@ -132,6 +132,18 @@ class ImageModel {
 		});
 	}
 
+	getImageByImageID(imgID){
+		return new Promise((resolve, reject) => {
+			Image.findOne({
+				where: {ImageID: imgID}
+			}).then(oImage => {
+				resolve(oImage);
+			}).catch(err => {
+				reject(err);
+			});
+		});
+	}
+	
 	/**
    * Check on what parameter has been passed from front end
    * @param  {Object} req

@@ -368,10 +368,12 @@ input.input-line:focus {
     border-radius: 0.25em;
     height: auto;
     margin: 25px;
-    top: 10%;
+    top: calc(100vh - 10%);
     left: 35%;
     width: 350px;
     box-shadow: 2px 2px 2px 2px #5a5858;
+    max-height: calc(100vh - 210px);
+    overflow-y: auto;
   }
 
   .month-title {

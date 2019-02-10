@@ -1,0 +1,7 @@
+<div class="list-group">
+    <h4>Categories</h4>
+    <% data.categories.forEach(function(category){ %>
+        <button class="btn list-group-item list-group-item-action text-wrap" 
+            onclick="Javascript: appec.common.redirectTo('/post/all?category=' + '<%= category.CatID %>')"><%= category.catname %></button>
+    <% }); %>
+</div>

@@ -1,0 +1,19 @@
+<%- include('../header') -%>
+<div class="container-fluid p-0" style="overflow:hidden;">
+  <div class="row">
+    <div class="col-12">
+      <%-include('../navbar') %> 
+    </div>
+  </div>
+</div>
+
+<main role="main" class="container" style="margin-top: 20px;">
+    <div class="row">
+      <%-include('../main/recentpost', {recent_post: data.recent_post}) %>
+    </div>
+</main>
+<% if(data.recent_post.length > 0) {%>
+  <%- include('../backtotop') %>
+  <%- include('postpagination') %>
+<% } %>
+<%- include('../footer') %>

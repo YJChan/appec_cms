@@ -1,0 +1,27 @@
+<div id="pageData" style="border: 1px solid dark; width: 100%; margin: 0 auto; height: 50%;overflow: scroll;
+														bottom:30px; position: fixed; z-index:999999; background: #f3f3f3; padding: 4px; display:none;">
+  <div style="margin:0 auto; width: 100%;">
+    <pre style="border: 1px solid black; background: #fff; width:99%; height: 95%; position: absolute;"><%- JSON.stringify({data}, null, 2) -%></pre>
+  </div>
+</div>
+<div style="cursor: pointer; width:100%; bottom:0; z-index:99999999; position: fixed; bottom:0; height: 30px; padding: 2px; background: #545b62;"
+   onclick="openProfiler()">
+  <div style="float: left; border: 1px solid darkgray; background: black; color: #fff; border-radius: 4px; padding: 3px; font-size: smaller;">
+    data profiler
+  </div>
+  <div style="float:right; text-align: left; width: 3%; margin:2px auto; color: #fff;" onclick="openProfiler()">
+    <span id="arrow">&#x2912;</span>
+  </div>
+</div>
+
+<script>
+  function openProfiler(){
+    if(document.getElementById('pageData').style.display === 'none'){
+      document.getElementById('pageData').style.display = 'block';
+      document.getElementById('arrow').innerHTML = '&#x2913;';
+    }else{
+      document.getElementById('pageData').style.display = 'none';
+      document.getElementById('arrow').innerHTML = '&#x2912;';
+    }
+  }
+</script>

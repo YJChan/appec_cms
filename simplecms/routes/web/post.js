@@ -10,4 +10,8 @@ router.get('/', function (req, res) {
 
 router.get('/:post', PostController.webGetPost);
 
+router.get('/all/:pagenum', PostController.webGetAllPosts);
+
+router.get('/all', PostController.webGetAllPosts);
+
 module.exports = router;

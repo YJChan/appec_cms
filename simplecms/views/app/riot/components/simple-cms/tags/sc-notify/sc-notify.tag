@@ -69,7 +69,8 @@
     @media (min-width: 320px) and (max-width: 480px) {
       .notify-bottom-right{
         right: 0;
-        top: 0;
+        max-height: 25px;
+        height: calc(100% - 25px);
         border: 1px solid #ddd;
         border-radius: 0.2em;
         width: 60%;
@@ -79,62 +80,62 @@
         position: absolute
       }
 
-    .notify-bottom-left{
-      left: 0;
-      top: 0;
-      border: 1px solid #ddd;
-      border-radius: 0.2em;
-      width: 60%;
-      display: inline-block;
-      padding: 20px;         
-      margin: 15px;
-      position: absolute
-    }
-    
-    .notify-top-right{
-      right: 0;
-      top: 0;
-      border: 1px solid #ddd;
-      border-radius: 0.2em;
-      width: 60%;
-      display: inline-block;
-      padding: 15px;         
-      margin: 15px;
-      position: absolute
-    }
+      .notify-bottom-left{
+        left: 0;
+        max-height: 25px;
+        height: calc(100% - 25px);
+        border: 1px solid #ddd;
+        border-radius: 0.2em;
+        width: 60%;
+        display: inline-block;
+        padding: 20px;         
+        margin: 15px;
+        position: absolute
+      }
+      
+      .notify-top-right{
+        right: 0;
+        top: calc(100vh - 95%);
+        border: 1px solid #ddd;
+        border-radius: 0.2em;
+        width: 60%;
+        display: inline-block;
+        padding: 15px;         
+        margin: 15px;
+        position: absolute
+      }
 
-    .notify-top-left{
-      left: 0;
-      top: 0;
-      border: 1px solid #ddd;
-      border-radius: 0.2em;
-      width: 60%;
-      display: inline-block;
-      padding: 20px;         
-      margin: 15px;
-      position: absolute
-    }
+      .notify-top-left{
+        left: 0;
+        top: calc(100vh - 95%);
+        border: 1px solid #ddd;
+        border-radius: 0.2em;
+        width: 60%;
+        display: inline-block;
+        padding: 20px;         
+        margin: 15px;
+        position: absolute
+      }
 
-    .notify-center{
-      left: 40%;
-      top: 45%;
-      border: 1px solid #ddd;
-      border-radius: 0.2em;
-      width: 60%;
-      display: inline-block;
-      padding: 20px;         
-      margin: 15px;
-      position: absolute
-    }
-
-
+      .notify-center{
+        left: 40%;
+        top: calc(100vh - 50%);
+        border: 1px solid #ddd;
+        border-radius: 0.2em;
+        width: 60%;
+        display: inline-block;
+        padding: 20px;         
+        margin: 15px;
+        position: absolute
+      }
     }
 
     @media (min-width: 481px) and (max-width: 767px) {
       
       .notify-bottom-right{
         right: 0;
-        bottom: 0;
+        max-height: 25px;
+        height: calc(100% - 25px);
         border: 1px solid #ddd;
         border-radius: 0.2em;
         width: 50%;
@@ -146,7 +147,8 @@
 
       .notify-bottom-left{
         left: 0;
-        bottom: 0;
+        max-height: 25px;
+        height: calc(100% - 25px);
         border: 1px solid #ddd;
         border-radius: 0.2em;
         width: 50%;
@@ -182,7 +184,7 @@
 
       .notify-center{
         left: 40%;
-        top: 45%;
+        top: calc(100vh - 50%);
         border: 1px solid #ddd;
         border-radius: 0.2em;
         width: 50%;
@@ -205,7 +207,8 @@
 
       .notify-bottom-right{
         right: 0;
-        bottom: 0;
+        max-height: 25px;
+        height: calc(100% - 25px);
         border: 1px solid #ddd;
         border-radius: 0.2em;
         width: 30%;
@@ -217,7 +220,8 @@
 
       .notify-bottom-left{
         left: 0;
-        bottom: 0;
+        max-height: 25px;
+        height: calc(100% - 25px);
         border: 1px solid #ddd;
         border-radius: 0.2em;
         width: 30%;
@@ -229,7 +233,7 @@
       
       .notify-top-right{
         right: 0;
-        top: 0;
+        top: calc(100vh - 95%);
         border: 1px solid #ddd;
         border-radius: 0.2em;
         width: 30%;
@@ -241,7 +245,7 @@
 
       .notify-top-left{
         left: 0;
-        top: 0;
+        top: calc(100vh - 95%);
         border: 1px solid #ddd;
         border-radius: 0.2em;
         width: 30%;
@@ -253,7 +257,7 @@
 
       .notify-center{
         left: 40%;
-        top: 45%;
+        top: calc(100vh - 50%);
         border: 1px solid #ddd;
         border-radius: 0.2em;
         width: 30%;
@@ -276,62 +280,64 @@
     
       .notify-bottom-right{
         right: 0;
-        bottom: 0;
+        max-height: 25px;
+        height: calc(100% - 25px);
         border: 1px solid #ddd;
         border-radius: 0.2em;
         width: 20%;
         display: inline-block;
         padding: 20px;         
         margin: 15px;
-        position: absolute
+        position: absolute;
       }
 
       .notify-bottom-left{
         left: 0;
-        bottom: 0;
+        max-height: 25px;
+        height: calc(100% - 25px);
         border: 1px solid #ddd;
         border-radius: 0.2em;
         width: 20%;
         display: inline-block;
         padding: 20px;         
-        margin: 15px;
-        position: absolute
+        margin: 10px;
+        position: absolute;
       }
       
       .notify-top-right{
         right: 0;
-        top: 0;
+        top: calc(100vh - 95%);
         border: 1px solid #ddd;
         border-radius: 0.2em;
         width: 20%;
         display: inline-block;
         padding: 15px;         
         margin: 15px;
-        position: absolute
+        position: absolute;
       }
 
       .notify-top-left{
         left: 0;
-        top: 0;
+        top: calc(100vh - 95%);
         border: 1px solid #ddd;
         border-radius: 0.2em;
         width: 20%;
         display: inline-block;
         padding: 20px;         
         margin: 15px;
-        position: absolute
+        position: absolute;
       }
 
       .notify-center{
         left: 40%;
-        top: 45%;
+        top: calc(100vh - 50%);
         border: 1px solid #ddd;
         border-radius: 0.2em;
         width: 20%;
         display: inline-block;
         padding: 20px;         
         margin: 15px;
-        position: absolute
+        position: absolute;
       }
 
       .notify-progress{

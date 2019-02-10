@@ -1,92 +1,79 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-  <title><%= post.title %></title>
-  <link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32" />
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400" rel="stylesheet"> 
-  <link rel="stylesheet" href="/stylesheets/pure-css-1.0.0/pure-min.css" />
-  <link rel="stylesheet" href="/stylesheets/pure-css-1.0.0/grids-responsive-min.css" />
-  <link rel='stylesheet' href='/scripts/quill/dist/quill.content.css'/> 
-  <link rel='stylesheet' href="/stylesheets/blog-style.css" />  
-</head>
-<body>  
-  <div id="layout" class="pure-g">
-    <div class="sidebar pure-u-1 pure-u-md-1-4">
-      <div class="header">
-        <h1 class="brand-title"><%= blog.brand_title %></h1>
-        <h2 class="brand-tagline"><%= blog.brand_tagline %></h2>
-
-        <nav class="nav">
-          <ul class="nav-list">
-            <li class="nav-item">
-              <a class="pure-button" href="https://github.com/YJChan/appec_cms">Github</a>
-            </li>            
-          </ul>
-        </nav>
-      </div>
-    </div>
-
-    <div class="content pure-u-1 pure-u-md-3-4">
-      <div>
-        <!-- A wrapper for all the blog posts -->
-        <div class="posts">
-          <h1 class="content-subhead"><% %></h1>
-
-          <!-- A single blog post -->
-          <section class="post">
-            <header class="post-header">
-              <% if(post.AdminPost !== null){ %>
-              <img width="48" height="48" alt="<%= post.createdBy %>&#x27;s avatar" class="post-avatar" src="<%= post.AdminPost.avatar %>">
-              <!-- <span class="post-author"><%= post.createdBy %></span> -->
-              <% } %>
-              <h2 class="post-title"><%=post.title %></h2>
-
-              <p class="post-meta">
-                By <a href="#" class="post-author"><%= post.createdBy %></a> 
-                <% post.Post_Category.forEach(function(oPostCat){ %>                  
-                  <% category.forEach(function(oCat){ %>
-                    <% if (oCat.CatID === oPostCat.CatID) {%>
-                    <a class="post-category post-category-pure">
-                      <%= oCat.catname %>
-                    </a>
-                    <% } %>
-                  <% }); %>
-                <% }); %>
-              </p>
-            </header>
-
-            <div class="post-description  ">
-              <!--Content start -->
-              <%- post.content %>
-              <!--Content end -->
-            </div>
-          </section>
-        </div>
-
-        <div class="footer">
-          <div class="pure-menu pure-menu-horizontal">
-            <ul>
-              <li class="pure-menu-item"><a href="http://appec.work/" class="pure-menu-link">About</a></li>
-              <li class="pure-menu-item"><a href="http://appec.work/" class="pure-menu-link">Services</a></li>
-              <li class="pure-menu-item"><a href="https://github.com/YJChan/appec_cms" class="pure-menu-link">GitHub</a></li>
-            </ul>
+<%-include('../header') -%>
+<%-include('../navbar') -%>
+<main role="main" class="container post-container">
+  <div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto">
+      <h2 class="post-title">
+        <%= data.post.title %>
+      </h2>
+      <div class="container-fluid p-0">
+        <div class="row">
+          <div class="col-lg-1 col-md-1 col-sm-2 col-xs-3 col-3">
+            <% if(data.post.AdminPost !== null){ %>
+            <img width="48" height="48" alt="<%= data.post.createdBy %>&#x27;s avatar" class="post-avatar" src="<%= data.post.AdminPost.avatar %>" />
+            <% }else{ %>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M7.5 6.5C7.5 8.981 9.519 11 12 11s4.5-2.019 4.5-4.5S14.481 2 12 2 7.5 4.019 7.5 6.5zM20 21h1v-1c0-3.859-3.141-7-7-7h-4c-3.86 0-7 3.141-7 7v1h1 1 14H20z"/></svg>
+            <% } %>
+          </div>
+          <div class="col-lg-11 col-md-11 col-sm-10 col-xs-9 col-9">
+            by
+            <% if(data.post.AdminPost !== null){ %>
+            <span class="badge badge-light">
+              <%= data.post.createdBy %></span>
+            <% }%>
+            <% data.post.Post_Category.forEach(function(oPostCat){ %>
+            <% data.category.forEach(function(oCat){ %>
+            <% if (oCat.CatID === oPostCat.CatID) {%>
+            <span class="badge badge-primary">
+              <%= oCat.catname %>
+            </span>
+            <% } %>
+            <% }); %>
+            <% }); %>
+            <p>
+              <%- data.post.publishDate.toDateString() %>
+            </p>
           </div>
         </div>
       </div>
     </div>
+    <article>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 col-12 col-sm-12 col-xs-12 mx-auto">
+            <div class="text-wrap post-content">
+              <%- data.post.content %>
+            </div>
+          </div>
+        </div>        
+        <button class="btn btn-block btn-outline-secondary btn-sm" style="display:none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path d="M4 21h1V8H4c-1.104 0-2 .896-2 2v9C2 20.104 2.896 21 4 21zM20 8h-7l1.122-3.368C14.554 3.337 13.59 2 12.225 2H12L7 7.438V21h11l3.912-8.596C21.937 12.291 21.976 12.114 22 12v-2C22 8.896 21.104 8 20 8z"/></svg>
+                <span class="badge badge-success"></span>
+              </button>
+        <div class="row">
+          <div class="col-2">
+            <div class="bg-light p-2" style="position: fixed; bottom: calc(100vh - 60%);">          
+              <button class="btn btn-block btn-outline-secondary btn-sm" onclick="appec.blog.fbShare('<%= data.baseUrl %>' + 'post/' + '<%= data.post.title %>')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path d="M13.397,20.997v-8.196h2.765l0.411-3.209h-3.176V7.548c0-0.926,0.258-1.56,1.587-1.56h1.684V3.127	C15.849,3.039,15.025,2.997,14.201,3c-2.444,0-4.122,1.492-4.122,4.231v2.355H7.332v3.209h2.753v8.202H13.397z"/></svg>
+              </button>
+              <button class="btn btn-block btn-outline-secondary btn-sm" onclick="appec.blog.twitterShare('<%= data.baseUrl %>' + 'post/' + '<%= data.post.title %>')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path d="M19.633,7.997c0.013,0.175,0.013,0.349,0.013,0.523c0,5.325-4.053,11.461-11.46,11.461c-2.282,0-4.402-0.661-6.186-1.809	c0.324,0.037,0.636,0.05,0.973,0.05c1.883,0,3.616-0.636,5.001-1.721c-1.771-0.037-3.255-1.197-3.767-2.793	c0.249,0.037,0.499,0.062,0.761,0.062c0.361,0,0.724-0.05,1.061-0.137c-1.847-0.374-3.23-1.995-3.23-3.953v-0.05	c0.537,0.299,1.16,0.486,1.82,0.511C3.534,9.419,2.823,8.184,2.823,6.787c0-0.748,0.199-1.434,0.548-2.032	c1.983,2.443,4.964,4.04,8.306,4.215c-0.062-0.3-0.1-0.611-0.1-0.923c0-2.22,1.796-4.028,4.028-4.028	c1.16,0,2.207,0.486,2.943,1.272c0.91-0.175,1.782-0.512,2.556-0.973c-0.299,0.935-0.936,1.721-1.771,2.22	c0.811-0.088,1.597-0.312,2.319-0.624C21.104,6.712,20.419,7.423,19.633,7.997z"/></svg>
+              </button>
+              <button class="btn btn-block btn-outline-secondary btn-sm" onclick="appec.blog.linkedInShare('<%= data.baseUrl %>' + 'post/' + '<%= data.post.title %>')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><circle cx="4.983" cy="5.009" r="2.188"/><path d="M9.237 8.855v12.139h3.769v-6.003c0-1.584.298-3.118 2.262-3.118 1.937 0 1.961 1.811 1.961 3.218v5.904H21v-6.657c0-3.27-.704-5.783-4.526-5.783-1.835 0-3.065 1.007-3.568 1.96h-.051v-1.66H9.237zM3.095 8.855H6.87V20.994H3.095z"/></svg>
+              </button>
+              <button class="btn btn-block btn-outline-secondary btn-sm" onclick="appec.blog.manipulateFontSize(1)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path d="M13.937,4.649C13.79,4.259,13.417,4,13,4h-2c-0.417,0-0.79,0.259-0.937,0.649L4.307,20h2.137l1.875-5h7.363l1.875,5h2.137 L13.937,4.649z M9.068,13l2.625-7h0.614l2.625,7H9.068z"/></svg> +
+              </button>
+              <button class="btn btn-block btn-outline-secondary btn-sm" onclick="appec.blog.manipulateFontSize(-1)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path d="M13.937,4.649C13.79,4.259,13.417,4,13,4h-2c-0.417,0-0.79,0.259-0.937,0.649L4.307,20h2.137l1.875-5h7.363l1.875,5h2.137 L13.937,4.649z M9.068,13l2.625-7h0.614l2.625,7H9.068z"/></svg> - 
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
   </div>
-  <script type="text/javascript" src="/scripts/axios/dist/axios.js"></script>
-  <script>
-    window.onload = postViewed();
-
-    function postViewed(){
-      axios.get('<%= baseUrl %>api/post/post-view/<%= post.PostID %>')
-        .then((response) => {
-          console.log(response);
-        });
-    }
-  </script>
-</body>
-
-</html>
+</main>
+<%- include('../backtotop') %>
+<%- include('../footer') %>

@@ -1,4 +1,4 @@
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 var validator = require('validator');
 var sanitizer = require('sanitizer');
 var jsonwebtoken = require('jsonwebtoken');
@@ -16,7 +16,6 @@ const security = {
 
 			callback(null, hash);
 		});
-		//bcrypt.hashSync(pwd, salts);
 	},
 	decrypt(pwd, hash, callback){
 		bcrypt.compare(pwd, hash, (err, res) => {
@@ -38,7 +37,7 @@ const security = {
 				name: authenticatedObj.name,
 				level: authenticatedObj.level,
 				exp: Math.floor(Date.now() / 1000) + (60 * (exp_time *60)),
-				iss: 'http://appec.work',
+				iss: config[config.environment].base_url,
 				jwtid: utils.sguid(),
 				role: {
 					admin: {

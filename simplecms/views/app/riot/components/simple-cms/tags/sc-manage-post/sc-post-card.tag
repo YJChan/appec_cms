@@ -113,7 +113,7 @@
       }
     }
 
-    notify(notifyObj){      
+    notify(notifyObj){
       if(notifyObj !== null){
         riot.mount('sc-notify', {
           position : notifyObj.position,
@@ -124,7 +124,7 @@
           visible : true
         });
         
-        self.update();                
+        //self.update();                
       }
     }
 
@@ -132,7 +132,7 @@
       var result = c.getter('deleteSinglePostGetter');            
       if(result.success.status){
         self.notify({
-          position: 'bottom-left',
+          position: 'top-left',
           theme: 'success',
           leadstyle: 'note',
           stay: 3,
@@ -141,7 +141,7 @@
         });   
       }else{
         self.notify({
-          position: 'bottom-left',
+          position: 'top-left',
           theme: 'warning',
           leadstyle: 'note',
           stay: 3,
@@ -157,16 +157,17 @@
       if(result.success.status)  {
         self.isFeature = 1;
         self.notify({
-          position: 'bottom-left',
+          position: 'top-left',
           theme: 'success',
           leadstyle: 'note',
           stay: 3,
           message: 'Selected post has been set featured.',
           visible: true
-        });  
+        });
+        self.parent.updateList();
       }else{
         self.notify({
-          position: 'bottom-left',
+          position: 'top-left',
           theme: 'warning',
           leadstyle: 'note',
           stay: 3,
@@ -174,7 +175,6 @@
           visible: true
         });  
       }
-      self.parent.updateList();
     });
 
     mainControl.change('FeaturePostRemoved', function(state, c){
@@ -182,16 +182,17 @@
       if(result.success.status)  {
         self.isFeature = 0;
         self.notify({
-          position: 'bottom-left',
+          position: 'top-left',
           theme: 'success',
           leadstyle: 'note',
           stay: 3,
-          message: 'Selected post has been set featured.',
+          message: 'Selected post has been removed from feature.',
           visible: true
-        });  
+        });
+        self.parent.updateList();
       }else{
         self.notify({
-          position: 'bottom-left',
+          position: 'top-left',
           theme: 'warning',
           leadstyle: 'note',
           stay: 3,
@@ -199,7 +200,6 @@
           visible: true
         });  
       }
-      self.parent.updateList();
     });
   </script>
 </sc-post-card>
